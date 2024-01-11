@@ -1,7 +1,6 @@
 package com.project.zipkok.model;
 
 import jakarta.persistence.*;
-import jdk.jfr.Unsigned;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,12 +8,12 @@ import lombok.NoArgsConstructor;
 @Table(name = "TransactionType")
 @NoArgsConstructor
 @Getter
-public class TransactionType {
+public class TransactionPriceConfig {
 
     @Id
-    @Column(name = "transaction_type_id")
+    @Column(name = "transaction_config_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long transactionTypeId;
+    private long transactionConfigId;
 
     @Column(name = "mprice_min")
     private int mPriceMin;
