@@ -14,4 +14,17 @@ public class CheckedFurniture {
     @Column(name = "checked_furniture_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long checkedFurnitureId;
+
+    @ManyToOne
+    @JoinColumn(name = "kok_id", nullable = false)
+    private  Kok kok;
+
+    @ManyToOne
+    @JoinColumn(name = "furniture_option_id", nullable = false)
+    private FurnitureOption furnitureOption;
+
+    public CheckedFurniture(Kok kok, FurnitureOption furnitureOption){
+        this.kok = kok;
+        this.furnitureOption = furnitureOption;
+    }
 }

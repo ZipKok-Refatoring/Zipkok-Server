@@ -14,4 +14,17 @@ public class CheckedImpression {
     @Column(name = "checked_impression_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long checkedImpressionId;
+
+    @ManyToOne
+    @JoinColumn(name = "kok_id", nullable = false)
+    private Kok kok;
+
+    @ManyToOne
+    @JoinColumn(name = "impression_id", nullable = false)
+    private Impression impression;
+
+    public CheckedImpression(Kok kok, Impression impression){
+        this.kok = kok;
+        this.impression = impression;
+    }
 }

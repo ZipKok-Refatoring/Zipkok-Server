@@ -15,4 +15,16 @@ public class CheckedHighlight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long checkedHighlightId;
 
+    @ManyToOne
+    @JoinColumn(name = "kok_id", nullable = false)
+    private Kok kok;
+
+    @ManyToOne
+    @JoinColumn(name ="highlight_id", nullable = false)
+    private Highlight highlight;
+
+    public CheckedHighlight(Kok kok, Highlight highlight){
+        this.kok = kok;
+        this.highlight = highlight;
+    }
 }
