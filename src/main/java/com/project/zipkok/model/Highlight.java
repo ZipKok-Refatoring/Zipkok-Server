@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "Highlight")
 @Getter
@@ -21,6 +24,9 @@ public class Highlight {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "HighLight", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<CheckedHighlight> checkedHighlights = new ArrayList<>();
 
     public Highlight(String title, User user){
         this.title = title;

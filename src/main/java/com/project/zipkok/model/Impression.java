@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "Impression")
 @Getter
@@ -17,6 +20,9 @@ public class Impression {
 
     @Column(name ="impression_title", nullable = false)
     private String impressionTitle;
+
+    @OneToMany(mappedBy = "Impression", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<CheckedImpression> checkedImpressions = new ArrayList<>();
 
     public Impression(String impressionTitle){
         this.impressionTitle = impressionTitle;

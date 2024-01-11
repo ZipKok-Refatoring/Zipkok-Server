@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "DetailOption")
 @Getter
@@ -20,6 +23,9 @@ public class DetailOption {
 
     @Column(name ="is_visible", nullable = false)
     private boolean isVisible;
+
+    @OneToMany(mappedBy = "DetailOption", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<CheckedDetailOption> checkedDetailOptions = new ArrayList<>();
 
     public DetailOption(String name, boolean isVisible){
         this.name =name;

@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "FurnitureOption")
 @Getter
@@ -20,6 +23,9 @@ public class FurnitureOption {
 
     @Column(name ="icon_url", nullable = false)
     private String iconUrl;
+
+    @OneToMany(mappedBy = "FurnitureOption", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<CheckedFurniture> checkedFurnitures = new ArrayList<>();
 
     public FurnitureOption(String furnitureName, String iconUrl){
         this.furnitureName = furnitureName;
