@@ -25,8 +25,18 @@ public class DesireResidence {
     @Column(name = "longitude", nullable = false)
     private double longitude;
 
+    @Column(name = "status", nullable = false)
+    private String status;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public DesireResidence(String address, double latitude, double longitude) {
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.status = "active";
+    }
 
 }

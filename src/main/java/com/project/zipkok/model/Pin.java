@@ -36,4 +36,12 @@ public class Pin {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public Pin(String address, String pinNickname, double latitude, double longitude) {
+        this.address = address;
+        this.pinNickname = pinNickname;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.status = "active"
+    }
 }

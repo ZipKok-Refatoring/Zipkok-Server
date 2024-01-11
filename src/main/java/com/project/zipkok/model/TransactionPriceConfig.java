@@ -39,7 +39,15 @@ public class TransactionPriceConfig {
     @Column(name = "purchase_max")
     private long puchaseMax;
 
+    @Column(name = "status", nullable = false)
+    private String status;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public TransactionPriceConfig(User user) {
+        this.user = user;
+        this.status = "active";
+    }
 }

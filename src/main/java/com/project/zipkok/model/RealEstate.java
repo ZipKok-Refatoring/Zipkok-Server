@@ -57,4 +57,19 @@ public class RealEstate {
 
     @Column(name = "is_temporal", nullable = false)
     private boolean isTemporal;
+
+    @Column(name = "status", nullable = false)
+    private String status;
+
+    public RealEstate(String address, double latitude, double longitude, String transactionType, long deposit, long price, RealEstateType realEstateType, boolean isTemporal) {
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.transactionType = transactionType;
+        this.deposit = deposit;
+        this.price = price;
+        this.realEstateType = realEstateType;
+        this.isTemporal = isTemporal;
+        this.status = "active";
+    }
 }
