@@ -18,4 +18,17 @@ public class Kok {
     @Column(name = "direction", nullable = true)
     private String direction;
 
+    @ManyToOne
+    @JoinColumn(name = "realestate_id", nullable = false)
+    private RealEstate realEstate;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    public Kok(RealEstate realEstate, User user) {
+        this.realEstate = realEstate;
+        this.user = user;
+    }
+
 }

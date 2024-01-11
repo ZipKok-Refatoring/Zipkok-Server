@@ -42,6 +42,6 @@ public class Pin {
         this.pinNickname = pinNickname;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.status = "active"
+        this.status = "active";
     }
 }

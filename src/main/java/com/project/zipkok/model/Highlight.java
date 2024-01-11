@@ -18,7 +18,12 @@ public class Highlight {
     @Column(name ="title", nullable = false)
     private String title;
 
-    public Highlight(String title){
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    public Highlight(String title, User user){
         this.title = title;
+        this.user = user;
     }
 }
