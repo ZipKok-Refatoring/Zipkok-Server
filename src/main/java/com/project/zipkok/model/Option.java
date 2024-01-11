@@ -5,6 +5,9 @@ import jdk.jfr.Unsigned;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "Option")
 @Getter
@@ -32,6 +35,14 @@ public class Option {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @OneToMany(mappedBy = "Option",orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<KokImage> kokImages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "Option",orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<CheckedOption> checkedOptions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "Option",orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<DetailOption> detailOptions = new ArrayList<>();
 
     public Option(String name, boolean isVisible, long orderNum, String category, User user){
         this.name = name;

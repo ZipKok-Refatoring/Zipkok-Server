@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "RealEstate")
 @Getter
@@ -60,6 +63,15 @@ public class RealEstate {
 
     @Column(name = "status", nullable = false)
     private String status;
+
+    @OneToMany(mappedBy = "RealEstate",orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<Zim> zims = new ArrayList<>();
+
+    @OneToMany(mappedBy = "RealEstate",orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<RealEstateImage> realEstateImages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "RealEstate",orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<Kok> koks = new ArrayList<>();
 
     public RealEstate(String address, double latitude, double longitude, String transactionType, long deposit, long price, RealEstateType realEstateType, boolean isTemporal) {
         this.address = address;
