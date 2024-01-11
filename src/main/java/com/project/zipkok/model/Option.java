@@ -28,10 +28,16 @@ public class Option {
     @Column(name ="category")
     private String category;
 
-    public Option(String name, boolean isVisible, long orderNum, String category){
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+
+    public Option(String name, boolean isVisible, long orderNum, String category, User user){
         this.name = name;
         this.isVisible = isVisible;
         this.orderNum = orderNum;
         this.category = category;
+        this.user = user;
     }
 }

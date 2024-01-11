@@ -28,10 +28,15 @@ public class Star {
     @Column(name = "vibe_star", nullable = false)
     private int vibeStar;
 
-    public Star(int facilityStar, int infraStar, int structureStar, int vibeStar){
+    @ManyToOne
+    @JoinColumn(name = "kok_id", nullable = false)
+    private Kok kok;
+
+    public Star(int facilityStar, int infraStar, int structureStar, int vibeStar, Kok kok){
         this.facilityStar = facilityStar;
         this.infraStar = infraStar;
         this.structureStar = structureStar;
         this.vibeStar = vibeStar;
+        this.kok = kok;
     }
 }
