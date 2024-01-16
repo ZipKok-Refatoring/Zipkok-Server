@@ -1,6 +1,7 @@
 spring:
   profiles:
     group:
+      "test" : "localDB, devPort, secret, web-mvc, jpa-config"
       "local": "localDB, devPort, secret, web-mvc, jpa-config"
       "dev": "devDB, devPort, secret, web-mvc, jpa-config"
       "prod": "prodDB, prodPort, secret, web-mvc, jpa-config"
