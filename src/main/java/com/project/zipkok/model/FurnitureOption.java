@@ -24,7 +24,7 @@ public class FurnitureOption {
     @Column(name ="icon_url", nullable = false)
     private String iconUrl;
 
-    @OneToMany(mappedBy = "FurnitureOption", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "furnitureOption", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CheckedFurniture> checkedFurnitures = new ArrayList<>();
 
     public FurnitureOption(String furnitureName, String iconUrl){

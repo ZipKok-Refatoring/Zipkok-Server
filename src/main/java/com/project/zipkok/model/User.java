@@ -53,31 +53,31 @@ public class User {
     @Column(name = "status", nullable = false)
     private String status;
 
-    @OneToMany(mappedBy = "User",orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Zim> zims = new ArrayList<>();
 
-    @OneToMany(mappedBy = "User",orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<RealEstate> realEstates = new ArrayList<>();
 
-    @OneToMany(mappedBy = "User",orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Kok> koks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "User",orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<TransactionPriceConfig> transactionPriceConfigs = new ArrayList<>();
 
-    @OneToMany(mappedBy = "User",orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Option> options = new ArrayList<>();
 
-    @OneToMany(mappedBy = "User",orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Pin> pins = new ArrayList<>();
 
-    @OneToMany(mappedBy = "User",orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<DesireResidence> desireResidences = new ArrayList<>();
 
-    @OneToMany(mappedBy = "User",orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Highlight> highlights = new ArrayList<>();
 
-    @OneToMany(mappedBy = "User", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Impression> impressions  = new ArrayList<>();
 
     public User(String email, OAuthProvider oAuthProvider, String nickname, Gender gender, String birthday) {

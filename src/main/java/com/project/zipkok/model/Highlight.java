@@ -25,7 +25,7 @@ public class Highlight {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "HighLight", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "highlight", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CheckedHighlight> checkedHighlights = new ArrayList<>();
 
     public Highlight(String title, User user){

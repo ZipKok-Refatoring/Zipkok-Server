@@ -25,7 +25,7 @@ public class Impression {
     @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
-    @OneToMany(mappedBy = "Impression", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "impression", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CheckedImpression> checkedImpressions = new ArrayList<>();
 
     public Impression(String impressionTitle){

@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "TransactionType")
+@Table(name = "TransactionPriceConfig")
 @NoArgsConstructor
 @Getter
 public class TransactionPriceConfig {
@@ -16,10 +16,10 @@ public class TransactionPriceConfig {
     private long transactionConfigId;
 
     @Column(name = "mprice_min")
-    private int mPriceMin;
+    private long mPriceMin;
 
     @Column(name = "mprice_max")
-    private int mPriceMax;
+    private long mPriceMax;
 
     @Column(name = "mdeposit_min")
     private long mDepositMin;

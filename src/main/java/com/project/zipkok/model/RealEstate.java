@@ -71,13 +71,13 @@ public class RealEstate {
     @Column(name = "detail_address")
     private String detailAddress;
 
-    @OneToMany(mappedBy = "RealEstate",orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "realEstate",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Zim> zims = new ArrayList<>();
 
-    @OneToMany(mappedBy = "RealEstate",orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "realEstate",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<RealEstateImage> realEstateImages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "RealEstate",orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "realEstate",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Kok> koks = new ArrayList<>();
 
     public RealEstate(String address, double latitude, double longitude, String transactionType, long deposit, long price, RealEstateType realEstateType) {
