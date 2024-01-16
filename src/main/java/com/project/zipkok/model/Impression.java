@@ -21,6 +21,10 @@ public class Impression {
     @Column(name ="impression_title", nullable = false)
     private String impressionTitle;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = true)
+    private User user;
+
     @OneToMany(mappedBy = "Impression", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CheckedImpression> checkedImpressions = new ArrayList<>();
 

@@ -3,6 +3,7 @@ package com.project.zipkok.model;
 import com.project.zipkok.common.enums.Gender;
 import com.project.zipkok.common.enums.OAuthProvider;
 import com.project.zipkok.common.enums.RealEstateType;
+import com.project.zipkok.common.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,6 +46,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private RealEstateType reslEstateType;
 
+    @Column(name = "transaction_type", nullable = true)
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
+
     @Column(name = "status", nullable = false)
     private String status;
 
@@ -71,6 +76,9 @@ public class User {
 
     @OneToMany(mappedBy = "User",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Highlight> highlights = new ArrayList<>();
+
+    @OneToMany(mappedBy = "User", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<Impression> impressions  = new ArrayList<>();
 
     public User(String email, OAuthProvider oAuthProvider, String nickname, Gender gender, String birthday) {
         this.email = email;

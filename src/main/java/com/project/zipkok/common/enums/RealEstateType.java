@@ -1,7 +1,10 @@
 package com.project.zipkok.common.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum RealEstateType {
-    APARTMENT("아파트"), ONEROOM("여자"), TWOROOM("비공개"), OFFICETELL("오피스텔");
+    APARTMENT("아파트"), ONEROOM("원룸"), TWOROOM("투룸"), OFFICETELL("오피스텔");
 
     private String description;
 

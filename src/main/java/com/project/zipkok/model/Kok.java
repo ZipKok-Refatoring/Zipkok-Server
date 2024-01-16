@@ -21,6 +21,9 @@ public class Kok {
     @Column(name = "direction", nullable = true)
     private String direction;
 
+    @Column(name = "review", nullable = false)
+    private String review;
+
     @ManyToOne
     @JoinColumn(name = "realestate_id", nullable = false)
     private RealEstate realEstate;
@@ -51,11 +54,9 @@ public class Kok {
     private List<Star> stars = new ArrayList<>();
 
 
-
-
-
-    public Kok(RealEstate realEstate, User user) {
+    public Kok(RealEstate realEstate, String review, User user) {
         this.realEstate = realEstate;
+        this.review = review;
         this.user = user;
     }
 

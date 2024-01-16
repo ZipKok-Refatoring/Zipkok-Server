@@ -41,7 +41,7 @@ public class RealEstate {
     private long price;
 
     @Column(name = "administrative_fee")
-    private long administrativeFee;
+    private float administrativeFee;
 
     @Column(name = "detail")
     private String detail;
@@ -58,11 +58,18 @@ public class RealEstate {
     @Column(name = "floor_num")
     private long floorNum;
 
-    @Column(name = "is_temporal", nullable = false)
-    private boolean isTemporal;
-
     @Column(name = "status", nullable = false)
     private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Column(name = "agent")
+    private String agent;
+
+    @Column(name = "detail_address")
+    private String detailAddress;
 
     @OneToMany(mappedBy = "RealEstate",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Zim> zims = new ArrayList<>();
@@ -73,7 +80,7 @@ public class RealEstate {
     @OneToMany(mappedBy = "RealEstate",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Kok> koks = new ArrayList<>();
 
-    public RealEstate(String address, double latitude, double longitude, String transactionType, long deposit, long price, RealEstateType realEstateType, boolean isTemporal) {
+    public RealEstate(String address, double latitude, double longitude, String transactionType, long deposit, long price, RealEstateType realEstateType) {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -81,7 +88,6 @@ public class RealEstate {
         this.deposit = deposit;
         this.price = price;
         this.realEstateType = realEstateType;
-        this.isTemporal = isTemporal;
         this.status = "active";
     }
 }

@@ -22,12 +22,11 @@ public class KokImage {
     private String category;
 
     @ManyToOne
-    @JoinColumn(name = "oprion_id", nullable = false)
+    @JoinColumn(name = "oprion_id", nullable = true)
     private Option option;
 
-    public KokImage(String imageUrl, String category, Option option){
+    public KokImage(String imageUrl, String category){
         this.imageUrl = imageUrl;
         this.category =category;
-        this.option = option;
     }
 }
