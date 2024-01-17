@@ -1,35 +1,36 @@
 package com.project.zipkok.config;
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 
 @Configuration
-@EnableSwagger2
 public class SwaggerConfig {
-
     @Bean
-    public Docket apiV1(){
-        return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("groupName1")
-                .select()
-                .apis(RequestHandlerSelectors.
-                        basePackage("javable.controller"))
-                .paths(PathSelectors.ant("/posts/**")).build();
+    public OpenAPI openAPI() {
+        String jwt = "JWT";
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwt);
+        Components components = new Components().addSecuritySchemes(jwt, new SecurityScheme()
+                .name(jwt)
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT")
+        );
+        return new OpenAPI()
+                .components(new Components())
+                .info(apiInfo())
+                .addSecurityItem(securityRequirement)
+                .components(components);
     }
-
-    @Bean
-    public Docket apiV2(){
-        return new Docket(DocumentationType.SWAGGER_2)
-                .useDefaultResponseMessages(false)
-                .groupName("groupName2")
-                .select()
-                .apis(RequestHandlerSelectors.
-                        basePackage("javable.controller"))
-                .paths(PathSelectors.ant("/posts/**")).build();
+    private Info apiInfo() {
+        return new Info()
+                .title("집콕 API Test") // API의 제목
+                .description("구현 완료된 API 목록입니다.") // API에 대한 설명
+                .version("1.0.0"); // API의 버전
     }
 }
