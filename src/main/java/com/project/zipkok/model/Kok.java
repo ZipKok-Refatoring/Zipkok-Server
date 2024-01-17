@@ -32,26 +32,26 @@ public class Kok {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "Kok", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CheckedFurniture> checkedFurniturs = new ArrayList<>();
 
-    @OneToMany(mappedBy = "Kok", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CheckedImpression> checkedImpressions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "Kok", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CheckedHighlight> checkedHighlights = new ArrayList<>();
 
-    @OneToMany(mappedBy = "Kok", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CheckedDetailOption> checkedDetailOptions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "Kok", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CheckedOption> checkedOptions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "Kok", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<KokImage> kokImages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "Kok", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Star> stars = new ArrayList<>();
+    @OneToOne(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
+    private Star star = new Star();
 
 
     public Kok(RealEstate realEstate, String review, User user) {

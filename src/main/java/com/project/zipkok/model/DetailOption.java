@@ -24,7 +24,11 @@ public class DetailOption {
     @Column(name ="is_visible", nullable = false)
     private boolean isVisible;
 
-    @OneToMany(mappedBy = "DetailOption", orphanRemoval = true, cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "option_id", nullable = false)
+    private Option option;
+
+    @OneToMany(mappedBy = "detailOption", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CheckedDetailOption> checkedDetailOptions = new ArrayList<>();
 
     public DetailOption(String name, boolean isVisible){

@@ -25,6 +25,10 @@ public class KokImage {
     @JoinColumn(name = "oprion_id", nullable = true)
     private Option option;
 
+    @ManyToOne
+    @JoinColumn(name = "kok_id", nullable = false)
+    private Kok kok;
+
     public KokImage(String imageUrl, String category){
         this.imageUrl = imageUrl;
         this.category =category;

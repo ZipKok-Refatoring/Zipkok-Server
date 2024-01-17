@@ -28,7 +28,7 @@ public class Star {
     @Column(name = "vibe_star", nullable = false)
     private int vibeStar;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "kok_id", nullable = false)
     private Kok kok;
 
