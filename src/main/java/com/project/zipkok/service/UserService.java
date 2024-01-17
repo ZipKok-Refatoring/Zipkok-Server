@@ -23,13 +23,13 @@ public class UserService {
                 .map(user -> new GetUserResponse(
                         user.getNickname(),
                         user.getProfileImgUrl(),
-                        user.getDesireResidences().get(0).getAddress(),
+                        user.getDesireResidence().getAddress(),
                         user.getReslEstateType().getDescription(),
                         user.getTransactionType().getDescription(),
-                        user.getTransactionPriceConfigs().get(0).getMPriceMax(),
-                        user.getTransactionPriceConfigs().get(0).getMPriceMin(),
-                        user.getTransactionPriceConfigs().get(0).getMDepositMax(),
-                        user.getTransactionPriceConfigs().get(0).getMDepositMin()
+                        user.getTransactionPriceConfig().getMPriceMax(),
+                        user.getTransactionPriceConfig().getMPriceMin(),
+                        user.getTransactionPriceConfig().getMDepositMax(),
+                        user.getTransactionPriceConfig().getMDepositMin()
                 )).collect(Collectors.toList());
 
         return userList;

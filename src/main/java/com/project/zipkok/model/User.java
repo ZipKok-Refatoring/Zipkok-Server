@@ -62,8 +62,8 @@ public class User {
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Kok> koks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<TransactionPriceConfig> transactionPriceConfigs = new ArrayList<>();
+    @OneToOne(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
+    private TransactionPriceConfig transactionPriceConfig = new TransactionPriceConfig();
 
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Option> options = new ArrayList<>();
@@ -71,8 +71,8 @@ public class User {
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Pin> pins = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<DesireResidence> desireResidences = new ArrayList<>();
+    @OneToOne(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
+    private DesireResidence desireResidence = new DesireResidence();
 
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Highlight> highlights = new ArrayList<>();

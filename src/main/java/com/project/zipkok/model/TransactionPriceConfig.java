@@ -42,7 +42,7 @@ public class TransactionPriceConfig {
     @Column(name = "status", nullable = false)
     private String status;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
