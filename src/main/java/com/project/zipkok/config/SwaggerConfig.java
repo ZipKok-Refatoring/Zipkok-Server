@@ -30,7 +30,7 @@ public class SwaggerConfig {
                 .addSecurityItem(securityRequirement)
                 .components(components)
                 .servers(Arrays.asList(new Server().url("https://zipkok.store"),
-                        new Server().url("http://localhost:9000")));
+                        new Server().url("http://localhost:9000"),new Server().url("https://zipkok.shop")));
     }
     private Info apiInfo() {
         return new Info()

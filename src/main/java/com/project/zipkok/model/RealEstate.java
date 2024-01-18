@@ -41,7 +41,7 @@ public class RealEstate {
     private long price;
 
     @Column(name = "administrative_fee")
-    private float administrativeFee;
+    private int administrativeFee;
 
     @Column(name = "detail")
     private String detail;
