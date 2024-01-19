@@ -5,8 +5,10 @@ import com.project.zipkok.common.enums.OAuthProvider;
 import com.project.zipkok.common.enums.RealEstateType;
 import com.project.zipkok.common.enums.TransactionType;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.List;
 @Table(name = "User")
 @Getter
 @NoArgsConstructor
+@Setter
 public class User {
 
     @Id
@@ -51,7 +54,13 @@ public class User {
     private TransactionType transactionType;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    private String status = "active";
+
+    @OneToOne(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
+    private DesireResidence desireResidence;
+
+    @OneToOne(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
+    private TransactionPriceConfig transactionPriceConfig;
 
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Zim> zims = new ArrayList<>();
@@ -62,17 +71,11 @@ public class User {
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Kok> koks = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
-    private TransactionPriceConfig transactionPriceConfig = new TransactionPriceConfig();
-
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Option> options = new ArrayList<>();
 
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Pin> pins = new ArrayList<>();
-
-    @OneToOne(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
-    private DesireResidence desireResidence = new DesireResidence();
 
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Highlight> highlights = new ArrayList<>();
@@ -80,15 +83,9 @@ public class User {
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Impression> impressions  = new ArrayList<>();
 
+    @Builder
     public User(String email, OAuthProvider oAuthProvider, String nickname, Gender gender, String birthday) {
         this.email = email;
         this.oAuthProvider = oAuthProvider;
-        this.nickname = nickname;
-        this.gender = gender;
-        this.birthday = birthday;
-        this.status = "active";
     }
-
-
-
 }

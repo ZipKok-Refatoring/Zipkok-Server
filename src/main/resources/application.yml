@@ -90,12 +90,14 @@ oauth:
   kakao:
     client-id: f251abb4b1d323c283685a7be4211aa4
     url:
-      auth: https://kauth.kaka.com
+      auth: https://kauth.kakao.com
       api: https://kapi.kakao.com
 
 secret:
   jwt-secret-key: ${JWT_SECRET_KEY}
-  jwt-expired-in: ${JWT_EXPIRED_IN}
+  jwt-expired-in:
+    access-token: ${JWT_EXPIRED_IN}
+    refresh-token: ${REFRESH_TOKEN_EXPIRED_IN}
 
 ---
 
