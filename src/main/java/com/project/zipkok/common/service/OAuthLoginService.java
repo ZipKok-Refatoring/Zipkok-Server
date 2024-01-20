@@ -12,6 +12,8 @@ import com.project.zipkok.util.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.KAKAO_LOGIN_NEED_REGISTRATION;
 
 @Service
@@ -21,6 +23,7 @@ public class OAuthLoginService {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
     private final RequestOAuthInfoService requestOAuthInfoService;
+    private final RedisService redisService;
 
     public GetLoginResponse login(OAuthLoginParams params) {
         OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
@@ -29,6 +32,9 @@ public class OAuthLoginService {
 
         if (user != null) {
             AuthTokens authTokens = jwtProvider.createToken(user.getEmail(), user.getUserId());
+
+            redisService.setValues(user.getEmail(), authTokens.getRefreshToken(), Duration.ofMillis(jwtProvider.getREFRESH_TOKEN_EXPIRED_IN()));
+
             return new GetLoginResponse(true, authTokens, null);
         }
 
