@@ -88,7 +88,7 @@ spring:
 
 oauth:
   kakao:
-    client-id: f251abb4b1d323c283685a7be4211aa4
+    client-id: ${OAUTH_KAKAO_CLIENT_ID}
     url:
       auth: https://kauth.kakao.com
       api: https://kapi.kakao.com
