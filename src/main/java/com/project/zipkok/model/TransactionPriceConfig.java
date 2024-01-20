@@ -3,11 +3,13 @@ package com.project.zipkok.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "TransactionPriceConfig")
 @NoArgsConstructor
 @Getter
+@Setter
 public class TransactionPriceConfig {
 
     @Id
@@ -40,7 +42,7 @@ public class TransactionPriceConfig {
     private long puchaseMax;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    private String status = "active";
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -48,6 +50,5 @@ public class TransactionPriceConfig {
 
     public TransactionPriceConfig(User user) {
         this.user = user;
-        this.status = "active";
     }
 }

@@ -19,23 +19,37 @@ public class JwtProvider {
     @Value("${secret.jwt-secret-key}")
     private String JWT_SECRET_KEY;
 
-    @Value("${secret.jwt-expired-in}")
+    @Value("${secret.jwt-expired-in.access-token}")
     private long JWT_EXPIRED_IN;
 
-    public String createToken(String principal, long userId) {
+    @Value("${secret.jwt-expired-in.refresh-token}")
+    private long REFRESH_TOKEN_EXPIRED_IN;
+
+    public AuthTokens createToken(String principal, Long userId) {
         log.info("JWT key={}", JWT_SECRET_KEY);
 
         Claims claims = Jwts.claims().setSubject(principal);
         Date now = new Date();
-        Date validity = new Date(now.getTime() + JWT_EXPIRED_IN);
+        Date accessTokenExpiredAt = new Date(now.getTime() + JWT_EXPIRED_IN);
+        Date refreshTokenExpiredAt = new Date(now.getTime() + REFRESH_TOKEN_EXPIRED_IN);
 
-        return Jwts.builder()
+        String accessToken = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(validity)
-                .claim("userId", userId) //payLoad에 이런식으로 값을 넣을 수 있다는 예시로, userId를 넣는 과정은 없어도 무방하다
+                .setExpiration(accessTokenExpiredAt)
+                .claim("userId", userId)
                 .signWith(SignatureAlgorithm.HS256, JWT_SECRET_KEY)
                 .compact();
+
+        String refreshToken = Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(refreshTokenExpiredAt)
+                .claim("userId", userId)
+                .signWith(SignatureAlgorithm.HS256, JWT_SECRET_KEY)
+                .compact();
+
+        return AuthTokens.of(accessToken, refreshToken, JWT_EXPIRED_IN, REFRESH_TOKEN_EXPIRED_IN);
     }
 
     public boolean isExpiredToken(String token) throws JwtInvalidTokenException {
@@ -66,4 +80,5 @@ public class JwtProvider {
                 .parseClaimsJws(token)
                 .getBody().getSubject();
     }
+
 }
