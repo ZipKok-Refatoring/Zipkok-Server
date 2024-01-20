@@ -34,12 +34,11 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     MALFORMED_TOKEN(4004, HttpStatus.UNAUTHORIZED.value(), "토큰이 올바르게 구성되지 않았습니다."),
     EXPIRED_TOKEN(4005, HttpStatus.UNAUTHORIZED.value(), "만료된 토큰입니다."),
     TOKEN_MISMATCH(4006, HttpStatus.UNAUTHORIZED.value(), "로그인 정보가 토큰 정보와 일치하지 않습니다."),
-
     /**
      * 5000: User 예외
      */
-    KAKAO_LOGIN_MEMBER_EXIST(5000, HttpStatus.OK.value(), "이미 회원인 경우"),
-    KAKAO_LOGIN_NEED_REGISTRATION(5001, HttpStatus.OK.value(), "새로운 회원가입이 필요한 경우"),
+    KAKAO_LOGIN_MEMBER_EXIST(5000, HttpStatus.OK.value(), "성공적으로 로그인 되었습니다."),
+    KAKAO_LOGIN_NEED_REGISTRATION(5001, HttpStatus.OK.value(), "회원가입이 필요합니다."),
     REGISTRATION_SUCCESS(5002, HttpStatus.OK.value(), "회원가입 성공"),
     MEMBER_INFO_UPDATE_SUCCESS(5003, HttpStatus.OK.value(), "회원정보 등록/수정 성공"),
     MY_PAGE_INFO_LOAD_SUCCESS(5004, HttpStatus.OK.value(), "마이페이지 회원정보 로드 성공"),

@@ -49,7 +49,7 @@ public class JwtProvider {
                 .signWith(SignatureAlgorithm.HS256, JWT_SECRET_KEY)
                 .compact();
 
-        return AuthTokens.of(accessToken, refreshToken, "Bearer", JWT_EXPIRED_IN / 1000L);
+        return AuthTokens.of(accessToken, refreshToken, JWT_EXPIRED_IN, REFRESH_TOKEN_EXPIRED_IN);
     }
 
     public boolean isExpiredToken(String token) throws JwtInvalidTokenException {

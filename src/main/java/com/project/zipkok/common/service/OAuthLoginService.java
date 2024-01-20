@@ -1,18 +1,18 @@
 package com.project.zipkok.common.service;
 
-import com.project.zipkok.common.enums.Gender;
+import com.project.zipkok.common.exception.NoExistUserException;
 import com.project.zipkok.common.oauth.RequestOAuthInfoService;
 import com.project.zipkok.common.oauth.request.OAuthLoginParams;
 import com.project.zipkok.common.oauth.response.OAuthInfoResponse;
 import com.project.zipkok.dto.GetLoginResponse;
-import com.project.zipkok.model.DesireResidence;
-import com.project.zipkok.model.TransactionPriceConfig;
 import com.project.zipkok.model.User;
 import com.project.zipkok.repository.UserRepository;
 import com.project.zipkok.util.jwt.AuthTokens;
 import com.project.zipkok.util.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.KAKAO_LOGIN_NEED_REGISTRATION;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +32,8 @@ public class OAuthLoginService {
             return new GetLoginResponse(true, authTokens, null);
         }
 
-        return new GetLoginResponse(false, null, oAuthInfoResponse.getEmail());
+        GetLoginResponse getLoginResponse = new GetLoginResponse(false, null, oAuthInfoResponse.getEmail());
+        throw new NoExistUserException(KAKAO_LOGIN_NEED_REGISTRATION, getLoginResponse);
 
     }
 
