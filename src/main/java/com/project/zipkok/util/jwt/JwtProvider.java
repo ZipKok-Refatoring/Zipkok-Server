@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import com.project.zipkok.common.exception.jwt.bad_request.JwtUnsupportedTokenException;
 import com.project.zipkok.common.exception.jwt.unauthorized.JwtInvalidTokenException;
 import com.project.zipkok.common.exception.jwt.unauthorized.JwtMalformedTokenException;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,12 +24,13 @@ public class JwtProvider {
     private long JWT_EXPIRED_IN;
 
     @Value("${secret.jwt-expired-in.refresh-token}")
+    @Getter
     private long REFRESH_TOKEN_EXPIRED_IN;
 
-    public AuthTokens createToken(String principal, Long userId) {
+    public AuthTokens createToken(String email, Long userId) {
         log.info("JWT key={}", JWT_SECRET_KEY);
 
-        Claims claims = Jwts.claims().setSubject(principal);
+        Claims claims = Jwts.claims().setSubject(email);
         Date now = new Date();
         Date accessTokenExpiredAt = new Date(now.getTime() + JWT_EXPIRED_IN);
         Date refreshTokenExpiredAt = new Date(now.getTime() + REFRESH_TOKEN_EXPIRED_IN);
@@ -74,11 +76,20 @@ public class JwtProvider {
         }
     }
 
-    public String getPrincipal(String token) {
+    public String getEmail(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(JWT_SECRET_KEY).build()
                 .parseClaimsJws(token)
-                .getBody().getSubject();
+                .getBody()
+                .getSubject();
+    }
+
+    public Long getId(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(JWT_SECRET_KEY).build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("userId", Long.class);
     }
 
 }

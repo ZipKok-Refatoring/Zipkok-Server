@@ -1,5 +1,6 @@
 package com.project.zipkok.common.exception_handler;
 
+import com.project.zipkok.common.exception.jwt.unauthorized.JwtInvalidRefreshTokenException;
 import jakarta.annotation.Priority;
 import com.project.zipkok.common.exception.jwt.bad_request.JwtBadRequestException;
 import com.project.zipkok.common.exception.jwt.unauthorized.JwtUnauthorizedTokenException;
@@ -26,6 +27,13 @@ public class JwtExceptionControllerAdvice {
     @ExceptionHandler(JwtUnauthorizedTokenException.class)
     public BaseExceptionResponse handle_JwtUnauthorizedException(JwtUnauthorizedTokenException e) {
         log.error("[handle_JwtUnauthorizedException]", e);
+        return new BaseExceptionResponse(e.getExceptionStatus());
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(JwtInvalidRefreshTokenException.class)
+    public BaseExceptionResponse handle_JwtInvalidRefreshTokenException(JwtInvalidRefreshTokenException e) {
+        log.error("[handle_JwtInvalidRefreshTokenException]", e);
         return new BaseExceptionResponse(e.getExceptionStatus());
     }
 }
