@@ -15,9 +15,6 @@ public class BaseResponse<T> implements ResponseStatus {
 
     private final int code;
 
-    @JsonIgnore
-    private final int status;
-
     private final String message;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -25,14 +22,12 @@ public class BaseResponse<T> implements ResponseStatus {
 
     public BaseResponse(T result) {
         this.code = SUCCESS.getCode();
-        this.status = SUCCESS.getStatus();
         this.message = SUCCESS.getMessage();
         this.result = result;
     }
 
     public BaseResponse(BaseExceptionResponseStatus baseExceptionResponseStatus, T result) {
         this.code = baseExceptionResponseStatus.getCode();
-        this.status = baseExceptionResponseStatus.getStatus();
         this.message = baseExceptionResponseStatus.getMessage();
         this.result = result;
     }
@@ -41,11 +36,6 @@ public class BaseResponse<T> implements ResponseStatus {
     @Override
     public int getCode() {
         return code;
-    }
-
-    @Override
-    public int getStatus() {
-        return status;
     }
 
     @Override
