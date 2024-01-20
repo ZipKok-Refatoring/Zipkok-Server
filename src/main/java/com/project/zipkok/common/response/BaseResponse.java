@@ -1,5 +1,6 @@
 package com.project.zipkok.common.response;
 
+        import com.fasterxml.jackson.annotation.JsonIgnore;
         import com.fasterxml.jackson.annotation.JsonInclude;
         import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         import com.project.zipkok.common.response.status.BaseExceptionResponseStatus;
@@ -9,11 +10,14 @@ package com.project.zipkok.common.response;
         import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.SUCCESS;
 
 @Getter
-@JsonPropertyOrder({"code", "status", "message", "result"})
+@JsonPropertyOrder({"code", "message", "result"})
 public class BaseResponse<T> implements ResponseStatus {
 
     private final int code;
+
+    @JsonIgnore
     private final int status;
+
     private final String message;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
