@@ -1,5 +1,6 @@
 package com.project.zipkok.service;
 
+import com.project.zipkok.dto.GetAddressResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,10 +22,11 @@ public class AddressService {
     @Value("${daum.url.address}")
     private String uri;
 
-    @Value("${OAUTH_KAKAO_CLIENT_ID}")
+    @Value("${oauth.kakao.client-id}")
     private String key;
 
-    public Object getAddresses(String query, int page, int size) {
+    public GetAddressResponse getAddresses(String query, int page, int size) {
+        log.info("[AddressService.getAddress]");
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -42,8 +44,8 @@ public class AddressService {
                 .queryParam("size", size)
                 .build();
 
-        ResponseEntity<Object> response = restTemplate.exchange(uriComponents.toString(), HttpMethod.GET, entity, Object.class);
+        GetAddressResponse getAddressResponse = restTemplate.exchange(uriComponents.toString(), HttpMethod.GET, entity, GetAddressResponse.class).getBody();
 
-        return response.getBody();
+        return getAddressResponse;
     }
 }
