@@ -18,9 +18,9 @@ public class AddressController {
     private final AddressService addressService;
 
     @GetMapping("")
-    public BaseResponse searchAddress(@RequestParam("query") String query, @RequestParam("page") int page, @RequestParam("size") int size) {
+    public BaseResponse<Object> searchAddress(@RequestParam("query") String query, @RequestParam("page") int page, @RequestParam("size") int size) {
         log.info("AddressController.searchAddress");
 
-        return new BaseResponse(addressService.getAddresses(query, page, size));
+        return new BaseResponse<>(addressService.getAddresses(query, page, size));
     }
 }

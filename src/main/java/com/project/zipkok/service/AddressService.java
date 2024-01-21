@@ -38,6 +38,8 @@ public class AddressService {
         UriComponents uriComponents = UriComponentsBuilder
                 .fromHttpUrl(uri)
                 .queryParam("query", query)
+                .queryParam("page", page)
+                .queryParam("size", size)
                 .build();
 
         ResponseEntity<Object> response = restTemplate.exchange(uriComponents.toString(), HttpMethod.GET, entity, Object.class);
