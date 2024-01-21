@@ -93,6 +93,10 @@ oauth:
       auth: https://kauth.kakao.com
       api: https://kapi.kakao.com
 
+daum:
+  url:
+    address: https://dapi.kakao.com/v2/local/search/address.json
+
 secret:
   jwt-secret-key: ${JWT_SECRET_KEY}
   jwt-expired-in:
