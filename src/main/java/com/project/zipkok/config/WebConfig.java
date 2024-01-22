@@ -1,7 +1,7 @@
 package com.project.zipkok.config;
 
 import com.project.zipkok.common.argument_resolver.JwtAuthHandlerArgumentResolver;
-//import com.project.zipkok.common.interceptor.JwtAuthInterceptor;
+import com.project.zipkok.common.interceptor.JwtAuthInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -14,16 +14,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-//    private final JwtAuthInterceptor jwtAuthenticationInterceptor;
+    private final JwtAuthInterceptor jwtAuthenticationInterceptor;
     private final JwtAuthHandlerArgumentResolver jwtAuthHandlerArgumentResolver;
 
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(jwtAuthenticationInterceptor)
-//                .order(1)
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(jwtAuthenticationInterceptor)
+                .order(1)
 //                .addPathPatterns("/auth/test", "/users/**")
-//                .excludePathPatterns("/users");
-//    }
+                .excludePathPatterns("/user", "/auth/refreshToken");
+    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {

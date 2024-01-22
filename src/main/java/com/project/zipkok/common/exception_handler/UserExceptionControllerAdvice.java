@@ -1,6 +1,8 @@
 package com.project.zipkok.common.exception_handler;
 
 import com.project.zipkok.common.exception.NoExistUserException;
+import com.project.zipkok.common.exception.user.UserBadRequestException;
+import com.project.zipkok.common.response.BaseExceptionResponse;
 import com.project.zipkok.common.response.BaseResponse;
 import jakarta.annotation.Priority;
 import lombok.extern.slf4j.Slf4j;
@@ -21,5 +23,12 @@ public class UserExceptionControllerAdvice {
     public BaseResponse handle_NoExistUserException(NoExistUserException e) {
         log.error("[handle_UserException]", e);
         return new BaseResponse(e.getExceptionStatus(), e.getGetLoginResponse());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(UserBadRequestException.class)
+    public BaseExceptionResponse handle_UserBadRequestException(UserBadRequestException e) {
+        log.error("[handle_UserBadRequestException]", e);
+        return new BaseExceptionResponse(e.getExceptionStatus());
     }
 }
