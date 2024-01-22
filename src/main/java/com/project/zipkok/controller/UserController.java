@@ -24,11 +24,13 @@ import static com.project.zipkok.common.response.status.BaseExceptionResponseSta
 public class UserController {
     private final UserService userService;
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping("")
     public BaseResponse<List<GetUserResponse>> getUserInfo() {
         return new BaseResponse<List<GetUserResponse>>(userService.getUsers());
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("")
     public BaseResponse<AuthTokens> signUp(@Validated @RequestBody PostSignUpRequest postSignUpRequest, BindingResult bindingResult) {
         log.info("{UserController.signUp}");
