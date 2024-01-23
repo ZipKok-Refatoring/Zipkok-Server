@@ -4,12 +4,14 @@ import com.project.zipkok.common.exception.jwt.bad_request.JwtNoTokenException;
 import com.project.zipkok.common.exception.jwt.bad_request.JwtUnsupportedTokenException;
 import com.project.zipkok.common.exception.jwt.unauthorized.JwtExpiredTokenException;
 import com.project.zipkok.common.exception.jwt.unauthorized.JwtInvalidTokenException;
+import com.project.zipkok.repository.UserRepository;
 import com.project.zipkok.util.jwt.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -23,20 +25,26 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
     private static final String JWT_TOKEN_PREFIX = "Bearer ";
 
     private final JwtProvider jwtProvider;
-//    private final AuthService authService;
+    private final UserRepository userRepository;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         log.info("[JwtAuthInterceptor.preHandle]");
 
+        String method = request.getMethod();
+        String url = request.getRequestURI();
+
+        if(method.equals(HttpMethod.POST.name()) && url.equals("/user")){
+            return true;
+        }
         String accessToken = resolveAccessToken(request);
         validateAccessToken(accessToken);
 
         String email = jwtProvider.getEmail(accessToken);
         validatePayload(email);
 
-//        long userId = authService.getUserIdByEmail(email);
-//        request.setAttribute("userId", userId);
+        long userId = this.userRepository.findByEmail(email).getUserId();
+        request.setAttribute("userId", userId);
         return true;
     }
 
