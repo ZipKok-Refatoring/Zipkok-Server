@@ -51,7 +51,7 @@ public class UserController {
     @PatchMapping("")
     public BaseResponse<Object> onBoarding(@PreAuthorize long userId, @Validated @RequestBody PatchOnBoardingRequest patchOnBoardingRequest, BindingResult bindingResult){
         log.info("{UserController.onBoarding}");
-
+        System.out.println(patchOnBoardingRequest.toString());
         if(bindingResult.hasFieldErrors("address")){
             throw new OnBoardingBadRequestException(ADDRESS_OVER_LENGTH);
         }
@@ -74,6 +74,9 @@ public class UserController {
             throw new OnBoardingBadRequestException(INVALID_INTEREST_TYPE);
         }
         if(bindingResult.hasFieldErrors("isSmallerthanMax")){
+            throw new OnBoardingBadRequestException(MIN_IS_BIGGER_THAN_MAX);
+        }
+        if(bindingResult.hasErrors()){
             throw new OnBoardingBadRequestException(BAD_REQUEST);
         }
 

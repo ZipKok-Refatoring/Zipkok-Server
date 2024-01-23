@@ -3,15 +3,13 @@ package com.project.zipkok.dto;
 import com.project.zipkok.common.enums.RealEstateType;
 import com.project.zipkok.common.enums.ValidEnum;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class PatchOnBoardingRequest {
 
     @NotBlank
@@ -19,45 +17,45 @@ public class PatchOnBoardingRequest {
     private String address;
 
     @NotNull
-    private double latitude;
+    private Double latitude;
 
     @NotNull
-    private double longitude;
+    private Double longitude;
 
     @ValidEnum(enumClass = RealEstateType.class)
     private RealEstateType realEstateType;
 
     @NotNull
     @PositiveOrZero
-    private long mpriceMin;
+    private Long mpriceMin;
 
     @NotNull
     @PositiveOrZero
-    private long mpriceMax;
+    private Long mpriceMax;
 
     @NotNull
     @PositiveOrZero
-    private long mdepositMin;
+    private Long mdepositMin;
 
     @NotNull
     @PositiveOrZero
-    private long mdepositMax;
+    private Long mdepositMax;
 
     @NotNull
     @PositiveOrZero
-    private long ydepositMin;
+    private Long ydepositMin;
 
     @NotNull
     @PositiveOrZero
-    private long ydepositMax;
+    private Long ydepositMax;
 
     @NotNull
     @PositiveOrZero
-    private long purchaseMin;
+    private Long purchaseMin;
 
     @NotNull
     @PositiveOrZero
-    private long purchaseMax;
+    private Long purchaseMax;
 
     @AssertTrue(message = "최소가격은 최대가격을 넘을 수 없습니다.")
     private boolean isSmallerthanMax(){

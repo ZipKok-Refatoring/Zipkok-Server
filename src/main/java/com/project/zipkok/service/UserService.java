@@ -5,6 +5,8 @@ import com.project.zipkok.common.enums.Gender;
 import com.project.zipkok.common.enums.OAuthProvider;
 import com.project.zipkok.common.enums.RealEstateType;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
+import com.project.zipkok.common.service.RedisService;
+import com.project.zipkok.config.RedisConfig;
 import com.project.zipkok.dto.GetUserResponse;
 import com.project.zipkok.dto.PatchOnBoardingRequest;
 import com.project.zipkok.dto.PostSignUpRequest;
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -36,6 +39,7 @@ public class UserService {
     private final DesireResidenceRepository desireResidenceRepository;
     private final TransactionPriceConfigRepository transactionPriceConfigRepository;
     private final JwtProvider jwtProvider;
+    private final RedisService redisService;
 
     @Transactional
     public List<GetUserResponse> getUsers() {
@@ -67,16 +71,19 @@ public class UserService {
         String birthday = postSignUpRequest.getBirthday();
 
         User user = new User(email, oAuthProvider, nickname,gender,birthday);
-        DesireResidence desireResidence = new DesireResidence(user);
-        TransactionPriceConfig transactionPriceConfig = new TransactionPriceConfig(user);
+
+        user.setDesireResidence(new DesireResidence(user));
+        user.setTransactionPriceConfig(new TransactionPriceConfig(user));
 
         this.userRepository.save(user);
-        this.desireResidenceRepository.save(desireResidence);
-        this.transactionPriceConfigRepository.save(transactionPriceConfig);
 
         long userId = this.userRepository.findByEmail(email).getUserId();
 
-        return this.jwtProvider.createToken(email, userId);
+        AuthTokens authTokens = jwtProvider.createToken(email, userId);
+
+        redisService.setValues(email, authTokens.getRefreshToken(), Duration.ofMillis(jwtProvider.getREFRESH_TOKEN_EXPIRED_IN()));
+
+        return authTokens;
     }
 
     @Transactional
