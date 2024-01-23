@@ -64,7 +64,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     MEMBER_LIST_ITEM_QUERY_FAILURE(5022, HttpStatus.BAD_REQUEST.value(), "회원 리스트 항목 조회 실패"),
     MEMBER_LIST_ITEM_UPDATE_SUCCESS(5023, HttpStatus.OK.value(), "회원 리스트 항목 수정 성공"),
     MEMBER_LIST_ITEM_UPDATE_FAILURE(5024, HttpStatus.BAD_REQUEST.value(), "회원 리스트 항목 수정 실패"),
-
+    MIN_IS_BIGGER_THAN_MAX(5025, HttpStatus.BAD_REQUEST.value(), "최솟값은 최댓값을 넘을 수 없습니다."),
 
     /**
      * 6000 : zim 예외
