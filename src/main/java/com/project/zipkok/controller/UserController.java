@@ -1,8 +1,11 @@
 package com.project.zipkok.controller;
 
+import com.project.zipkok.common.argument_resolver.PreAuthorize;
+import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
 import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.dto.GetUserResponse;
+import com.project.zipkok.dto.PatchOnBoardingRequest;
 import com.project.zipkok.dto.PostSignUpRequest;
 import com.project.zipkok.service.UserService;
 import com.project.zipkok.util.jwt.AuthTokens;
@@ -21,38 +24,60 @@ import static com.project.zipkok.common.response.status.BaseExceptionResponseSta
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
+@CrossOrigin(origins = {"http://localhost:3000", "https://localhost:3000"})
 public class UserController {
     private final UserService userService;
 
-    @CrossOrigin(origins = {"http://localhost:3000"})
-    @GetMapping("")
-    public BaseResponse<List<GetUserResponse>> getUserInfo() {
-        return new BaseResponse<List<GetUserResponse>>(userService.getUsers());
-    }
-
-    @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("")
     public BaseResponse<AuthTokens> signUp(@Validated @RequestBody PostSignUpRequest postSignUpRequest, BindingResult bindingResult) {
         log.info("{UserController.signUp}");
 
-        System.out.println(postSignUpRequest.getNickname());
-
         if(bindingResult.hasFieldErrors("nickname")){
-            System.out.println(bindingResult.getFieldError("nickname"));
             throw new UserBadRequestException(INVALID_NICKNAME_FORMAT);
         }
         if(bindingResult.hasFieldErrors("gender")){
-            System.out.println(bindingResult.getFieldError("gender"));
             throw new UserBadRequestException(INVALID_GENDER_FORMAT);
         }
         if(bindingResult.hasFieldErrors("birthday")){
             throw new UserBadRequestException(INVALID_BIRTHDAY_FORMAT);
         }
         if(bindingResult.hasErrors()){
-            System.out.println(bindingResult.getFieldError());
-            throw new UserBadRequestException(SERVER_ERROR);
+            throw new UserBadRequestException(BAD_REQUEST);
         }
 
-        return new BaseResponse<>(this.userService.signUp(postSignUpRequest));
+        return new BaseResponse<>(REGISTRATION_SUCCESS, this.userService.signUp(postSignUpRequest));
+    }
+
+    @PatchMapping("")
+    public BaseResponse<Object> onBoarding(@PreAuthorize long userId, @Validated @RequestBody PatchOnBoardingRequest patchOnBoardingRequest, BindingResult bindingResult){
+        log.info("{UserController.onBoarding}");
+
+        if(bindingResult.hasFieldErrors("address")){
+            throw new OnBoardingBadRequestException(ADDRESS_OVER_LENGTH);
+        }
+        if(bindingResult.hasFieldErrors("latitude") || bindingResult.hasFieldErrors("longitude")){
+            throw new OnBoardingBadRequestException(INVALID_LAT_LNG);
+        }
+        if(bindingResult.hasFieldErrors("mpriceMin") ||
+            bindingResult.hasFieldErrors("mdepositMin") ||
+            bindingResult.hasFieldErrors("ydepositMin") ||
+            bindingResult.hasFieldErrors("purchaseMin")){
+            throw  new OnBoardingBadRequestException(INVALID_MIN_PRICE);
+        }
+        if(bindingResult.hasFieldErrors("mpriceMax") ||
+            bindingResult.hasFieldErrors("mdepositMax") ||
+            bindingResult.hasFieldErrors("ydepositMax") ||
+            bindingResult.hasFieldErrors("purchaseMax")){
+            throw new OnBoardingBadRequestException(INVALID_MAX_PRICE);
+        }
+        if(bindingResult.hasFieldErrors("realEstateType")){
+            throw new OnBoardingBadRequestException(INVALID_INTEREST_TYPE);
+        }
+        if(bindingResult.hasFieldErrors("isSmallerthanMax")){
+            throw new OnBoardingBadRequestException(BAD_REQUEST);
+        }
+
+        return new BaseResponse(MEMBER_INFO_UPDATE_SUCCESS, this.userService.setOnBoarding(patchOnBoardingRequest, userId));
+
     }
 }

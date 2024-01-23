@@ -4,6 +4,9 @@ import com.project.zipkok.common.argument_resolver.JwtAuthHandlerArgumentResolve
 import com.project.zipkok.common.interceptor.JwtAuthInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -21,8 +24,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtAuthenticationInterceptor)
                 .order(1)
-//                .addPathPatterns("/auth/test", "/users/**")
-                .excludePathPatterns("/user", "/auth/refreshToken");
+                .addPathPatterns("/user/**")
+                .excludePathPatterns("/oauth/kakao/callback", "/auth/refreshToken");
+                //.excludePathPatterns(HttpMethod.POST.name(), "/user");
     }
 
     @Override

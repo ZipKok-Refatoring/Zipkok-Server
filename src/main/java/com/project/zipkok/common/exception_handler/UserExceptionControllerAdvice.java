@@ -1,6 +1,7 @@
 package com.project.zipkok.common.exception_handler;
 
 import com.project.zipkok.common.exception.NoExistUserException;
+import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
 import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.common.response.BaseExceptionResponse;
 import com.project.zipkok.common.response.BaseResponse;
@@ -29,6 +30,13 @@ public class UserExceptionControllerAdvice {
     @ExceptionHandler(UserBadRequestException.class)
     public BaseExceptionResponse handle_UserBadRequestException(UserBadRequestException e) {
         log.error("[handle_UserBadRequestException]", e);
+        return new BaseExceptionResponse(e.getExceptionStatus());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(OnBoardingBadRequestException.class)
+    public BaseExceptionResponse handle_OnBoardingBadRequestException(OnBoardingBadRequestException e) {
+        log.error("[handle_OnBoardingBadRequestException]", e);
         return new BaseExceptionResponse(e.getExceptionStatus());
     }
 }
