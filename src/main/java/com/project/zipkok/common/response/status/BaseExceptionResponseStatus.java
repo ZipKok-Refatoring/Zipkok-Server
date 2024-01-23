@@ -108,7 +108,15 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_ADDRESS_FORMAT(8008, HttpStatus.BAD_REQUEST.value(), "주소 정보가 없거나 형식이 잘못됨"),
     INVALID_PROPERTY_ID(8009, HttpStatus.NOT_FOUND.value(), "존재하지 않는 매물이거나 잘못된 매물 id"),
     INVALID_LATITUDE_FORMAT(8010, HttpStatus.BAD_REQUEST.value(), "위도 정보가 없거나 형식이 잘못됨"),
-    INVALID_LONGITUDE_FORMAT(8011, HttpStatus.BAD_REQUEST.value(), "경도 정보가 없거나 형식이 잘못됨");
+    INVALID_LONGITUDE_FORMAT(8011, HttpStatus.BAD_REQUEST.value(), "경도 정보가 없거나 형식이 잘못됨"),
+
+
+    /**
+     * 9000 : Address 예외
+     */
+    ADDRESS_SEARCH_SUCCESS(9000, HttpStatus.OK.value(), "주소 검색 성공"),
+
+    ADDRESS_SEARCH_FAILURE(9001, HttpStatus.NOT_FOUND.value(), "주소 검색 실패");
 
 
     private final int code;
