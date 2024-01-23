@@ -70,7 +70,7 @@ public class UserService {
         Gender gender = postSignUpRequest.getGender();
         String birthday = postSignUpRequest.getBirthday();
 
-        User user = new User(email, oAuthProvider, nickname,gender,birthday);
+        User user = new User(email, oAuthProvider, nickname, gender,birthday);
 
         user.setDesireResidence(new DesireResidence(user));
         user.setTransactionPriceConfig(new TransactionPriceConfig(user));

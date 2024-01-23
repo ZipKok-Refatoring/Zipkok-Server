@@ -87,5 +87,8 @@ public class User {
     public User(String email, OAuthProvider oAuthProvider, String nickname, Gender gender, String birthday) {
         this.email = email;
         this.oAuthProvider = oAuthProvider;
+        this.nickname = nickname;
+        this.gender = gender;
+        this.birthday = birthday;
     }
 }
