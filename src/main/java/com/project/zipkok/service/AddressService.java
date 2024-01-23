@@ -1,17 +1,20 @@
 package com.project.zipkok.service;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.project.zipkok.common.exception.AddressException;
 import com.project.zipkok.dto.GetAddressResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.ADDRESS_SEARCH_FAILURE;
 
 
 @Slf4j
@@ -37,15 +40,17 @@ public class AddressService {
         httpHeaders.set("Authorization", apiKey);
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 
-        UriComponents uriComponents = UriComponentsBuilder
-                .fromHttpUrl(uri)
-                .queryParam("query", query)
-                .queryParam("page", page)
-                .queryParam("size", size)
-                .build();
+            UriComponents uriComponents = UriComponentsBuilder
+                    .fromHttpUrl(uri)
+                    .queryParam("query", query)
+                    .queryParam("page", page)
+                    .queryParam("size", size)
+                    .build();
 
-        GetAddressResponse getAddressResponse = restTemplate.exchange(uriComponents.toString(), HttpMethod.GET, entity, GetAddressResponse.class).getBody();
 
-        return getAddressResponse;
+            ResponseEntity<GetAddressResponse> response = restTemplate.exchange(uriComponents.toString(), HttpMethod.GET, entity, GetAddressResponse.class);
+
+            return response.getBody();
+
     }
 }

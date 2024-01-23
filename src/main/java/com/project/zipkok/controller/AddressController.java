@@ -1,6 +1,7 @@
 package com.project.zipkok.controller;
 
 import com.project.zipkok.common.response.BaseResponse;
+import com.project.zipkok.common.response.status.BaseExceptionResponseStatus;
 import com.project.zipkok.dto.GetAddressResponse;
 import com.project.zipkok.service.AddressService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,6 @@ public class AddressController {
     public BaseResponse<GetAddressResponse> searchAddress(@RequestParam("query") String query, @RequestParam("page") int page, @RequestParam("size") int size) {
         log.info("[AddressController.searchAddress]");
 
-        return new BaseResponse<>(addressService.getAddresses(query, page, size));
+        return new BaseResponse<>(BaseExceptionResponseStatus.ADDRESS_SEARCH_SUCCESS, addressService.getAddresses(query, page, size));
     }
 }
