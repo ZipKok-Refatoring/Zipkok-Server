@@ -24,7 +24,6 @@ import static com.project.zipkok.common.response.status.BaseExceptionResponseSta
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
-@CrossOrigin(origins = {"https://localhost:3000"}, allowCredentials = "true")
 public class UserController {
     private final UserService userService;
 
