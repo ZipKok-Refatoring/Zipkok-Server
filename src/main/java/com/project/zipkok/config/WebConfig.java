@@ -28,7 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtAuthenticationInterceptor)
                 .order(1)
                 .addPathPatterns("/user/**")
-                .excludePathPatterns("/oauth/kakao/callback", "/auth/refreshToken");
+                .excludePathPatterns("/oauth/kakao/callback", "/auth/refreshToken", "/user");
                 //.excludePathPatterns(HttpMethod.POST.name(), "/user");
     }
 
