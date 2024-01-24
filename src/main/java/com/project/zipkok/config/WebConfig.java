@@ -28,8 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtAuthenticationInterceptor)
                 .order(1)
                 .addPathPatterns("/user/**")
-                .excludePathPatterns("/oauth/kakao/callback", "/auth/refreshToken", "/user");
-                //.excludePathPatterns(HttpMethod.POST.name(), "/user");
+                .excludePathPatterns("/oauth/kakao/callback", "/auth/refreshToken");
     }
 
     @Override
@@ -40,8 +39,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("https://localhost:3000")
-                .allowedOrigins("http://localhost:3000")
-                .allowedMethods("OPTIONS","GET","POST","PUT","DELETE");
+                .allowedOrigins("*")
+                .allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PATCH.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name(), HttpMethod.HEAD.name());
     }
 }
