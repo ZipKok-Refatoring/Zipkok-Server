@@ -21,6 +21,7 @@ import static com.project.zipkok.common.response.status.BaseExceptionResponseSta
 
 @Slf4j
 @RestController
+@CrossOrigin(origins = {"https://localhost:3000"}, allowCredentials = "true")
 @RequiredArgsConstructor
 public class AuthController {
     private final OAuthLoginService oAuthLoginService;

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/address")
+@CrossOrigin(origins = {"https://localhost:3000"}, allowCredentials = "true")
 @RequiredArgsConstructor
 public class AddressController {
 
