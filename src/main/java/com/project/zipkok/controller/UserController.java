@@ -45,6 +45,9 @@ public class UserController {
         if(bindingResult.hasFieldErrors("birthday")){
             throw new UserBadRequestException(INVALID_BIRTHDAY_FORMAT);
         }
+        if(bindingResult.hasFieldErrors("email")){
+            throw new UserBadRequestException(INVALID_EMAIL_REQUEST);
+        }
         if(bindingResult.hasErrors()){
             throw new UserBadRequestException(BAD_REQUEST);
         }
