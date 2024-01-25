@@ -9,6 +9,9 @@ import com.project.zipkok.dto.PatchOnBoardingRequest;
 import com.project.zipkok.dto.PostSignUpRequest;
 import com.project.zipkok.service.UserService;
 import com.project.zipkok.util.jwt.AuthTokens;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -24,9 +27,11 @@ import static com.project.zipkok.common.response.status.BaseExceptionResponseSta
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
+@Tag(name = "User API", description = "회원 관련 API")
 public class UserController {
     private final UserService userService;
 
+    @Operation(summary = "회원가입 API", description = "온보딩 전 회원정보를 입력하는 API입니다.")
     @PostMapping("")
     public BaseResponse<AuthTokens> signUp(@Validated @RequestBody PostSignUpRequest postSignUpRequest, BindingResult bindingResult) {
         log.info("{UserController.signUp}");
@@ -47,8 +52,9 @@ public class UserController {
         return new BaseResponse<>(REGISTRATION_SUCCESS, this.userService.signUp(postSignUpRequest));
     }
 
+    @Operation(summary = "온보딩정보 입력 API", description = "회원가입 후, 온보딩 정보를 입력하는 API입니다.")
     @PatchMapping("")
-    public BaseResponse<Object> onBoarding(@PreAuthorize long userId, @Validated @RequestBody PatchOnBoardingRequest patchOnBoardingRequest, BindingResult bindingResult){
+    public BaseResponse<Object> onBoarding(@Parameter(hidden=true) @PreAuthorize long userId, @Validated @RequestBody PatchOnBoardingRequest patchOnBoardingRequest, BindingResult bindingResult){
         log.info("{UserController.onBoarding}");
         System.out.println(patchOnBoardingRequest.toString());
         if(bindingResult.hasFieldErrors("address")){

@@ -32,7 +32,7 @@ public class GetAddressResponse {
         private String longitude;
     }
 
-    @Getter
+
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ResponseMetaData {
@@ -40,9 +40,11 @@ public class GetAddressResponse {
         @JsonProperty("is_end")
         private boolean isEnd;
 
+        @Getter
         @JsonProperty("pageable_count")
         private int pagableCount;
 
+        @Getter
         @JsonProperty("total_count")
         private int totalCount;
     }

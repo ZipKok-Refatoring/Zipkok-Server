@@ -10,6 +10,8 @@ import com.project.zipkok.dto.PostRefreshTokenRequest;
 import com.project.zipkok.dto.PostRefreshTokenResponse;
 import com.project.zipkok.service.AuthService;
 import com.project.zipkok.util.jwt.AuthTokens;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,12 +24,14 @@ import static com.project.zipkok.common.response.status.BaseExceptionResponseSta
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Auth API", description = "소셜로그인/ 인증/ 인가 관련 API")
 public class AuthController {
     private final OAuthLoginService oAuthLoginService;
 
     private final AuthService authService;
 
 
+    @Operation(summary = "인가코드를 받아 서비스의 회원여부를 응답하는 API ", description = "authorizaion code를 쿼리 파라미터로 추가한뒤, 요청해주세요")
     @GetMapping("/oauth/kakao/callback")
     public BaseResponse<GetLoginResponse> loginKakao(@RequestParam("code") String authorizationCode) {
         log.info("AuthController.loginKakao");
@@ -35,6 +39,7 @@ public class AuthController {
         return new BaseResponse<GetLoginResponse>(oAuthLoginService.login(params));
     }
 
+    @Operation(summary = "토큰 재발행 API", description = "Token이 만료된 경우에 refreshToken을 통해 재발급 받는 API")
     @PostMapping("/auth/refreshToken")
     public BaseResponse<PostRefreshTokenResponse> reIssueToken(@Validated @RequestBody PostRefreshTokenRequest postRefreshTokenRequest, BindingResult bindingResult) {
         log.info("AuthController.reIssueToken");

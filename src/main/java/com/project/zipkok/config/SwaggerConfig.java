@@ -34,7 +34,7 @@ public class SwaggerConfig {
     }
     private Info apiInfo() {
         return new Info()
-                .title("집콕 API Test") // API의 제목
+                .title("집콕 API") // API의 제목
                 .description("구현 완료된 API 목록입니다.") // API에 대한 설명
                 .version("1.0.0"); // API의 버전
     }
