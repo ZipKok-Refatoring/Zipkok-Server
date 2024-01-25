@@ -11,6 +11,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.ADDRESS_SEARCH_FAILURE;
 
@@ -25,4 +26,13 @@ public class AddressExceptionControllerAdvice {
         log.error("[handle_AddressException]", e);
         return new BaseExceptionResponse(e.getExceptionStatus());
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(HttpClientErrorException.class)
+    public BaseExceptionResponse handle_AddressException(HttpClientErrorException e) {
+        log.error("[handle_AddressException]", e);
+        return new BaseExceptionResponse(ADDRESS_SEARCH_FAILURE, e.getMessage());
+    }
+
+
 }

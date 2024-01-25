@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.INVALID_REFRESH_TOKEN;
 
 @Slf4j
-@CrossOrigin(origins = {"https://localhost:3000", "http://localhost:3000"})
 @RestController
 @RequiredArgsConstructor
 public class AuthController {

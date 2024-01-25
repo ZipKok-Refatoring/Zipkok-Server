@@ -40,17 +40,17 @@ public class AddressService {
         httpHeaders.set("Authorization", apiKey);
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 
-            UriComponents uriComponents = UriComponentsBuilder
-                    .fromHttpUrl(uri)
-                    .queryParam("query", query)
-                    .queryParam("page", page)
-                    .queryParam("size", size)
-                    .build();
+        UriComponents uriComponents = UriComponentsBuilder
+                .fromHttpUrl(uri)
+                .queryParam("query", query)
+                .queryParam("page", page)
+                .queryParam("size", size)
+                .build();
 
 
-            ResponseEntity<GetAddressResponse> response = restTemplate.exchange(uriComponents.toString(), HttpMethod.GET, entity, GetAddressResponse.class);
+        ResponseEntity<GetAddressResponse> response = restTemplate.exchange(uriComponents.toString(), HttpMethod.GET, entity, GetAddressResponse.class);
 
-            return response.getBody();
+        return response.getBody();
 
     }
 }

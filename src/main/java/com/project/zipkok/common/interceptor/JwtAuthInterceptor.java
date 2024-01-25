@@ -34,9 +34,11 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
         String method = request.getMethod();
         String url = request.getRequestURI();
 
-        if(method.equals(HttpMethod.POST.name()) && url.equals("/user")){
+        if((method.equals(HttpMethod.OPTIONS.name()) || method.equals(HttpMethod.POST.name())) && url.equals("/user")){
             return true;
         }
+        log.info("[POST & OPTIONS /user must not pass this log]");
+
         String accessToken = resolveAccessToken(request);
         validateAccessToken(accessToken);
 

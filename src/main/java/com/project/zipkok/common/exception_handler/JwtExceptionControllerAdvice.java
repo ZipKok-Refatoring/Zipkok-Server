@@ -1,6 +1,10 @@
 package com.project.zipkok.common.exception_handler;
 
+import com.project.zipkok.common.exception.jwt.bad_request.JwtNoTokenException;
+import com.project.zipkok.common.exception.jwt.bad_request.JwtUnsupportedTokenException;
+import com.project.zipkok.common.exception.jwt.unauthorized.JwtExpiredTokenException;
 import com.project.zipkok.common.exception.jwt.unauthorized.JwtInvalidRefreshTokenException;
+import com.project.zipkok.common.exception.jwt.unauthorized.JwtInvalidTokenException;
 import jakarta.annotation.Priority;
 import com.project.zipkok.common.exception.jwt.bad_request.JwtBadRequestException;
 import com.project.zipkok.common.exception.jwt.unauthorized.JwtUnauthorizedTokenException;
@@ -34,6 +38,35 @@ public class JwtExceptionControllerAdvice {
     @ExceptionHandler(JwtInvalidRefreshTokenException.class)
     public BaseExceptionResponse handle_JwtInvalidRefreshTokenException(JwtInvalidRefreshTokenException e) {
         log.error("[handle_JwtInvalidRefreshTokenException]", e);
+        return new BaseExceptionResponse(e.getExceptionStatus());
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(JwtNoTokenException.class)
+    public BaseExceptionResponse handle_JwtNoTokenException(JwtNoTokenException e) {
+        log.error("[handle_JwtNoTokenException]", e);
+        return new BaseExceptionResponse(e.getExceptionStatus());
+    }
+
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(JwtUnsupportedTokenException.class)
+    public BaseExceptionResponse handle_JwtUnsupportedTokenException(JwtUnsupportedTokenException e) {
+        log.error("[handle_JwtUnsupportedTokenException]", e);
+        return new BaseExceptionResponse(e.getExceptionStatus());
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(JwtExpiredTokenException.class)
+    public BaseExceptionResponse handle_JwtExpiredTokenException(JwtExpiredTokenException e) {
+        log.error("[handle_JwtExpiredTokenException]", e);
+        return new BaseExceptionResponse(e.getExceptionStatus());
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(JwtInvalidTokenException.class)
+    public BaseExceptionResponse handle_JwtInvalidTokenException(JwtInvalidTokenException e) {
+        log.error("[handle_JwtInvalidTokenException]", e);
         return new BaseExceptionResponse(e.getExceptionStatus());
     }
 }
