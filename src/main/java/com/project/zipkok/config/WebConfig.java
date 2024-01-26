@@ -27,7 +27,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtAuthenticationInterceptor)
                 .order(1)
-                .addPathPatterns("/user/**")
+                .addPathPatterns("/user/**", "/realEstate/**")
                 .excludePathPatterns("/oauth/kakao/callback", "/auth/refreshToken");
     }
 

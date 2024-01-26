@@ -6,15 +6,18 @@ import com.project.zipkok.common.exception.RealEstateException;
 import com.project.zipkok.dto.GetRealEstateResponse;
 import com.project.zipkok.model.RealEstate;
 import com.project.zipkok.model.RealEstateImage;
+import com.project.zipkok.model.User;
+import com.project.zipkok.model.Zim;
+import com.project.zipkok.repository.KokRepository;
 import com.project.zipkok.repository.RealEstateRepository;
+import com.project.zipkok.repository.UserRepository;
+import com.project.zipkok.repository.ZimRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.INVALID_PROPERTY_ID;
@@ -25,20 +28,36 @@ import static com.project.zipkok.common.response.status.BaseExceptionResponseSta
 public class RealEstateService {
 
     private final RealEstateRepository realEstateRepository;
+    private final UserRepository userRepository;
+    private final ZimRepository zimRepository;
+    private final KokRepository kokRepository;
 
 
     @Transactional
-    public GetRealEstateResponse getRealEstateInfo(Long realEstateId) {
+    public GetRealEstateResponse getRealEstateInfo(Long userId, Long realEstateId) {
 
         log.info("[RealEstateService.getRealEstateInfo]");
 
         try {
             RealEstate realEstate = realEstateRepository.findById(realEstateId).get();
+            User user = userRepository.findByUserId(userId);
 
             List<String> realEstateImages = realEstate.getRealEstateImages()
                     .stream()
                     .map(RealEstateImage::getImageUrl)
                     .collect(Collectors.toList());
+
+            boolean isZimmed = false;
+            boolean isKokked = false;
+
+            if (zimRepository.findFirstByUserAndRealEstate(user, realEstate) != null) {
+                isZimmed = true;
+            }
+
+            if (kokRepository.findFirstByUserAndRealEstate(user, realEstate) != null) {
+                isKokked = true;
+            }
+
 
             GetRealEstateResponse response = GetRealEstateResponse.builder()
                     .realEstateId(realEstate.getRealEstateId())
@@ -56,8 +75,8 @@ public class RealEstateService {
                     .administrativeFee(realEstate.getAdministrativeFee())
                     .latitude(realEstate.getLatitude())
                     .longitude(realEstate.getLongitude())
-                    .isZimmed(!realEstate.getZims().isEmpty())
-                    .isKokked(!realEstate.getKoks().isEmpty())
+                    .isZimmed(isZimmed)
+                    .isKokked(isKokked)
                     .build();
 
             return response;

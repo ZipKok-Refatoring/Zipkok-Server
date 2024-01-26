@@ -1,5 +1,6 @@
 package com.project.zipkok.controller;
 
+import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.exception.RealEstateException;
 import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.dto.GetRealEstateResponse;
@@ -29,7 +30,7 @@ public class RealEstateController {
 
     @Operation(summary = "매물 상세정보 API", description = "매물의 상세정보를 응답하는 API입니다.")
     @GetMapping("/{realEstateId}")
-    public BaseResponse<GetRealEstateResponse> getRealEstate(@Parameter(name = "realEstateId", description = "매물의 Id", in = ParameterIn.PATH)
+    public BaseResponse<GetRealEstateResponse> getRealEstate(@Parameter(hidden = true) @PreAuthorize long userId, @Parameter(name = "realEstateId", description = "매물의 Id", in = ParameterIn.PATH)
                                                                  @PathVariable(value = "realEstateId") Long realEstateId) {
         log.info("[RealEstateController.getRealEstate]");
 
@@ -37,6 +38,6 @@ public class RealEstateController {
             throw new RealEstateException(INVALID_PROPERTY_ID);
         }
 
-        return new BaseResponse<>(PROPERTY_DETAIL_QUERY_SUCCESS, realEstateService.getRealEstateInfo(realEstateId));
+        return new BaseResponse<>(PROPERTY_DETAIL_QUERY_SUCCESS, realEstateService.getRealEstateInfo(userId, realEstateId));
     }
 }
