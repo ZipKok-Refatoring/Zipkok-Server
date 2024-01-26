@@ -98,10 +98,6 @@ public class UserController {
     public BaseResponse<GetMyPageResponse> myPage(@Parameter(hidden = true) @PreAuthorize long userId){
         log.info("{UserController.myPage}");
 
-        if(userId == 0){
-            throw new NoMatchUserException(MEMBER_NOT_FOUND);
-        }
-
         return new BaseResponse<>(this.userService.myPageLoad(userId));
     }
 }
