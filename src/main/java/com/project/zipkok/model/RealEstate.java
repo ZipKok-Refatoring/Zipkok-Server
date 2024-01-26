@@ -1,6 +1,7 @@
 package com.project.zipkok.model;
 
 import com.project.zipkok.common.enums.RealEstateType;
+import com.project.zipkok.common.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +33,8 @@ public class RealEstate {
     private double longitude;
 
     @Column(name = "transaction_type", nullable = false)
-    private String transactionType;
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
 
     @Column(name = "deposit", nullable = false)
     private long deposit;
@@ -53,6 +55,7 @@ public class RealEstate {
     private long pyeongsu;
 
     @Column(name = "realestate_type", nullable = false)
+    @Enumerated(EnumType.STRING)
     private RealEstateType realEstateType;
 
     @Column(name = "floor_num")
@@ -80,7 +83,7 @@ public class RealEstate {
     @OneToMany(mappedBy = "realEstate",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Kok> koks = new ArrayList<>();
 
-    public RealEstate(String address, double latitude, double longitude, String transactionType, long deposit, long price, RealEstateType realEstateType) {
+    public RealEstate(String address, double latitude, double longitude, TransactionType transactionType, long deposit, long price, RealEstateType realEstateType) {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
