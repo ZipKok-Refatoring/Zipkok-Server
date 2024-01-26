@@ -78,6 +78,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     FAVORITES_QUERY_FAILURE(6004, HttpStatus.BAD_REQUEST.value(), "찜 조회 실패"),
     FAVORITES_CANCEL_FAILURE(6005, HttpStatus.BAD_REQUEST.value(), "찜 취소 실패"),
     ALREADY_EXIST_ZIM(6006, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 찜입니다."),
+    NO_EXIST_ZIM(6007, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 찜입니다."),
 
 
     /**

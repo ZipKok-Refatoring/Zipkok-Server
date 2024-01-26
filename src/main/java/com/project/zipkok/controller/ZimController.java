@@ -40,4 +40,15 @@ public class ZimController {
 
         return new BaseResponse<>(FAVORITES_ADD_SUCCESS, this.zimService.zimRegister(userId, postZimRegisterRequest.getRealEstateId()));
     }
+
+    @DeleteMapping("")
+    public BaseResponse<Object> zimDelete(@Parameter(hidden = true) @PreAuthorize long userId, @Validated  @RequestBody PostZimRegisterRequest postZimRegisterRequest, BindingResult bindingResult){
+        log.info("{ZimController.zimDelete}");
+
+        if(bindingResult.hasErrors()){
+            throw new ZimBadRequestException(INVALID_REALESTATE_ID);
+        }
+
+        return new BaseResponse<>(FAVORITES_CANCEL_SUCCESS, this.zimService.zimDelete(userId, postZimRegisterRequest.getRealEstateId()));
+    }
 }

@@ -62,7 +62,7 @@ public class ZimService {
             throw new NoUserOrRealEstate(FAVORITES_ADD_FAILURE);
         }
         for(Zim zim : zimList){
-            if(zim.getUser().getUserId().equals(realEstateId)){
+            if(zim.getRealEstate().getRealEstateId().equals(realEstateId)){
                 throw new ZimBadRequestException(ALREADY_EXIST_ZIM);
             }
         }
@@ -71,5 +71,21 @@ public class ZimService {
         this.zimRepository.save(zim);
 
         return null;
+    }
+
+    public Object zimDelete(long userId, Long realEstateId) {
+        log.info("{ZimService.zimDelete}");
+
+        User user = this.userRepository.findByUserId(userId);
+        List<Zim> zimList = this.zimRepository.findAllByUser(user);
+
+        for(Zim zim : zimList){
+            if(zim.getRealEstate().getRealEstateId().equals(realEstateId)){
+                this.zimRepository.delete(zim);
+                return null;
+            }
+        }
+
+        throw new ZimBadRequestException(NO_EXIST_ZIM);
     }
 }
