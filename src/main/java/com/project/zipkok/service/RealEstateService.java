@@ -1,6 +1,7 @@
 package com.project.zipkok.service;
 
 import com.project.zipkok.common.exception.DatabaseException;
+import com.project.zipkok.common.exception.InternalServerErrorException;
 import com.project.zipkok.common.exception.RealEstateException;
 import com.project.zipkok.dto.GetRealEstateResponse;
 import com.project.zipkok.model.RealEstate;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,11 +35,14 @@ public class RealEstateService {
         try {
             RealEstate realEstate = realEstateRepository.findById(realEstateId).get();
 
-            int imageNumber = realEstate.getRealEstateImages().size();
+            List<String> realEstateImages = realEstate.getRealEstateImages()
+                    .stream()
+                    .map(RealEstateImage::getImageUrl)
+                    .collect(Collectors.toList());
 
             GetRealEstateResponse response = GetRealEstateResponse.builder()
                     .realEstateId(realEstate.getRealEstateId())
-                    .imageInfo(new GetRealEstateResponse.ImageInfo(imageNumber, realEstate.getRealEstateImages().stream().map(RealEstateImage::getImageUrl).collect(Collectors.toList())))
+                    .imageInfo(new GetRealEstateResponse.ImageInfo(realEstateImages.size(), realEstateImages))
                     .address(realEstate.getAddress())
                     .detailAddress(realEstate.getDetailAddress())
                     .transactionType(realEstate.getTransactionType().getDescription())
@@ -52,7 +57,8 @@ public class RealEstateService {
                     .latitude(realEstate.getLatitude())
                     .longitude(realEstate.getLongitude())
                     .isZimmed(!realEstate.getZims().isEmpty())
-                    .isKokked(!realEstate.getKoks().isEmpty()).build();
+                    .isKokked(!realEstate.getKoks().isEmpty())
+                    .build();
 
             return response;
         } catch (Exception e) {

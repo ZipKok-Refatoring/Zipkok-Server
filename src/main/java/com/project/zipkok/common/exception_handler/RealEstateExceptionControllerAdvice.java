@@ -21,6 +21,6 @@ public class RealEstateExceptionControllerAdvice {
     @ExceptionHandler(RealEstateException.class)
     public BaseExceptionResponse handle_RealEstateException(RealEstateException e) {
         log.error("[handle_RealEstateException]", e);
-        return new BaseExceptionResponse(e.getBaseExceptionResponseStatus(), e.getMessage());
+        return new BaseExceptionResponse(e.getResponseStatus(), e.getMessage());
     }
 }

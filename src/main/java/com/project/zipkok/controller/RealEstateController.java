@@ -29,7 +29,8 @@ public class RealEstateController {
 
     @Operation(summary = "매물 상세정보 API", description = "매물의 상세정보를 응답하는 API입니다.")
     @GetMapping("/{realEstateId}")
-    public BaseResponse<GetRealEstateResponse> getRealEstate(@Parameter(name = "realEstateId", description = "매물의 Id", in = ParameterIn.PATH) @PathVariable(value = "realEstateId") Long realEstateId) {
+    public BaseResponse<GetRealEstateResponse> getRealEstate(@Parameter(name = "realEstateId", description = "매물의 Id", in = ParameterIn.PATH)
+                                                                 @PathVariable(value = "realEstateId") Long realEstateId) {
         log.info("[RealEstateController.getRealEstate]");
 
         if (realEstateId == null) {
