@@ -4,9 +4,13 @@ import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.enums.Gender;
 import com.project.zipkok.common.enums.OAuthProvider;
 import com.project.zipkok.common.enums.RealEstateType;
+import com.project.zipkok.common.enums.TransactionType;
+import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
+import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.common.service.RedisService;
 import com.project.zipkok.config.RedisConfig;
+import com.project.zipkok.dto.GetMyPageResponse;
 import com.project.zipkok.dto.GetUserResponse;
 import com.project.zipkok.dto.PatchOnBoardingRequest;
 import com.project.zipkok.dto.PostSignUpRequest;
@@ -28,6 +32,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.MEMBER_NOT_FOUND;
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.SERVER_ERROR;
 
 @Slf4j
@@ -129,9 +134,53 @@ public class UserService {
         transactionPriceConfig.setYDepositMin(ydepositMin);
         transactionPriceConfig.setYDepositMax(ydepositMax);
         transactionPriceConfig.setPurchaseMin(purchaseMin);
-        transactionPriceConfig.setPuchaseMax(purchaseMax);
+        transactionPriceConfig.setPurchaseMax(purchaseMax);
         this.transactionPriceConfigRepository.save(transactionPriceConfig);
 
         return null;
+    }
+
+    public GetMyPageResponse myPageLoad(long userId) {
+        log.info("{UserService.myPageLoad}");
+
+        User user = this.userRepository.findByUserId(userId);
+
+        TransactionPriceConfig transactionPriceConfig = this.transactionPriceConfigRepository.findByUser(user);
+
+        GetMyPageResponse getMyPageResponse = new GetMyPageResponse();
+
+        getMyPageResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
+
+        String transactionType = null;
+
+        if(user.getTransactionType() == null){
+            getMyPageResponse.setTransactionType(TransactionType.MONTHLY);
+            transactionType = "월세";
+        }
+        else{
+            getMyPageResponse.setTransactionType(user.getTransactionType());
+            transactionType = user.getTransactionType().getDescription();
+        }
+
+        if(transactionType.equals("월세")){
+            getMyPageResponse.setPriceMax(transactionPriceConfig.getMPriceMax());
+            getMyPageResponse.setPriceMin(transactionPriceConfig.getMPriceMin());
+            getMyPageResponse.setDepositMax(transactionPriceConfig.getMDepositMax());
+            getMyPageResponse.setDepositMin(transactionPriceConfig.getMDepositMin());
+        }
+        else if(transactionType.equals("전세")){
+            getMyPageResponse.setDepositMax(transactionPriceConfig.getYDepositMax());
+            getMyPageResponse.setDepositMin(transactionPriceConfig.getYDepositMin());
+        }
+        else if(transactionType.equals("매매")){
+            getMyPageResponse.setPriceMax(transactionPriceConfig.getPurchaseMax());
+            getMyPageResponse.setPriceMin(transactionPriceConfig.getPurchaseMin());
+        }
+
+        getMyPageResponse.setNickname(user.getNickname());
+        getMyPageResponse.setImageUrl(user.getProfileImgUrl());
+        getMyPageResponse.setRealEstateType(user.getReslEstateType());
+
+        return getMyPageResponse;
     }
 }

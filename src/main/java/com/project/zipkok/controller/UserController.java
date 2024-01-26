@@ -1,9 +1,11 @@
 package com.project.zipkok.controller;
 
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
+import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
 import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.common.response.BaseResponse;
+import com.project.zipkok.dto.GetMyPageResponse;
 import com.project.zipkok.dto.GetUserResponse;
 import com.project.zipkok.dto.PatchOnBoardingRequest;
 import com.project.zipkok.dto.PostSignUpRequest;
@@ -90,5 +92,16 @@ public class UserController {
 
         return new BaseResponse(MEMBER_INFO_UPDATE_SUCCESS, this.userService.setOnBoarding(patchOnBoardingRequest, userId));
 
+    }
+
+    @GetMapping("")
+    public BaseResponse<GetMyPageResponse> myPage(@Parameter(hidden = true) @PreAuthorize long userId){
+        log.info("{UserController.myPage}");
+
+        if(userId == 0){
+            throw new NoMatchUserException(MEMBER_NOT_FOUND);
+        }
+
+        return new BaseResponse<>(this.userService.myPageLoad(userId));
     }
 }
