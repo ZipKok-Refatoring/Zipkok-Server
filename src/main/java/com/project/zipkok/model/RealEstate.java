@@ -18,7 +18,7 @@ public class RealEstate {
     @Id
     @Column(name = "realestate_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long realEstateId;
+    private Long realEstateId;
 
     @Column(name = "image_url")
     private String imageUrl;
