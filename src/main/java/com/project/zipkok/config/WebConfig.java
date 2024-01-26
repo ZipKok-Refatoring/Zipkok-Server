@@ -36,12 +36,12 @@ public class WebConfig implements WebMvcConfigurer {
         resolvers.add(jwtAuthHandlerArgumentResolver);
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("https://localhost:3000", "https://zipkok.store", "http://localhost:9000")
-                .allowCredentials(true)
-                .allowedHeaders("Content-Type")
-                .allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PATCH.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name(), HttpMethod.HEAD.name());
-    }
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**")
+//                .allowedOrigins("https://localhost:3000")
+//                .allowCredentials(true)
+//                .allowedHeaders("Content-Type")
+//                .allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PATCH.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name(), HttpMethod.HEAD.name());
+//    }
 }
