@@ -5,10 +5,7 @@ import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
 import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.common.response.BaseResponse;
-import com.project.zipkok.dto.GetMyPageResponse;
-import com.project.zipkok.dto.GetUserResponse;
-import com.project.zipkok.dto.PatchOnBoardingRequest;
-import com.project.zipkok.dto.PostSignUpRequest;
+import com.project.zipkok.dto.*;
 import com.project.zipkok.service.UserService;
 import com.project.zipkok.util.jwt.AuthTokens;
 import io.swagger.v3.oas.annotations.Operation;
@@ -99,5 +96,12 @@ public class UserController {
         log.info("{UserController.myPage}");
 
         return new BaseResponse<>(this.userService.myPageLoad(userId));
+    }
+
+    @GetMapping("/detail")
+    public BaseResponse<GetMyPageDetailResponse> myPageDetail(@Parameter(hidden = true) @PreAuthorize long userId){
+        log.info("{UserController.myPageDetail}");
+
+        return new BaseResponse<>(this.userService.myPageDetailLoad(userId));
     }
 }

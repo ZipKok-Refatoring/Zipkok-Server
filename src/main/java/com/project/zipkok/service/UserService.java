@@ -10,10 +10,7 @@ import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
 import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.common.service.RedisService;
 import com.project.zipkok.config.RedisConfig;
-import com.project.zipkok.dto.GetMyPageResponse;
-import com.project.zipkok.dto.GetUserResponse;
-import com.project.zipkok.dto.PatchOnBoardingRequest;
-import com.project.zipkok.dto.PostSignUpRequest;
+import com.project.zipkok.dto.*;
 import com.project.zipkok.model.DesireResidence;
 import com.project.zipkok.model.TransactionPriceConfig;
 import com.project.zipkok.model.User;
@@ -25,6 +22,7 @@ import com.project.zipkok.util.jwt.JwtProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -143,16 +141,23 @@ public class UserService {
     public GetMyPageResponse myPageLoad(long userId) {
         log.info("{UserService.myPageLoad}");
 
+        //repository로부터 객체 가져오기
         User user = this.userRepository.findByUserId(userId);
-
         TransactionPriceConfig transactionPriceConfig = this.transactionPriceConfigRepository.findByUser(user);
 
+        //return 할 dto 선언
         GetMyPageResponse getMyPageResponse = new GetMyPageResponse();
+
+        //dto field 값 set
+        getMyPageResponse.setNickname(user.getNickname());
+        getMyPageResponse.setImageUrl(user.getProfileImgUrl());
+        getMyPageResponse.setRealEstateType(user.getReslEstateType());
 
         getMyPageResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
 
         String transactionType = null;
 
+        //관심매물유형에 따라 dto field 값 set 작업 분기처리
         if(user.getTransactionType() == null){
             getMyPageResponse.setTransactionType(TransactionType.MONTHLY);
             transactionType = "월세";
@@ -177,10 +182,72 @@ public class UserService {
             getMyPageResponse.setPriceMin(transactionPriceConfig.getPurchaseMin());
         }
 
-        getMyPageResponse.setNickname(user.getNickname());
-        getMyPageResponse.setImageUrl(user.getProfileImgUrl());
-        getMyPageResponse.setRealEstateType(user.getReslEstateType());
-
         return getMyPageResponse;
+    }
+
+    public GetMyPageDetailResponse myPageDetailLoad(long userId) {
+        log.info("{UserService.myPageDetailLoad}");
+
+        User user = this.userRepository.findByUserId(userId);
+        TransactionPriceConfig transactionPriceConfig = this.transactionPriceConfigRepository.findByUser(user);
+
+        GetMyPageDetailResponse getMyPageDetailResponse = new GetMyPageDetailResponse();
+
+        getMyPageDetailResponse.setImageUrl(user.getProfileImgUrl());
+        getMyPageDetailResponse.setNickname(user.getNickname());
+        getMyPageDetailResponse.setBirthday(user.getBirthday());
+        getMyPageDetailResponse.setGender(user.getGender());
+        getMyPageDetailResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
+        getMyPageDetailResponse.setRealEstateType(user.getReslEstateType());
+
+        if(user.getTransactionType() == null){
+            getMyPageDetailResponse.setTransactionType(TransactionType.MONTHLY);
+        }
+        else{
+            getMyPageDetailResponse.setTransactionType(user.getTransactionType());
+        }
+
+        getMyPageDetailResponse.setMpriceMin(transactionPriceConfig.getMPriceMin());
+        getMyPageDetailResponse.setMpriceMax(transactionPriceConfig.getMPriceMax());
+        getMyPageDetailResponse.setMdepositMin(transactionPriceConfig.getMDepositMin());
+        getMyPageDetailResponse.setMdepositMax(transactionPriceConfig.getMDepositMax());
+        getMyPageDetailResponse.setYdepositMin(transactionPriceConfig.getYDepositMin());
+        getMyPageDetailResponse.setYdepositMax(transactionPriceConfig.getYDepositMax());
+        getMyPageDetailResponse.setPriceMin(transactionPriceConfig.getPurchaseMin());
+        getMyPageDetailResponse.setPriceMax(transactionPriceConfig.getPurchaseMax());
+
+//        ModelMapper modelMapper = new ModelMapper();
+//
+//        modelMapper.typeMap(TransactionPriceConfig.class, GetMyPageDetailResponse.class).addMappings(mapper -> {
+//            mapper.map(TransactionPriceConfig::getMPriceMin, GetMyPageDetailResponse::setMpriceMin);
+//            mapper.map(TransactionPriceConfig::getMPriceMax, GetMyPageDetailResponse::setMpriceMax);
+//            mapper.map(TransactionPriceConfig::getMDepositMin, GetMyPageDetailResponse::setMdepositMin);
+//            mapper.map(TransactionPriceConfig::getMDepositMax, GetMyPageDetailResponse::setMdepositMax);
+//            mapper.map(TransactionPriceConfig::getYDepositMin, GetMyPageDetailResponse::setYdepositMin);
+//            mapper.map(TransactionPriceConfig::getYDepositMax, GetMyPageDetailResponse::setYdepositMax);
+//            mapper.map(TransactionPriceConfig::getPurchaseMin, GetMyPageDetailResponse::setPriceMin);
+//            mapper.map(TransactionPriceConfig::getPurchaseMax, GetMyPageDetailResponse::setPriceMax);
+//        });
+//
+//        getMyPageDetailResponse = modelMapper.map(transactionPriceConfig, GetMyPageDetailResponse.class);
+//
+//        modelMapper.typeMap(User.class, GetMyPageDetailResponse.class).addMappings(mapper -> {
+//            mapper.map(User::getProfileImgUrl, GetMyPageDetailResponse::setImageUrl);
+//            mapper.map(User::getNickname, GetMyPageDetailResponse::setNickname);
+//            mapper.map(User::getBirthday, GetMyPageDetailResponse::setBirthday);
+//            mapper.map(User::getGender, GetMyPageDetailResponse::setGender);
+//            mapper.map(User::getRealEstates, GetMyPageDetailResponse::setRealEstateType);
+//            mapper.map(User::getTransactionType, GetMyPageDetailResponse::setTransactionType);
+//        });
+//
+//        getMyPageDetailResponse = modelMapper.map(user, GetMyPageDetailResponse.class);
+//
+//        if(getMyPageDetailResponse.getTransactionType() == null){
+//            getMyPageDetailResponse.setTransactionType(TransactionType.MONTHLY);
+//        }
+//
+//        getMyPageDetailResponse.setAddress(user.getDesireResidence().getAddress());
+
+        return getMyPageDetailResponse;
     }
 }
