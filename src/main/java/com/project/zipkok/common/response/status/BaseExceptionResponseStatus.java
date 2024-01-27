@@ -90,7 +90,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     KOK_CONTRACT_INFO_QUERY_SUCCESS(7005, HttpStatus.OK.value(), "콕의 중개 계약 정보 조회 성공"),
     KOK_REVIEW_INFO_QUERY_SUCCESS(7006, HttpStatus.OK.value(), "콕의 리뷰 정보 조회 성공"),
     KOK_ID_NOT_FOUND(7007, HttpStatus.NOT_FOUND.value(), "kokId에 해당하는 정보를 찾을 수 없습니다."),
-    NO_MORE_KOK_DATA(7008, HttpStatus.OK.value(), "더이상 조회할 콕 데이터가 없습니다. (무한 스크롤 끝)"),
+    NO_MORE_KOK_DATA(7008, HttpStatus.OK.value(), "더이상 조회할 콕 데이터가 없습니다."),
     MEMBER_SETTING_INFO_QUERY_SUCCESS(7009, HttpStatus.OK.value(), "회원 설정 정보 조회 성공"),
     MEMBER_SETTING_INFO_QUERY_FAILURE(7010, HttpStatus.BAD_REQUEST.value(), "회원 설정 정보 조회 실패"),
     KOK_REGISTRATION_SUCCESS(7011, HttpStatus.OK.value(), "콕 등록 성공"),

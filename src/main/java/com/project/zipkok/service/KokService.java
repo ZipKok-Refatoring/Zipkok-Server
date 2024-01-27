@@ -1,5 +1,6 @@
 package com.project.zipkok.service;
 
+import com.project.zipkok.common.exception.KokException;
 import com.project.zipkok.dto.GetKokResponse;
 import com.project.zipkok.model.Kok;
 import com.project.zipkok.model.User;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.NO_MORE_KOK_DATA;
 
 @Slf4j
 @Service
@@ -42,6 +45,9 @@ public class KokService {
         }
 
         int totalPage = (int) Math.ceil((double) koks.size()/size);
+        if(page > totalPage) {
+            throw new KokException(NO_MORE_KOK_DATA);
+        }
 
 
         GetKokResponse response = GetKokResponse.builder()
