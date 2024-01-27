@@ -31,6 +31,7 @@ public class AuthService {
         String email = jwtProvider.getEmail(refreshToken);
 
         if (!redisService.getValues(email).equals(refreshToken)) {
+            log.error("[\nemail : " + email + "\nredis token : " + redisService.getValues(email) + "\nrequest token : " + refreshToken + "]");
             throw new JwtInvalidRefreshTokenException(INVALID_REFRESH_TOKEN);
         }
 

@@ -2,6 +2,7 @@ package com.project.zipkok.controller;
 
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.response.BaseResponse;
+import com.project.zipkok.dto.GetKokDetailResponse;
 import com.project.zipkok.dto.GetKokResponse;
 import com.project.zipkok.service.KokService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,11 +11,9 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.KOK_DETAIL_QUERY_SUCCESS;
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.KOK_LIST_QUERY_SUCCESS;
 
 @Slf4j
@@ -35,6 +34,15 @@ public class KokController {
         log.info("[KokController.getKoks]");
 
         return new BaseResponse<>(KOK_LIST_QUERY_SUCCESS, kokService.getKoks(userId, page, size));
+    }
+
+    @GetMapping("/{kokId}/detail")
+    @Operation(summary = "콕 세부정보 반환", description = "kokId를 PathVariable에 추가하여 요청")
+    public BaseResponse<GetKokDetailResponse> getKokDetail(@Parameter(hidden = true) @PreAuthorize long userId,
+                                                           @Parameter(name = "kokId", description = "조회할 콕의 Id") @PathVariable(value = "kokId") long kokId) {
+        log.info("[KokController.getKokDetail]");
+
+        return new BaseResponse<GetKokDetailResponse>(KOK_DETAIL_QUERY_SUCCESS, kokService.getKokDetail(userId, kokId));
     }
 
 
