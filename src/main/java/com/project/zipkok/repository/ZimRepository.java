@@ -12,4 +12,6 @@ import java.util.Optional;
 @Repository
 public interface ZimRepository extends JpaRepository<Zim, Long> {
     Zim findFirstByUserAndRealEstate(User user, RealEstate realEstateId);
+
+    Zim findByUser(User user);
 }
