@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.INVALID_REFRESH_TOKEN;
+import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.TOKEN_REISSUE_SUCCESS;
 
 @Slf4j
 @RestController
@@ -47,7 +48,7 @@ public class AuthController {
             throw new JwtInvalidRefreshTokenException(INVALID_REFRESH_TOKEN);
         }
 
-        return new BaseResponse<>(authService.reIssueToken(postRefreshTokenRequest.getRefreshToken()));
+        return new BaseResponse<>(TOKEN_REISSUE_SUCCESS, authService.reIssueToken(postRefreshTokenRequest.getRefreshToken()));
 
     }
 

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
+import static com.project.zipkok.util.BindingResultUtils.getErrorMessages;
 
 @Slf4j
 @RestController
@@ -81,11 +82,9 @@ public class UserController {
         if(bindingResult.hasFieldErrors("realEstateType")){
             throw new OnBoardingBadRequestException(INVALID_INTEREST_TYPE);
         }
-        if(bindingResult.hasFieldErrors("isSmallerthanMax")){
-            throw new OnBoardingBadRequestException(MIN_IS_BIGGER_THAN_MAX);
-        }
+
         if(bindingResult.hasErrors()){
-            throw new OnBoardingBadRequestException(BAD_REQUEST);
+            throw new OnBoardingBadRequestException(BAD_REQUEST, getErrorMessages(bindingResult));
         }
 
         return new BaseResponse(MEMBER_INFO_UPDATE_SUCCESS, this.userService.setOnBoarding(patchOnBoardingRequest, userId));

@@ -35,6 +35,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     EXPIRED_TOKEN(4005, HttpStatus.UNAUTHORIZED.value(), "만료된 토큰입니다."),
     TOKEN_MISMATCH(4006, HttpStatus.UNAUTHORIZED.value(), "로그인 정보가 토큰 정보와 일치하지 않습니다."),
 
+    TOKEN_REISSUE_SUCCESS(4010, HttpStatus.OK.value(), "토큰이 재발급 되었습니다."),
     INVALID_REFRESH_TOKEN(4011, HttpStatus.UNAUTHORIZED.value(), "유효하지 않은 refreshToken입니다."),
     /**
      * 5000: User 예외
