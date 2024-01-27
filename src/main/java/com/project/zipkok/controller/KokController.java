@@ -2,6 +2,8 @@ package com.project.zipkok.controller;
 
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.response.BaseResponse;
+import com.project.zipkok.dto.GetKokResponse;
+import com.project.zipkok.service.KokService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -33,7 +35,6 @@ public class KokController {
         log.info("[KokController.getKoks]");
 
         return new BaseResponse<>(KOK_LIST_QUERY_SUCCESS, kokService.getKoks(userId, page, size));
-
     }
 
 
