@@ -236,4 +236,28 @@ public class KokService {
 
         return response;
     }
+
+    public GetKokReviewInfoResponse getKokReviewInfo(long userId, long kokId) {
+
+        log.info("[KokService.getKokContractInfo]");
+
+        User user = userRepository.findByUserId(userId);
+
+        Kok kok = kokRepository.findById(kokId).get();
+
+        if (!kok.getUser().equals(user)) {
+            throw new KokException(INVALID_KOK_ACCESS);
+        }
+
+        GetKokReviewInfoResponse response = GetKokReviewInfoResponse.builder()
+                .impressions(kok.getCheckedImpressions().stream().map(checkedImpression -> checkedImpression.getImpression().getImpressionTitle()).collect(Collectors.toList()))
+                .facilityStarCount(kok.getStar().getFacilityStar())
+                .infraStarCount(kok.getStar().getInfraStar())
+                .structureStarCount(kok.getStar().getStructureStar())
+                .vibeStarCount(kok.getStar().getVibeStar())
+                .reviewText(kok.getReview())
+                .build();
+
+        return response;
+    }
 }

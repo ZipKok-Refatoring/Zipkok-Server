@@ -70,9 +70,20 @@ public class KokController {
     public BaseResponse<GetKokContractResponse> getKokContractInfo(@Parameter(hidden = true) @PreAuthorize long userId,
                                                                    @Parameter(name = "kokId", description = "집 중개/계약 정보를 조회할 콕의 Id") @PathVariable(value = "kokId") long kokId) {
 
-        log.info("[KokController.getKokInnerInfo]");
+        log.info("[KokController.getKokContractInfo]");
 
         return new BaseResponse<GetKokContractResponse>(KOK_CONTRACT_INFO_QUERY_SUCCESS, kokService.getKokContractInfo(userId, kokId));
+
+    }
+
+    @GetMapping("/{kokId}/review")
+    @Operation(summary = "콕의 후기 반환", description = "콕의 후기 정보를 반환")
+    public BaseResponse<GetKokReviewInfoResponse> getKokReviewInfo(@Parameter(hidden = true) @PreAuthorize long userId,
+                                                                   @Parameter(name = "kokId", description = " 후기 정보를 조회할 콕의 Id") @PathVariable(value = "kokId") long kokId) {
+
+        log.info("[KokController.getKokReviewInfo]");
+
+        return new BaseResponse<GetKokReviewInfoResponse>(KOK_REVIEW_INFO_QUERY_SUCCESS, kokService.getKokReviewInfo(userId, kokId));
 
     }
 
