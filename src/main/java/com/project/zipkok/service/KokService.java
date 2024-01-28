@@ -34,6 +34,8 @@ public class KokService {
     @Transactional
     public GetKokResponse getKoks(long userId, int page, int size) {
 
+        log.info("[KokService.getKoks]");
+
         User user = userRepository.findByUserId(userId);
 
         List<Kok> koks = user.getKoks();
@@ -85,6 +87,8 @@ public class KokService {
 
     public GetKokDetailResponse getKokDetail(long userId, long kokId) {
 
+        log.info("[KokService.getKokDetail]");
+
         User user = userRepository.findByUserId(userId);
 
         Kok kok = kokRepository.findById(kokId).get();
@@ -119,6 +123,8 @@ public class KokService {
     }
 
     public GetKokOuterInfoResponse getKokOuterInfo(long userId, long kokId) {
+
+        log.info("[KokService.getKokOuterInfo]");
 
         User user = userRepository.findByUserId(userId);
 
