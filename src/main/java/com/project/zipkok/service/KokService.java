@@ -2,10 +2,9 @@ package com.project.zipkok.service;
 
 import com.project.zipkok.common.exception.KokException;
 import com.project.zipkok.dto.GetKokDetailResponse;
+import com.project.zipkok.dto.GetKokOuterInfoResponse;
 import com.project.zipkok.dto.GetKokResponse;
-import com.project.zipkok.model.Kok;
-import com.project.zipkok.model.KokImage;
-import com.project.zipkok.model.User;
+import com.project.zipkok.model.*;
 import com.project.zipkok.repository.KokRepository;
 import com.project.zipkok.repository.UserRepository;
 import com.project.zipkok.repository.ZimRepository;
@@ -113,6 +112,40 @@ public class KokService {
                 .latitude(kok.getRealEstate().getLatitude())
                 .longitude(kok.getRealEstate().getLongitude())
                 .isZimmed(zimRepository.findByUser(user).getRealEstate().equals(kok.getRealEstate()))
+                .build();
+
+        return response;
+    }
+
+    public GetKokOuterInfoResponse getKokOuterInfo(long userId, long kokId) {
+
+        User user = userRepository.findByUserId(userId);
+
+        Kok kok = kokRepository.findById(kokId).get();
+
+        if (!kok.getUser().equals(user)) {
+            throw new KokException(INVALID_KOK_ACCESS);
+        }
+
+        GetKokOuterInfoResponse response = GetKokOuterInfoResponse.builder()
+                .hilights(kok.getCheckedHighlights()
+                        .stream()
+                        .map(CheckedHighlight::getHighlight)
+                        .map(Highlight::getTitle)
+                        .collect(Collectors.toList()))
+                .options(kok.getCheckedOptions()
+                        .stream()
+                        .map(checkedOption -> GetKokOuterInfoResponse.OuterOption.builder()
+                                .option(checkedOption.getOption().getName())
+                                .orderNumber((int) checkedOption.getOption().getOrderNum())
+                                .detailOptions(kok.getCheckedDetailOptions()
+                                        .stream()
+                                        .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().getOption().equals(checkedOption.getOption()))
+                                        .map(CheckedDetailOption::getDetailOption)
+                                        .map(DetailOption::getName)
+                                        .collect(Collectors.toList()))
+                                .build())
+                        .collect(Collectors.toList()))
                 .build();
 
         return response;

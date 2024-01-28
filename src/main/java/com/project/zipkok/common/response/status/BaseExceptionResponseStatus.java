@@ -85,7 +85,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
      */
     KOK_LIST_QUERY_SUCCESS(7001, HttpStatus.OK.value(), "콕리스트 조회 성공"),
     KOK_DETAIL_QUERY_SUCCESS(7002, HttpStatus.OK.value(), "콕 세부조회 성공"),
-    KOK_NEIGHBORHOOD_INFO_QUERY_SUCCESS(7003, HttpStatus.OK.value(), "콕의 집 주변 정보 조회 성공"),
+    KOK_OUTER_INFO_QUERY_SUCCESS(7003, HttpStatus.OK.value(), "콕의 집 주변 정보 조회 성공"),
     KOK_INTERNAL_INFO_QUERY_SUCCESS(7004, HttpStatus.OK.value(), "콕의 집 내부 정보 조회 성공"),
     KOK_CONTRACT_INFO_QUERY_SUCCESS(7005, HttpStatus.OK.value(), "콕의 중개 계약 정보 조회 성공"),
     KOK_REVIEW_INFO_QUERY_SUCCESS(7006, HttpStatus.OK.value(), "콕의 리뷰 정보 조회 성공"),

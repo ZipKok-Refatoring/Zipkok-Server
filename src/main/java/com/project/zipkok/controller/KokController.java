@@ -3,6 +3,7 @@ package com.project.zipkok.controller;
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.dto.GetKokDetailResponse;
+import com.project.zipkok.dto.GetKokOuterInfoResponse;
 import com.project.zipkok.dto.GetKokResponse;
 import com.project.zipkok.service.KokService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,8 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.KOK_DETAIL_QUERY_SUCCESS;
-import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.KOK_LIST_QUERY_SUCCESS;
+import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
 @RestController
@@ -45,6 +45,16 @@ public class KokController {
         return new BaseResponse<GetKokDetailResponse>(KOK_DETAIL_QUERY_SUCCESS, kokService.getKokDetail(userId, kokId));
     }
 
+    @GetMapping("/{kokId}/outer")
+    @Operation(summary = "콕 집주변 정보 반환", description = "콕의 집 주변 정보를 반환")
+    public BaseResponse<GetKokOuterInfoResponse> getKokOuterInfo(@Parameter(hidden = true) @PreAuthorize long userId,
+                                                                @Parameter(name = "kokId", description = "집 주변 정보를 조회할 콕의 Id") @PathVariable(value = "kokId") long kokId) {
+
+        log.info("[KokController.getKokOuterInfo]");
+
+        return new BaseResponse<GetKokOuterInfoResponse>(KOK_OUTER_INFO_QUERY_SUCCESS, kokService.getKokOuterInfo(userId, kokId));
+
+    }
 
 
 }
