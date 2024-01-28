@@ -3,6 +3,7 @@ package com.project.zipkok.service;
 import com.project.zipkok.common.enums.OptionCategory;
 import com.project.zipkok.common.exception.KokException;
 import com.project.zipkok.dto.GetKokDetailResponse;
+import com.project.zipkok.dto.GetKokInnerInfoResponse;
 import com.project.zipkok.dto.GetKokOuterInfoResponse;
 import com.project.zipkok.dto.GetKokResponse;
 import com.project.zipkok.model.*;
@@ -144,6 +145,44 @@ public class KokService {
                         .stream()
                         .filter(checkedOption -> checkedOption.getOption().getCategory().equals(OptionCategory.OUTER))
                         .map(checkedOption -> GetKokOuterInfoResponse.OuterOption.builder()
+                                .option(checkedOption.getOption().getName())
+                                .orderNumber((int) checkedOption.getOption().getOrderNum())
+                                .detailOptions(kok.getCheckedDetailOptions()
+                                        .stream()
+                                        .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().getOption().equals(checkedOption.getOption()))
+                                        .map(CheckedDetailOption::getDetailOption)
+                                        .map(DetailOption::getName)
+                                        .collect(Collectors.toList()))
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
+
+        return response;
+    }
+
+    public GetKokInnerInfoResponse getKokInnerInfo(long userId, long kokId) {
+
+        log.info("[KokService.getKokInnerInfo]");
+
+        User user = userRepository.findByUserId(userId);
+
+        Kok kok = kokRepository.findById(kokId).get();
+
+        if (!kok.getUser().equals(user)) {
+            throw new KokException(INVALID_KOK_ACCESS);
+        }
+
+        GetKokInnerInfoResponse response = GetKokInnerInfoResponse.builder()
+                .furnitureOptions(kok.getCheckedFurniturs()
+                        .stream()
+                        .map(CheckedFurniture::getFurnitureOption)
+                        .map(FurnitureOption::getFurnitureName)
+                        .collect(Collectors.toList()))
+                .direction(kok.getDirection())
+                .options(kok.getCheckedOptions()
+                        .stream()
+                        .filter(checkedOption -> checkedOption.getOption().getCategory().equals(OptionCategory.INNER))
+                        .map(checkedOption -> GetKokInnerInfoResponse.InnerOption.builder()
                                 .option(checkedOption.getOption().getName())
                                 .orderNumber((int) checkedOption.getOption().getOrderNum())
                                 .detailOptions(kok.getCheckedDetailOptions()

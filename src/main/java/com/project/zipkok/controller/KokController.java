@@ -3,6 +3,7 @@ package com.project.zipkok.controller;
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.dto.GetKokDetailResponse;
+import com.project.zipkok.dto.GetKokInnerInfoResponse;
 import com.project.zipkok.dto.GetKokOuterInfoResponse;
 import com.project.zipkok.dto.GetKokResponse;
 import com.project.zipkok.service.KokService;
@@ -53,6 +54,17 @@ public class KokController {
         log.info("[KokController.getKokOuterInfo]");
 
         return new BaseResponse<GetKokOuterInfoResponse>(KOK_OUTER_INFO_QUERY_SUCCESS, kokService.getKokOuterInfo(userId, kokId));
+
+    }
+
+    @GetMapping("/{kokId}/inner")
+    @Operation(summary = "콕 집 내부 정보 반환", description = "콕의 집 내부 정보를 반환")
+    public BaseResponse<GetKokInnerInfoResponse> getKokInnerInfo(@Parameter(hidden = true) @PreAuthorize long userId,
+                                                                 @Parameter(name = "kokId", description = "집 내부 정보를 조회할 콕의 Id") @PathVariable(value = "kokId") long kokId) {
+
+        log.info("[KokController.getKokInnerInfo]");
+
+        return new BaseResponse<GetKokInnerInfoResponse>(KOK_INTERNAL_INFO_QUERY_SUCCESS, kokService.getKokInnerInfo(userId, kokId));
 
     }
 
