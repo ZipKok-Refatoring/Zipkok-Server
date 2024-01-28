@@ -1,5 +1,6 @@
 package com.project.zipkok.service;
 
+import com.project.zipkok.common.enums.OptionCategory;
 import com.project.zipkok.common.exception.KokException;
 import com.project.zipkok.dto.GetKokDetailResponse;
 import com.project.zipkok.dto.GetKokOuterInfoResponse;
@@ -135,6 +136,7 @@ public class KokService {
                         .collect(Collectors.toList()))
                 .options(kok.getCheckedOptions()
                         .stream()
+                        .filter(checkedOption -> checkedOption.getOption().getCategory().equals(OptionCategory.OUTER))
                         .map(checkedOption -> GetKokOuterInfoResponse.OuterOption.builder()
                                 .option(checkedOption.getOption().getName())
                                 .orderNumber((int) checkedOption.getOption().getOrderNum())

@@ -1,5 +1,6 @@
 package com.project.zipkok.model;
 
+import com.project.zipkok.common.enums.OptionCategory;
 import jakarta.persistence.*;
 import jdk.jfr.Unsigned;
 import lombok.Getter;
@@ -29,7 +30,8 @@ public class Option {
     private long orderNum;
 
     @Column(name ="category")
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private OptionCategory category;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -44,7 +46,7 @@ public class Option {
     @OneToMany(mappedBy = "option",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<DetailOption> detailOptions = new ArrayList<>();
 
-    public Option(String name, boolean isVisible, long orderNum, String category, User user){
+    public Option(String name, boolean isVisible, long orderNum, OptionCategory category, User user){
         this.name = name;
         this.isVisible = isVisible;
         this.orderNum = orderNum;
