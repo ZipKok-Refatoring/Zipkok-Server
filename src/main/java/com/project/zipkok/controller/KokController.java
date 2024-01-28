@@ -2,10 +2,7 @@ package com.project.zipkok.controller;
 
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.response.BaseResponse;
-import com.project.zipkok.dto.GetKokDetailResponse;
-import com.project.zipkok.dto.GetKokInnerInfoResponse;
-import com.project.zipkok.dto.GetKokOuterInfoResponse;
-import com.project.zipkok.dto.GetKokResponse;
+import com.project.zipkok.dto.*;
 import com.project.zipkok.service.KokService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -65,6 +62,17 @@ public class KokController {
         log.info("[KokController.getKokInnerInfo]");
 
         return new BaseResponse<GetKokInnerInfoResponse>(KOK_INTERNAL_INFO_QUERY_SUCCESS, kokService.getKokInnerInfo(userId, kokId));
+
+    }
+
+    @GetMapping("/{kokId}/contract")
+    @Operation(summary = "콕 중개/계약 정보 반환", description = "콕의 중개/계약 정보를 반환")
+    public BaseResponse<GetKokContractResponse> getKokContractInfo(@Parameter(hidden = true) @PreAuthorize long userId,
+                                                                   @Parameter(name = "kokId", description = "집 중개/계약 정보를 조회할 콕의 Id") @PathVariable(value = "kokId") long kokId) {
+
+        log.info("[KokController.getKokInnerInfo]");
+
+        return new BaseResponse<GetKokContractResponse>(KOK_CONTRACT_INFO_QUERY_SUCCESS, kokService.getKokContractInfo(userId, kokId));
 
     }
 

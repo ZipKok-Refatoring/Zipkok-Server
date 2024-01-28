@@ -2,10 +2,7 @@ package com.project.zipkok.service;
 
 import com.project.zipkok.common.enums.OptionCategory;
 import com.project.zipkok.common.exception.KokException;
-import com.project.zipkok.dto.GetKokDetailResponse;
-import com.project.zipkok.dto.GetKokInnerInfoResponse;
-import com.project.zipkok.dto.GetKokOuterInfoResponse;
-import com.project.zipkok.dto.GetKokResponse;
+import com.project.zipkok.dto.*;
 import com.project.zipkok.model.*;
 import com.project.zipkok.repository.KokRepository;
 import com.project.zipkok.repository.UserRepository;
@@ -193,6 +190,48 @@ public class KokService {
                                         .collect(Collectors.toList()))
                                 .build())
                         .collect(Collectors.toList()))
+                .build();
+
+        return response;
+    }
+
+    public GetKokContractResponse getKokContractInfo(long userId, long kokId) {
+
+        log.info("[KokService.getKokContractInfo]");
+
+        User user = userRepository.findByUserId(userId);
+
+        Kok kok = kokRepository.findById(kokId).get();
+
+        if (!kok.getUser().equals(user)) {
+            throw new KokException(INVALID_KOK_ACCESS);
+        }
+
+        List<String> contractImages = kok.getKokImages()
+                .stream()
+                .filter(kokImage -> kokImage.getOption().getCategory().equals(OptionCategory.CONTRACT))
+                .map(KokImage::getImageUrl)
+                .toList();
+
+        GetKokContractResponse response = GetKokContractResponse.builder()
+                .options(kok.getCheckedOptions()
+                        .stream()
+                        .filter(checkedOption -> checkedOption.getOption().getCategory().equals(OptionCategory.CONTRACT))
+                        .map(checkedOption -> GetKokContractResponse.ContractOptions.builder()
+                                .option(checkedOption.getOption().getName())
+                                .orderNumber((int) checkedOption.getOption().getOrderNum())
+                                .detailOptions(kok.getCheckedDetailOptions()
+                                        .stream()
+                                        .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().getOption().equals(checkedOption.getOption()))
+                                        .map(CheckedDetailOption::getDetailOption)
+                                        .map(DetailOption::getName)
+                                        .collect(Collectors.toList()))
+                                .build())
+                        .collect(Collectors.toList()))
+                .imageInfo(GetKokContractResponse.ImageInfo.builder()
+                        .imageNumber(contractImages.size())
+                        .imageUrls(contractImages)
+                        .build())
                 .build();
 
         return response;
