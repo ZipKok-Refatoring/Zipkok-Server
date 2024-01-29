@@ -31,8 +31,9 @@ public class DetailOption {
     @OneToMany(mappedBy = "detailOption", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CheckedDetailOption> checkedDetailOptions = new ArrayList<>();
 
-    public DetailOption(String name, boolean isVisible){
+    public DetailOption(String name, boolean isVisible, Option option){
         this.name =name;
         this.isVisible =isVisible;
+        this.option = option;
     }
 }

@@ -4,6 +4,7 @@ import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
 import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.common.response.BaseResponse;
+import com.project.zipkok.dto.GetKokOptionLoadResponse;
 import com.project.zipkok.dto.GetUserResponse;
 import com.project.zipkok.dto.PatchOnBoardingRequest;
 import com.project.zipkok.dto.PostSignUpRequest;
@@ -90,5 +91,12 @@ public class UserController {
 
         return new BaseResponse(MEMBER_INFO_UPDATE_SUCCESS, this.userService.setOnBoarding(patchOnBoardingRequest, userId));
 
+    }
+
+    @GetMapping("/kokOption")
+    public BaseResponse<GetKokOptionLoadResponse> kokOptionLoad(@Parameter(hidden=true) @PreAuthorize long userId){
+        log.info("{UserController.kokOptionLoad}");
+
+        return new BaseResponse<>(MEMBER_LIST_ITEM_QUERY_SUCCESS, this.userService.kokOptionLoad(userId));
     }
 }
