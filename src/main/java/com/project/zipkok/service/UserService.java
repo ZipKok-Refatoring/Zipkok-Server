@@ -8,10 +8,7 @@ import com.project.zipkok.common.exception.user.KokOptionLoadException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
 import com.project.zipkok.common.service.RedisService;
 import com.project.zipkok.config.RedisConfig;
-import com.project.zipkok.dto.GetKokOptionLoadResponse;
-import com.project.zipkok.dto.GetUserResponse;
-import com.project.zipkok.dto.PatchOnBoardingRequest;
-import com.project.zipkok.dto.PostSignUpRequest;
+import com.project.zipkok.dto.*;
 import com.project.zipkok.model.*;
 import com.project.zipkok.repository.*;
 import com.project.zipkok.util.jwt.AuthTokens;
@@ -28,8 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.MEMBER_LIST_ITEM_QUERY_FAILURE;
-import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.SERVER_ERROR;
+import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
 @Service
@@ -144,29 +140,35 @@ public class UserService {
         return null;
     }
 
-    public GetKokOptionLoadResponse kokOptionLoad(long userId) {
+    @Transactional
+    public GetKokOptionLoadResponse loadKokOption(long userId) {
         log.info("{UserService.kokOptionLoad}");
 
+        //model 객체 호출
         User user = this.userRepository.findByUserId(userId);
         List<Highlight> highlightList = this.highlightRepository.findAllByUser(user);
         List<Option> optionList = this.optionRepository.findAllByUser(user);
 
+        //exception 처리
         if(highlightList == null || optionList == null){
             throw new KokOptionLoadException(MEMBER_LIST_ITEM_QUERY_FAILURE);
         }
 
         GetKokOptionLoadResponse getKokOptionLoadResponse = new GetKokOptionLoadResponse();
 
+        //dto에 highlight 정보 삽입
         for(Highlight highlight : highlightList){
             getKokOptionLoadResponse.addHighlight(highlight.getTitle());
         }
 
+        //dto에 option 정보 삽입
         List<GetKokOptionLoadResponse.Option> outerOptions = new ArrayList<>();
         List<GetKokOptionLoadResponse.Option> innerOptions = new ArrayList<>();
         List<GetKokOptionLoadResponse.Option> contractOptions = new ArrayList<>();
 
         for(Option option : optionList){
-
+            
+            //dto에 detailOption 정보 삽입
             List<DetailOption> detailOptionList = this.detailOptionRepository.findAllByOption(option);
 
             List<GetKokOptionLoadResponse.DetailOption> detailOptionList1 = new ArrayList<>();
@@ -175,6 +177,7 @@ public class UserService {
                 detailOptionList1.add(new GetKokOptionLoadResponse.DetailOption(detailOption.getDetailOptionId(), detailOption.getName(), detailOption.isVisible()));
             }
 
+            //for문 해당 option이 outerOption 인지, innerOption 인지, contractOption 인지 판단 --> dto에 삽입
             if(option.getCategory().equals("outerOption")){
                 outerOptions.add(new GetKokOptionLoadResponse.Option(option.getOptionId(), option.getName(), option.getOrderNum(), option.isVisible(), detailOptionList1));
             }
@@ -259,5 +262,87 @@ public class UserService {
         }
         
         return defaultOptions;
+    }
+
+    @Transactional
+    public Object updateKokOption(long userId, PostUpdateKokOptionRequest postUpdateKokOptionRequest) {
+        log.info("{UserService.updateKokOption}");
+
+        //model 객체 호출
+        User user = this.userRepository.findByUserId(userId);
+        List<Highlight> newHighlightList = this.highlightRepository.findAllByUser(user);
+
+        //exception 처리
+        if(newHighlightList == null){
+            throw new KokOptionLoadException(MEMBER_LIST_ITEM_UPDATE_FAILURE);
+        }
+
+
+        //기존 Highlight 객체 삭제=========================================================================
+        this.highlightRepository.deleteAll(newHighlightList);
+
+        //새로운 highlight list 생성하기
+        newHighlightList.clear();
+        for(String highlightTitle : postUpdateKokOptionRequest.getHighlights()){
+            newHighlightList.add(new Highlight(highlightTitle, user));
+        }
+
+        //user 객체에 highlight list 바꾸기
+        this.highlightRepository.saveAllAndFlush(newHighlightList);
+
+
+        //option, detailOption 객체 수정 (outer) ====================================================================
+        for(PostUpdateKokOptionRequest.Option requestOption : postUpdateKokOptionRequest.getOuterOptions()){
+
+            Option option = this.optionRepository.findByOptionId(requestOption.getOptionId());
+
+            option.setOrderNum(requestOption.getOrderNumber());
+            option.setVisible(requestOption.isVisible());
+
+            for(PostUpdateKokOptionRequest.DetailOption requestDetailOption : requestOption.getDetailOptions()){
+                DetailOption detailOption = this.detailOptionRepository.findByDetailOptionId(requestDetailOption.getDetailOptionId());
+
+                detailOption.setVisible(requestDetailOption.isDetailOptionIsVisible());
+                this.detailOptionRepository.save(detailOption);
+            }
+            this.optionRepository.save(option);
+        }
+
+        //option, detailOption 객체 수정 (inner) ====================================================================
+        for(PostUpdateKokOptionRequest.Option requestOption : postUpdateKokOptionRequest.getInnerOptions()){
+
+            Option option = this.optionRepository.findByOptionId(requestOption.getOptionId());
+
+            option.setOrderNum(requestOption.getOrderNumber());
+            option.setVisible(requestOption.isVisible());
+
+            for(PostUpdateKokOptionRequest.DetailOption requestDetailOption : requestOption.getDetailOptions()){
+                DetailOption detailOption = this.detailOptionRepository.findByDetailOptionId(requestDetailOption.getDetailOptionId());
+
+                detailOption.setVisible(requestDetailOption.isDetailOptionIsVisible());
+                this.detailOptionRepository.save(detailOption);
+            }
+            this.optionRepository.save(option);
+        }
+
+        //option, detailOption 객체 수정 (contract) ====================================================================
+        for(PostUpdateKokOptionRequest.Option requestOption : postUpdateKokOptionRequest.getContractOptions()){
+
+            Option option = this.optionRepository.findByOptionId(requestOption.getOptionId());
+
+            option.setOrderNum(requestOption.getOrderNumber());
+            option.setVisible(requestOption.isVisible());
+
+            for(PostUpdateKokOptionRequest.DetailOption requestDetailOption : requestOption.getDetailOptions()){
+                DetailOption detailOption = this.detailOptionRepository.findByDetailOptionId(requestDetailOption.getDetailOptionId());
+
+                detailOption.setVisible(requestDetailOption.isDetailOptionIsVisible());
+                this.detailOptionRepository.save(detailOption);
+            }
+            this.optionRepository.save(option);
+        }
+
+        return null;
+
     }
 }

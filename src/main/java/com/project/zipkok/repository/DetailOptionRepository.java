@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface DetailOptionRepository extends JpaRepository<DetailOption, Long> {
     List<DetailOption> findAllByOption(Option option);
+    DetailOption findByDetailOptionId(long detailOptionId);
 }

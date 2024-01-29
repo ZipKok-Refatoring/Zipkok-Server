@@ -4,10 +4,7 @@ import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
 import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.common.response.BaseResponse;
-import com.project.zipkok.dto.GetKokOptionLoadResponse;
-import com.project.zipkok.dto.GetUserResponse;
-import com.project.zipkok.dto.PatchOnBoardingRequest;
-import com.project.zipkok.dto.PostSignUpRequest;
+import com.project.zipkok.dto.*;
 import com.project.zipkok.service.UserService;
 import com.project.zipkok.util.jwt.AuthTokens;
 import io.swagger.v3.oas.annotations.Operation;
@@ -94,9 +91,20 @@ public class UserController {
     }
 
     @GetMapping("/kokOption")
-    public BaseResponse<GetKokOptionLoadResponse> kokOptionLoad(@Parameter(hidden=true) @PreAuthorize long userId){
+    public BaseResponse<GetKokOptionLoadResponse> loadKokOption(@Parameter(hidden=true) @PreAuthorize long userId){
         log.info("{UserController.kokOptionLoad}");
 
-        return new BaseResponse<>(MEMBER_LIST_ITEM_QUERY_SUCCESS, this.userService.kokOptionLoad(userId));
+        return new BaseResponse<>(MEMBER_LIST_ITEM_QUERY_SUCCESS, this.userService.loadKokOption(userId));
+    }
+
+    @PutMapping("/kokOption")
+    public BaseResponse<Object> updateKokOption(@Parameter(hidden=true) @PreAuthorize long userId, @Validated @RequestBody PostUpdateKokOptionRequest postUpdateKokOptionRequest, BindingResult bindingResult){
+        log.info("{UserController.updateKokOption}");
+
+        if(bindingResult.hasErrors()){
+            throw new UserBadRequestException(MEMBER_LIST_ITEM_UPDATE_FAILURE);
+        }
+
+        return new BaseResponse<>(MEMBER_LIST_ITEM_UPDATE_SUCCESS, this.userService.updateKokOption(userId, postUpdateKokOptionRequest));
     }
 }
