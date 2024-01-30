@@ -87,5 +87,15 @@ public class KokController {
 
     }
 
+    @GetMapping("/config")
+    @Operation(summary = "회원의 콕리스트 설정 정보 반환", description = "작성한 콕에서 확인 가능한 항목, 체크된 항목 정보 불러오기")
+    public BaseResponse<GetKokConfigInfoResponse> getKokConfigInfo(@Parameter(hidden = true) @PreAuthorize long userId,
+                                                                   @Parameter(name = "kokId", description = "체크된 항목을 불러올 콕의 Id") @RequestParam(value = "kokId", required = false) Long kokId) {
+
+        log.info("[KokController.getKokCongInfo]");
+
+        return new BaseResponse<GetKokConfigInfoResponse>(MEMBER_SETTING_INFO_QUERY_SUCCESS, kokService.getKokConfigInfo(userId, kokId));
+    }
+
 
 }

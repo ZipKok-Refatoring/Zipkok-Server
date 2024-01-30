@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface KokRepository extends JpaRepository<Kok, Long> {
     Kok findFirstByUserAndRealEstate(User user, RealEstate realEstateId);
+
+    Kok findByKokId(long kokId);
 }
