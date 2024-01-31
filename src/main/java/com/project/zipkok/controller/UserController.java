@@ -7,21 +7,26 @@ import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.dto.*;
 import com.project.zipkok.service.UserService;
+import com.project.zipkok.util.FileUploadUtils;
 import com.project.zipkok.util.jwt.AuthTokens;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
 import static com.project.zipkok.util.BindingResultUtils.getErrorMessages;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Slf4j
 @RestController
@@ -30,6 +35,8 @@ import static com.project.zipkok.util.BindingResultUtils.getErrorMessages;
 @Tag(name = "User API", description = "회원 관련 API")
 public class UserController {
     private final UserService userService;
+
+    private final FileUploadUtils fileUploadUtils;
 
     @Operation(summary = "회원가입 API", description = "온보딩 전 회원정보를 입력하는 API입니다.")
     @PostMapping("")
@@ -124,5 +131,18 @@ public class UserController {
         }
 
         return new BaseResponse<>(MEMBER_LIST_ITEM_UPDATE_SUCCESS, this.userService.updateKokOption(userId, postUpdateKokOptionRequest));
+    }
+
+    @Operation(summary = "테스트", description = "테스트API")
+    @PostMapping(value = "/upload", consumes = {APPLICATION_JSON_VALUE, MULTIPART_FORM_DATA_VALUE})
+    public void upload(@Parameter(hidden=true) @PreAuthorize long userId, @RequestPart(value = "file", required = false) MultipartFile file, @RequestPart(value = "data", required = false) PostZimRegisterRequest registerRequest, BindingResult bindingResult){
+        log.info("{UserController.upload}");
+
+        if(bindingResult.hasErrors()){
+            throw new RuntimeException("upload failed");
+        }
+
+        String url = fileUploadUtils.uploadFile(file);
+        log.info(url + "\n" + registerRequest);
     }
 }
