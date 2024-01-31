@@ -3,6 +3,7 @@ package com.project.zipkok.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 @Entity
 @Table(name = "DetailOption")
 @Getter
+@Setter
 @NoArgsConstructor
 public class DetailOption {
 
@@ -31,8 +33,9 @@ public class DetailOption {
     @OneToMany(mappedBy = "detailOption", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CheckedDetailOption> checkedDetailOptions = new ArrayList<>();
 
-    public DetailOption(String name, boolean isVisible){
+    public DetailOption(String name, boolean isVisible, Option option){
         this.name =name;
         this.isVisible =isVisible;
+        this.option = option;
     }
 }
