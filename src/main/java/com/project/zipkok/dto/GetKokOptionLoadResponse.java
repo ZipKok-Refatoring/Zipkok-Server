@@ -1,9 +1,7 @@
 package com.project.zipkok.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +36,8 @@ public class GetKokOptionLoadResponse {
 
         private Long orderNumber;
 
+        @JsonProperty("isVisible")
+        @Getter(AccessLevel.NONE)
         private boolean isVisible;
 
         private List<DetailOption> detailOptions = new ArrayList<DetailOption>();
