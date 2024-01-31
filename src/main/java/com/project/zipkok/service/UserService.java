@@ -296,13 +296,13 @@ public class UserService {
             }
 
             //for문 해당 option이 outerOption 인지, innerOption 인지, contractOption 인지 판단 --> dto에 삽입
-            if(option.getCategory().equals("outerOption")){
+            if(option.getCategory().equals(OptionCategory.OUTER)){
                 outerOptions.add(new GetKokOptionLoadResponse.Option(option.getOptionId(), option.getName(), option.getOrderNum(), option.isVisible(), detailOptionList1));
             }
-            else if(option.getCategory().equals("innerOption")){
+            else if(option.getCategory().equals(OptionCategory.INNER)){
                 innerOptions.add(new GetKokOptionLoadResponse.Option(option.getOptionId(), option.getName(), option.getOrderNum(), option.isVisible(), detailOptionList1));
             }
-            else if(option.getCategory().equals("contractOption")){
+            else if(option.getCategory().equals(OptionCategory.CONTRACT)){
                 contractOptions.add(new GetKokOptionLoadResponse.Option(option.getOptionId(), option.getName(), option.getOrderNum(), option.isVisible(), detailOptionList1));
             }
         }
