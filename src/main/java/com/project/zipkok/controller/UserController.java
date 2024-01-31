@@ -102,6 +102,6 @@ public class UserController {
     public BaseResponse<GetMyPageDetailResponse> myPageDetail(@Parameter(hidden = true) @PreAuthorize long userId){
         log.info("{UserController.myPageDetail}");
 
-        return new BaseResponse<>(this.userService.myPageDetailLoad(userId));
+        return new BaseResponse<>(MY_PAGE_INFO_LOAD_SUCCESS, this.userService.myPageDetailLoad(userId));
     }
 }
