@@ -2,6 +2,7 @@ package com.project.zipkok.common.exception_handler;
 
 import com.project.zipkok.common.exception.NoExistUserException;
 import com.project.zipkok.common.exception.user.NoMatchUserException;
+import com.project.zipkok.common.exception.user.KokOptionLoadException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
 import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.common.response.BaseExceptionResponse;
@@ -54,6 +55,14 @@ public class UserExceptionControllerAdvice {
     public BaseExceptionResponse handle_NoMatchUserException(NoMatchUserException e) {
         log.error("[handle_NoMatchUserException]", e);
         return new BaseExceptionResponse(e.getExceptionStatus());
+
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(KokOptionLoadException.class)
+    public BaseExceptionResponse handle_KokOptionLoadException(KokOptionLoadException e){
+        log.error("[handle_KokOptionLoadException]", e);
+        return new BaseExceptionResponse(e.getExceptionStatus(), e.getMessage());
     }
 
 }
