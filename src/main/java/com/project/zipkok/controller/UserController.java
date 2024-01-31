@@ -90,13 +90,15 @@ public class UserController {
 
     }
 
+    @Operation(summary = "마이페이지 회원의 정보 조회 API", description = "마이페이지에서 보여줄 회원 정보를 반환")
     @GetMapping("")
     public BaseResponse<GetMyPageResponse> myPage(@Parameter(hidden = true) @PreAuthorize long userId){
         log.info("{UserController.myPage}");
 
-        return new BaseResponse<>(this.userService.myPageLoad(userId));
+        return new BaseResponse<>(MY_PAGE_INFO_LOAD_SUCCESS, this.userService.myPageLoad(userId));
     }
 
+    @Operation(summary = "프로필 수정하기 화면에서 보여줄 회원 정보 조회 API", description = "프로필 수정하기 화면에서 보여줄 회원 정보를 반환")
     @GetMapping("/detail")
     public BaseResponse<GetMyPageDetailResponse> myPageDetail(@Parameter(hidden = true) @PreAuthorize long userId) {
         log.info("{UserController.myPageDetail}");
@@ -104,6 +106,7 @@ public class UserController {
         return new BaseResponse<>(MY_PAGE_INFO_LOAD_SUCCESS, this.userService.myPageDetailLoad(userId));
     }
 
+    @Operation(summary = "마이페이지 리스트 항목 수정 페이지 로드 API", description = "콕리스트 항목 설정 정보를 반환")
     @GetMapping("/kokOption")
     public BaseResponse<GetKokOptionLoadResponse> loadKokOption(@Parameter(hidden=true) @PreAuthorize long userId){
         log.info("{UserController.kokOptionLoad}");
@@ -111,6 +114,7 @@ public class UserController {
         return new BaseResponse<>(MEMBER_LIST_ITEM_QUERY_SUCCESS, this.userService.loadKokOption(userId));
     }
 
+    @Operation(summary = "마이페이지 리스트 항목 수정 API", description = "콕리스트 항목 설정 정보를 수정")
     @PutMapping("/kokOption")
     public BaseResponse<Object> updateKokOption(@Parameter(hidden=true) @PreAuthorize long userId, @Validated @RequestBody PostUpdateKokOptionRequest postUpdateKokOptionRequest, BindingResult bindingResult){
         log.info("{UserController.updateKokOption}");
