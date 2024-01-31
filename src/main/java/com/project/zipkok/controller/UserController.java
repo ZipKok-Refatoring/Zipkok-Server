@@ -1,12 +1,11 @@
 package com.project.zipkok.controller;
 
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
+import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
 import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.common.response.BaseResponse;
-import com.project.zipkok.dto.GetUserResponse;
-import com.project.zipkok.dto.PatchOnBoardingRequest;
-import com.project.zipkok.dto.PostSignUpRequest;
+import com.project.zipkok.dto.*;
 import com.project.zipkok.service.UserService;
 import com.project.zipkok.util.jwt.AuthTokens;
 import io.swagger.v3.oas.annotations.Operation;
@@ -89,5 +88,37 @@ public class UserController {
 
         return new BaseResponse(MEMBER_INFO_UPDATE_SUCCESS, this.userService.setOnBoarding(patchOnBoardingRequest, userId));
 
+    }
+
+    @GetMapping("")
+    public BaseResponse<GetMyPageResponse> myPage(@Parameter(hidden = true) @PreAuthorize long userId){
+        log.info("{UserController.myPage}");
+
+        return new BaseResponse<>(this.userService.myPageLoad(userId));
+    }
+
+    @GetMapping("/detail")
+    public BaseResponse<GetMyPageDetailResponse> myPageDetail(@Parameter(hidden = true) @PreAuthorize long userId) {
+        log.info("{UserController.myPageDetail}");
+
+        return new BaseResponse<>(MY_PAGE_INFO_LOAD_SUCCESS, this.userService.myPageDetailLoad(userId));
+    }
+
+    @GetMapping("/kokOption")
+    public BaseResponse<GetKokOptionLoadResponse> loadKokOption(@Parameter(hidden=true) @PreAuthorize long userId){
+        log.info("{UserController.kokOptionLoad}");
+
+        return new BaseResponse<>(MEMBER_LIST_ITEM_QUERY_SUCCESS, this.userService.loadKokOption(userId));
+    }
+
+    @PutMapping("/kokOption")
+    public BaseResponse<Object> updateKokOption(@Parameter(hidden=true) @PreAuthorize long userId, @Validated @RequestBody PostUpdateKokOptionRequest postUpdateKokOptionRequest, BindingResult bindingResult){
+        log.info("{UserController.updateKokOption}");
+
+        if(bindingResult.hasErrors()){
+            throw new UserBadRequestException(MEMBER_LIST_ITEM_UPDATE_FAILURE);
+        }
+
+        return new BaseResponse<>(MEMBER_LIST_ITEM_UPDATE_SUCCESS, this.userService.updateKokOption(userId, postUpdateKokOptionRequest));
     }
 }

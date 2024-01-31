@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jdk.jfr.Unsigned;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "Options")
 @Getter
+@Setter
 @NoArgsConstructor
 public class Option {
 
@@ -52,5 +54,9 @@ public class Option {
         this.orderNum = orderNum;
         this.category = category;
         this.user = user;
+    }
+
+    public void addDetailOption(DetailOption detailOption){
+        this.detailOptions.add(detailOption);
     }
 }

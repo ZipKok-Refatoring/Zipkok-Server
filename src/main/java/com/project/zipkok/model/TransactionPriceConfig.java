@@ -39,7 +39,7 @@ public class TransactionPriceConfig {
     private long purchaseMin;
 
     @Column(name = "purchase_max")
-    private long puchaseMax;
+    private long purchaseMax;
 
     @Column(name = "status", nullable = false)
     private String status = "active";

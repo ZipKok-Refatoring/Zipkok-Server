@@ -1,6 +1,8 @@
 package com.project.zipkok.common.exception_handler;
 
 import com.project.zipkok.common.exception.NoExistUserException;
+import com.project.zipkok.common.exception.user.NoMatchUserException;
+import com.project.zipkok.common.exception.user.KokOptionLoadException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
 import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.common.response.BaseExceptionResponse;
@@ -13,8 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
-import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.KAKAO_LOGIN_NEED_REGISTRATION;
+import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
 @Priority(0)
@@ -47,6 +48,21 @@ public class UserExceptionControllerAdvice {
     public BaseExceptionResponse handle_HttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error("[handle_HttpMessageNotReadableException]", e);
         return new BaseExceptionResponse(BAD_REQUEST, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoMatchUserException.class)
+    public BaseExceptionResponse handle_NoMatchUserException(NoMatchUserException e) {
+        log.error("[handle_NoMatchUserException]", e);
+        return new BaseExceptionResponse(e.getExceptionStatus());
+
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(KokOptionLoadException.class)
+    public BaseExceptionResponse handle_KokOptionLoadException(KokOptionLoadException e){
+        log.error("[handle_KokOptionLoadException]", e);
+        return new BaseExceptionResponse(e.getExceptionStatus(), e.getMessage());
     }
 
 }
