@@ -92,6 +92,13 @@ public class KokService {
         User user = userRepository.findByUserId(userId);
         Kok kok = kokRepository.findById(kokId).get();
 
+        boolean isZimmed = false;
+
+        Zim zim = zimRepository.findByUser(user);
+        if (zim != null) {
+            isZimmed = zim.getRealEstate().equals(kok.getRealEstate());
+        }
+
         validateUserAndKok(user, kok);
 
         GetKokDetailResponse response = GetKokDetailResponse.builder()
@@ -113,7 +120,7 @@ public class KokService {
                 .administrativeFee(kok.getRealEstate().getAdministrativeFee())
                 .latitude(kok.getRealEstate().getLatitude())
                 .longitude(kok.getRealEstate().getLongitude())
-                .isZimmed(zimRepository.findByUser(user).getRealEstate().equals(kok.getRealEstate()))
+                .isZimmed(isZimmed)
                 .build();
 
         return response;
@@ -311,6 +318,10 @@ public class KokService {
     }
 
     private static void validateUserAndKok(User user, Kok kok) {
+
+        if (kok == null) {
+            throw new KokException(KOK_ID_NOT_FOUND);
+        }
 
         if (!kok.getUser().equals(user)) {
             throw new KokException(INVALID_KOK_ACCESS);
