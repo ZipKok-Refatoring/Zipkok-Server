@@ -4,6 +4,8 @@ import com.project.zipkok.common.exception.jwt.bad_request.JwtNoTokenException;
 import com.project.zipkok.common.exception.jwt.bad_request.JwtUnsupportedTokenException;
 import com.project.zipkok.common.exception.jwt.unauthorized.JwtExpiredTokenException;
 import com.project.zipkok.common.exception.jwt.unauthorized.JwtInvalidTokenException;
+import com.project.zipkok.common.exception.user.NoMatchUserException;
+import com.project.zipkok.model.User;
 import com.project.zipkok.repository.UserRepository;
 import com.project.zipkok.util.jwt.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +47,13 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
         String email = jwtProvider.getEmail(accessToken);
         validatePayload(email);
 
-        long userId = this.userRepository.findByEmail(email).getUserId();
+        User user = this.userRepository.findByEmail(email);
+
+        if(user == null){
+            throw new NoMatchUserException(MEMBER_NOT_FOUND);
+        }
+
+        long userId = user.getUserId();
         request.setAttribute("userId", userId);
         return true;
     }
