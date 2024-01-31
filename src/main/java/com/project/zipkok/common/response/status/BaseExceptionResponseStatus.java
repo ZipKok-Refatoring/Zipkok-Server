@@ -77,6 +77,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     FAVORITES_ADD_FAILURE(6003, HttpStatus.BAD_REQUEST.value(), "찜 등록 실패"),
     FAVORITES_QUERY_FAILURE(6004, HttpStatus.BAD_REQUEST.value(), "찜 조회 실패"),
     FAVORITES_CANCEL_FAILURE(6005, HttpStatus.BAD_REQUEST.value(), "찜 취소 실패"),
+    ALREADY_EXIST_ZIM(6006, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 찜입니다."),
+    NO_EXIST_ZIM(6007, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 찜입니다."),
 
 
     /**
@@ -110,6 +112,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_PROPERTY_ID(8009, HttpStatus.NOT_FOUND.value(), "존재하지 않는 매물이거나 잘못된 매물 id"),
     INVALID_LATITUDE_FORMAT(8010, HttpStatus.BAD_REQUEST.value(), "위도 정보가 없거나 형식이 잘못됨"),
     INVALID_LONGITUDE_FORMAT(8011, HttpStatus.BAD_REQUEST.value(), "경도 정보가 없거나 형식이 잘못됨"),
+    INVALID_REALESTATE_ID(8012, HttpStatus.BAD_REQUEST.value(), "매물 아이디 형식이 잘못됨"),
 
 
     /**
