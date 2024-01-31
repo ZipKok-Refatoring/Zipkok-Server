@@ -22,7 +22,7 @@ public class KokImage {
     private String category;
 
     @ManyToOne
-    @JoinColumn(name = "oprion_id", nullable = true)
+    @JoinColumn(name = "option_id", nullable = true)
     private Option option;
 
     @ManyToOne

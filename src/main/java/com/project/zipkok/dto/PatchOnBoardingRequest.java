@@ -60,9 +60,9 @@ public class PatchOnBoardingRequest {
     @AssertTrue(message = "최소가격은 최대가격을 넘을 수 없습니다.")
     private boolean isSmallerthanMax(){
         return
-                this.mpriceMax > this.mpriceMin &&
-                this.mdepositMax > this.mdepositMin &&
-                this.ydepositMax > this.ydepositMin &&
-                this.purchaseMax > this.purchaseMin;
+                this.mpriceMax >= this.mpriceMin &&
+                this.mdepositMax >= this.mdepositMin &&
+                this.ydepositMax >= this.ydepositMin &&
+                this.purchaseMax >= this.purchaseMin;
     }
 }

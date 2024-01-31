@@ -1,10 +1,7 @@
 package com.project.zipkok.service;
 
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
-import com.project.zipkok.common.enums.Gender;
-import com.project.zipkok.common.enums.OAuthProvider;
-import com.project.zipkok.common.enums.RealEstateType;
-import com.project.zipkok.common.enums.TransactionType;
+import com.project.zipkok.common.enums.*;
 import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.KokOptionLoadException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
@@ -359,7 +356,7 @@ public class UserService {
 
         int orderNumber =1;
         for(String optionName : outerOptions.keySet()){
-            Option option = new Option(optionName, true, orderNumber++, "outerOption", user);
+            Option option = new Option(optionName, true, orderNumber++, OptionCategory.OUTER, user);
             for(String detailOptionTitle : outerOptions.get(optionName)){
                 DetailOption detailOption = new DetailOption(detailOptionTitle, true, option);
                 option.addDetailOption(detailOption);
@@ -368,7 +365,7 @@ public class UserService {
         }
         orderNumber =1;
         for(String optionName : innerOptions.keySet()){
-            Option option = new Option(optionName, true, orderNumber++, "innerOption", user);
+            Option option = new Option(optionName, true, orderNumber++, OptionCategory.INNER, user);
             for(String detailOptionTitle : innerOptions.get(optionName)){
                 DetailOption detailOption = new DetailOption(detailOptionTitle, true, option);
                 option.addDetailOption(detailOption);
@@ -377,7 +374,7 @@ public class UserService {
         }
         orderNumber =1;
         for(String optionName : contractOptions.keySet()){
-            Option option = new Option(optionName, true, orderNumber++, "contractOption", user);
+            Option option = new Option(optionName, true, orderNumber++, OptionCategory.CONTRACT, user);
             for(String detailOptionTitle : contractOptions.get(optionName)){
                 DetailOption detailOption = new DetailOption(detailOptionTitle, true, option);
                 option.addDetailOption(detailOption);

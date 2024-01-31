@@ -40,7 +40,7 @@ public class UserExceptionControllerAdvice {
     @ExceptionHandler(OnBoardingBadRequestException.class)
     public BaseExceptionResponse handle_OnBoardingBadRequestException(OnBoardingBadRequestException e) {
         log.error("[handle_OnBoardingBadRequestException]", e);
-        return new BaseExceptionResponse(e.getExceptionStatus());
+        return new BaseExceptionResponse(e.getExceptionStatus(), e.getErrorMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
