@@ -1,5 +1,8 @@
 package com.project.zipkok.dto;
 
+import com.project.zipkok.common.enums.RealEstateType;
+import com.project.zipkok.common.enums.TransactionType;
+import com.project.zipkok.model.RealEstate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,10 +36,14 @@ public class GetZimLoadResponse {
         private String address;
 
         private String agent;
+
+        private TransactionType transactionType;
+
+        private RealEstateType realEstateType;
     }
 
-    public void addRealEstateInfo(long realEstateId, String imageURL, Long deposit, Long price, String address, String agent){
-        this.realEstateInfo.add(new RealEstateInfo(realEstateId,imageURL,deposit,price,address,agent));
+    public void addRealEstateInfo(long realEstateId, String imageURL, Long deposit, Long price, String address, String agent,TransactionType transactionType, RealEstateType realEstateType){
+        this.realEstateInfo.add(new RealEstateInfo(realEstateId,imageURL,deposit,price,address,agent, transactionType, realEstateType));
     }
 
 }
