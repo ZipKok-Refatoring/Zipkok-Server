@@ -5,6 +5,7 @@ import com.project.zipkok.common.exception.jwt.bad_request.JwtUnsupportedTokenEx
 import com.project.zipkok.common.exception.jwt.unauthorized.JwtExpiredTokenException;
 import com.project.zipkok.common.exception.jwt.unauthorized.JwtInvalidTokenException;
 import com.project.zipkok.common.exception.user.NoMatchUserException;
+import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.model.User;
 import com.project.zipkok.repository.UserRepository;
 import com.project.zipkok.util.jwt.JwtProvider;
@@ -51,6 +52,9 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
 
         if(user == null){
             throw new NoMatchUserException(MEMBER_NOT_FOUND);
+        }
+        if(!user.getStatus().equals("active")){
+            throw new UserBadRequestException(NEED_TO_LOGIN);
         }
 
         long userId = user.getUserId();

@@ -1,5 +1,6 @@
 package com.project.zipkok.controller;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
@@ -144,5 +145,13 @@ public class UserController {
 
         String url = fileUploadUtils.uploadFile(file);
         log.info(url + "\n" + registerRequest);
+    }
+
+    @Operation(summary = "로그아웃 API", description = "회원 로그아웃을 위한 api입니다.")
+    @GetMapping("/logout")
+    public BaseResponse<Object> logout(@Parameter(hidden=true) @PreAuthorize long userId){
+        log.info("{UserController.logout}");
+
+        return new BaseResponse<>(LOGOUT_SUCCESS, this.userService.logout(userId));
     }
 }

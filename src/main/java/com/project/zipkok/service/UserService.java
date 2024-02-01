@@ -5,6 +5,7 @@ import com.project.zipkok.common.enums.*;
 import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.KokOptionLoadException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
+import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.common.service.RedisService;
 import com.project.zipkok.config.RedisConfig;
@@ -465,5 +466,27 @@ public class UserService {
 
         return null;
 
+    }
+
+    @Transactional
+    public Object logout(long userId) {
+        log.info("{UserService.logout}");
+
+        try{
+            User user = this.userRepository.findByUserId(userId);
+
+            //user table status를 disable로 설정
+            user.setStatus("disable");
+
+            //redis에 user Refresh token 삭제
+            this.redisService.deleteValues(user.getEmail());
+
+            this.userRepository.save(user);
+
+        }catch(Exception e){
+            throw new UserBadRequestException(LOGOUT_FAIL);
+        }
+
+        return null;
     }
 }

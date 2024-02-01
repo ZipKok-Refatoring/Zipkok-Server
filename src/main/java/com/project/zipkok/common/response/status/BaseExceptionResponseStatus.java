@@ -67,6 +67,9 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     MEMBER_LIST_ITEM_UPDATE_FAILURE(5024, HttpStatus.BAD_REQUEST.value(), "회원 리스트 항목 수정 실패"),
     MIN_IS_BIGGER_THAN_MAX(5025, HttpStatus.BAD_REQUEST.value(), "최솟값은 최댓값을 넘을 수 없습니다."),
     INVALID_EMAIL_REQUEST(5026, HttpStatus.BAD_REQUEST.value(), "잘못된 이메일 형식입니다."),
+    LOGOUT_SUCCESS(5027, HttpStatus.OK.value(), "성공적으로 로그아웃되었습니다."),
+    LOGOUT_FAIL(5028, HttpStatus.BAD_REQUEST.value(), "로그아웃이 실패했습니다."),
+    NEED_TO_LOGIN(5029, HttpStatus.BAD_REQUEST.value(), "로그인이 되지 않았습니다."),
 
     /**
      * 6000 : zim 예외

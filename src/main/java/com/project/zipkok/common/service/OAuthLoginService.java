@@ -31,6 +31,12 @@ public class OAuthLoginService {
         User user = userRepository.findByEmail(oAuthInfoResponse.getEmail());
 
         if (user != null) {
+
+            if(!user.getStatus().equals("active")){
+                user.setStatus("active");
+                this.userRepository.save(user);
+            }
+
             AuthTokens authTokens = jwtProvider.createToken(user.getEmail(), user.getUserId());
 
             redisService.setValues(user.getEmail(), authTokens.getRefreshToken(), Duration.ofMillis(jwtProvider.getREFRESH_TOKEN_EXPIRED_IN()));
