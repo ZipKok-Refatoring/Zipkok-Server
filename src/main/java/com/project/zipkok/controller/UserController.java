@@ -36,7 +36,7 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 public class UserController {
     private final UserService userService;
 
-    private final FileUploadUtils fileUploadUtils;
+    //private final FileUploadUtils fileUploadUtils;
 
     @Operation(summary = "회원가입 API", description = "온보딩 전 회원정보를 입력하는 API입니다.")
     @PostMapping("")
@@ -88,6 +88,9 @@ public class UserController {
         if(bindingResult.hasFieldErrors("realEstateType")){
             throw new OnBoardingBadRequestException(INVALID_INTEREST_TYPE);
         }
+        if(bindingResult.hasFieldErrors("isSmallerthanMax")){
+            throw new OnBoardingBadRequestException(MIN_IS_BIGGER_THAN_MAX);
+        }
 
         if(bindingResult.hasErrors()){
             throw new OnBoardingBadRequestException(BAD_REQUEST, getErrorMessages(bindingResult));
@@ -113,6 +116,51 @@ public class UserController {
         return new BaseResponse<>(MY_PAGE_INFO_LOAD_SUCCESS, this.userService.myPageDetailLoad(userId));
     }
 
+    @Operation(summary = "프로필 수정하기 API", description = "프로필 수정하기 기능을 담당하는 API입니다.")
+    @PutMapping("")
+    public BaseResponse<Object> updateMyInfo(@Parameter(hidden = true) @PreAuthorize long userId, @RequestPart(value = "file", required = false) MultipartFile file, @RequestPart(value = "data", required = false) PutUpdateMyInfoRequest putUpdateMyInfoRequest , BindingResult bindingResult){
+        log.info("{UserController.updateMyInfo}");
+
+        if(bindingResult.hasFieldErrors("nickname")){
+            throw new UserBadRequestException(INVALID_NICKNAME_FORMAT);
+        }
+        if(bindingResult.hasFieldErrors("gender")){
+            throw new UserBadRequestException(INVALID_GENDER_FORMAT);
+        }
+        if(bindingResult.hasFieldErrors("birthday")){
+            throw new UserBadRequestException(INVALID_BIRTHDAY_FORMAT);
+        }
+        if(bindingResult.hasFieldErrors("realEstateType")){
+            throw new UserBadRequestException(INVALID_INTEREST_TYPE);
+        }
+        if(bindingResult.hasFieldErrors("address")){
+            throw new UserBadRequestException(ADDRESS_OVER_LENGTH);
+        }
+        if(bindingResult.hasFieldErrors("latitude") || bindingResult.hasFieldErrors("longitude")){
+            throw new UserBadRequestException(INVALID_LAT_LNG);
+        }
+        if(bindingResult.hasFieldErrors("transactionType")){
+            throw new UserBadRequestException(INVALID_TRANSACTION_TYPE);
+        }
+        if(bindingResult.hasFieldErrors("mpriceMin") ||
+                bindingResult.hasFieldErrors("mdepositMin") ||
+                bindingResult.hasFieldErrors("ydepositMin") ||
+                bindingResult.hasFieldErrors("purchaseMin")){
+            throw  new UserBadRequestException(INVALID_MIN_PRICE);
+        }
+        if(bindingResult.hasFieldErrors("mpriceMax") ||
+                bindingResult.hasFieldErrors("mdepositMax") ||
+                bindingResult.hasFieldErrors("ydepositMax") ||
+                bindingResult.hasFieldErrors("purchaseMax")){
+            throw new UserBadRequestException(INVALID_MAX_PRICE);
+        }
+        if(bindingResult.hasFieldErrors("isSmallerthanMax")){
+            throw new UserBadRequestException(MIN_IS_BIGGER_THAN_MAX);
+        }
+
+        return new BaseResponse<>(MEMBER_INFO_UPDATE_SUCCESS, this.userService.updateMyInfo(userId, file, putUpdateMyInfoRequest));
+    }
+
     @Operation(summary = "마이페이지 리스트 항목 수정 페이지 로드 API", description = "콕리스트 항목 설정 정보를 반환")
     @GetMapping("/kokOption")
     public BaseResponse<GetKokOptionLoadResponse> loadKokOption(@Parameter(hidden=true) @PreAuthorize long userId){
@@ -133,7 +181,8 @@ public class UserController {
         return new BaseResponse<>(MEMBER_LIST_ITEM_UPDATE_SUCCESS, this.userService.updateKokOption(userId, postUpdateKokOptionRequest));
     }
 
-    @Operation(summary = "테스트", description = "테스트API")
+
+    /*@Operation(summary = "테스트", description = "테스트API")
     @PostMapping(value = "/upload", consumes = {APPLICATION_JSON_VALUE, MULTIPART_FORM_DATA_VALUE})
     public void upload(@Parameter(hidden=true) @PreAuthorize long userId, @RequestPart(value = "file", required = false) MultipartFile file, @RequestPart(value = "data", required = false) PostZimRegisterRequest registerRequest, BindingResult bindingResult){
         log.info("{UserController.upload}");
@@ -144,5 +193,5 @@ public class UserController {
 
         String url = fileUploadUtils.uploadFile(file);
         log.info(url + "\n" + registerRequest);
-    }
+    }*/
 }

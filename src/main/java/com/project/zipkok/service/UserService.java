@@ -2,6 +2,7 @@ package com.project.zipkok.service;
 
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.enums.*;
+import com.project.zipkok.common.exception.s3.FileUploadException;
 import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.KokOptionLoadException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
@@ -17,6 +18,7 @@ import com.project.zipkok.repository.TransactionPriceConfigRepository;
 import com.project.zipkok.repository.UserRepository;
 import com.project.zipkok.model.*;
 import com.project.zipkok.repository.*;
+import com.project.zipkok.util.FileUploadUtils;
 import com.project.zipkok.util.jwt.AuthTokens;
 import com.project.zipkok.util.jwt.JwtProvider;
 import jakarta.transaction.Transactional;
@@ -24,7 +26,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.FileAlreadyExistsException;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,6 +51,7 @@ public class UserService {
 
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
+    private final FileUploadUtils fileUploadUtils;
 
     @Transactional
     public List<GetUserResponse> getUsers() {
@@ -465,5 +470,44 @@ public class UserService {
 
         return null;
 
+    }
+
+    @Transactional
+    public Object updateMyInfo(long userId, MultipartFile file, PutUpdateMyInfoRequest putUpdateMyInfoRequest) {
+        log.info("{UserService.updateMyInfo}");
+
+        String url = this.fileUploadUtils.uploadFile(file);
+
+        if(url == null){
+            throw new FileUploadException(CANNOT_SAVE_FILE);
+        }
+
+        User user = this.userRepository.findByUserId(userId);
+
+        user.setNickname(putUpdateMyInfoRequest.getNickname());
+        user.setBirthday(putUpdateMyInfoRequest.getBirthday());
+        user.setGender(putUpdateMyInfoRequest.getGender());
+        user.setReslEstateType(putUpdateMyInfoRequest.getRealEstateType());
+        user.setTransactionType(putUpdateMyInfoRequest.getTransactionType());
+        user.setProfileImgUrl(url);
+
+        DesireResidence desireResidence = user.getDesireResidence();
+        desireResidence.setAddress(putUpdateMyInfoRequest.getAddress());
+        desireResidence.setLatitude(putUpdateMyInfoRequest.getLatitude());
+        desireResidence.setLongitude(putUpdateMyInfoRequest.getLongitude());
+
+        TransactionPriceConfig transactionPriceConfig = user.getTransactionPriceConfig();
+        transactionPriceConfig.setMPriceMin(putUpdateMyInfoRequest.getMpriceMin());
+        transactionPriceConfig.setMPriceMax(putUpdateMyInfoRequest.getMpriceMax());
+        transactionPriceConfig.setMDepositMin(putUpdateMyInfoRequest.getMdepositMin());
+        transactionPriceConfig.setMDepositMax(putUpdateMyInfoRequest.getMdepositMax());
+        transactionPriceConfig.setYDepositMin(putUpdateMyInfoRequest.getYdepositMin());
+        transactionPriceConfig.setYDepositMax(putUpdateMyInfoRequest.getYdepositMax());
+        transactionPriceConfig.setPurchaseMin(putUpdateMyInfoRequest.getPurchaseMin());
+        transactionPriceConfig.setPurchaseMax(putUpdateMyInfoRequest.getPurchaseMax());
+
+        this.userRepository.save(user);
+
+        return null;
     }
 }
