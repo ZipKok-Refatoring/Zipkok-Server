@@ -70,6 +70,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     LOGOUT_SUCCESS(5027, HttpStatus.OK.value(), "성공적으로 로그아웃되었습니다."),
     LOGOUT_FAIL(5028, HttpStatus.BAD_REQUEST.value(), "로그아웃이 실패했습니다."),
     NEED_TO_LOGIN(5029, HttpStatus.BAD_REQUEST.value(), "로그인이 되지 않았습니다."),
+    SIGNOUT_SUCCESS(5030, HttpStatus.OK.value(), "성공적으로 회원탈퇴 되었습니다."),
+    SIGNOUT_FAIL(5029, HttpStatus.BAD_REQUEST.value(), "회원탈퇴 실패했습니다."),
 
     /**
      * 6000 : zim 예외

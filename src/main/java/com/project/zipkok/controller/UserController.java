@@ -154,4 +154,12 @@ public class UserController {
 
         return new BaseResponse<>(LOGOUT_SUCCESS, this.userService.logout(userId));
     }
+
+    @Operation(summary = "회원탈퇴 API", description = "회원탈퇴를 위한 api입니다.")
+    @GetMapping("/signout")
+    public BaseResponse<Object> signout(@Parameter(hidden=true) @PreAuthorize long userId){
+        log.info("{UserController.signout}");
+
+        return new BaseResponse<>(SIGNOUT_SUCCESS, this.userService.signout(userId));
+    }
 }

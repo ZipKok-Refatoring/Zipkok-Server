@@ -40,4 +40,14 @@ public class FileUploadUtils {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+    public void deleteFile(String key){
+        try {
+            this.amazonS3Client.deleteObject(this.bucket, "스크린샷 2024-01-20 115756.png");
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 }

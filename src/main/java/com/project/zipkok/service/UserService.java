@@ -18,6 +18,7 @@ import com.project.zipkok.repository.TransactionPriceConfigRepository;
 import com.project.zipkok.repository.UserRepository;
 import com.project.zipkok.model.*;
 import com.project.zipkok.repository.*;
+import com.project.zipkok.util.FileUploadUtils;
 import com.project.zipkok.util.jwt.AuthTokens;
 import com.project.zipkok.util.jwt.JwtProvider;
 import jakarta.transaction.Transactional;
@@ -48,6 +49,7 @@ public class UserService {
 
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
+    private final FileUploadUtils fileUploadUtils;
 
     @Transactional
     public List<GetUserResponse> getUsers() {
@@ -485,6 +487,27 @@ public class UserService {
 
         }catch(Exception e){
             throw new UserBadRequestException(LOGOUT_FAIL);
+        }
+
+        return null;
+    }
+
+    @Transactional
+    public Object signout(long userId) {
+        log.info("{UserService.signout}");
+
+        try{
+            User user = this.userRepository.findByUserId(userId);
+
+            //redis에 user Refresh token 삭제
+            this.redisService.deleteValues(user.getEmail());
+
+            this.fileUploadUtils.deleteFile(user.getProfileImgUrl());
+
+            this.userRepository.delete(user);
+
+        }catch(Exception e){
+            throw new UserBadRequestException(SIGNOUT_FAIL);
         }
 
         return null;
