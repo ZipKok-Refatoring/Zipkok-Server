@@ -45,7 +45,7 @@ public class ZimService {
                 throw new NoUserOrRealEstate(FAVORITES_QUERY_FAILURE);
             }
 
-            getZimLoadResponse.addRealEstateInfo(realEstate.getRealEstateId(), realEstate.getImageUrl(), realEstate.getDeposit(), realEstate.getPrice(), realEstate.getAddress(), realEstate.getAgent());
+            getZimLoadResponse.addRealEstateInfo(realEstate.getRealEstateId(), realEstate.getImageUrl(), realEstate.getDeposit(), realEstate.getPrice(), realEstate.getAddress(), realEstate.getAgent(), zim.getRealEstate().getTransactionType().getDescription(), zim.getRealEstate().getRealEstateType().getDescription());
         }
 
         return getZimLoadResponse;

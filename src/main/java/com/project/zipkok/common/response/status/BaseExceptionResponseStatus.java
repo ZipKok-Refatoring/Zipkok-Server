@@ -67,6 +67,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     MEMBER_LIST_ITEM_UPDATE_FAILURE(5024, HttpStatus.BAD_REQUEST.value(), "회원 리스트 항목 수정 실패"),
     MIN_IS_BIGGER_THAN_MAX(5025, HttpStatus.BAD_REQUEST.value(), "최솟값은 최댓값을 넘을 수 없습니다."),
     INVALID_EMAIL_REQUEST(5026, HttpStatus.BAD_REQUEST.value(), "잘못된 이메일 형식입니다."),
+    INVALID_TRANSACTION_TYPE(5027, HttpStatus.BAD_REQUEST.value(), "잘못된 거래 유형 형식입니다."),
 
     /**
      * 6000 : zim 예외
@@ -122,8 +123,13 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
      */
     ADDRESS_SEARCH_SUCCESS(9000, HttpStatus.OK.value(), "주소 검색 성공"),
 
-    ADDRESS_SEARCH_FAILURE(9001, HttpStatus.NOT_FOUND.value(), "주소 검색 실패");
+    ADDRESS_SEARCH_FAILURE(9001, HttpStatus.NOT_FOUND.value(), "주소 검색 실패"),
 
+    /**
+     * 10000 : S3 예외
+     */
+    CANNOT_SAVE_FILE(10001, HttpStatus.SERVICE_UNAVAILABLE.value(), "파일 저장이 실패했습니다.");
+    
 
     private final int code;
     private final int status;
