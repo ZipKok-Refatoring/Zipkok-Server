@@ -3,20 +3,26 @@ package com.project.zipkok.service;
 import com.project.zipkok.common.enums.OptionCategory;
 import com.project.zipkok.common.exception.KokException;
 import com.project.zipkok.common.exception.NoExistUserException;
+import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.dto.*;
 import com.project.zipkok.model.*;
-import com.project.zipkok.repository.FurnitureOptionRepository;
-import com.project.zipkok.repository.KokRepository;
-import com.project.zipkok.repository.UserRepository;
-import com.project.zipkok.repository.ZimRepository;
+import com.project.zipkok.repository.*;
+import com.project.zipkok.util.FileUploadUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Check;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.security.auth.kerberos.KerberosKey;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -28,7 +34,14 @@ public class KokService {
     private final KokRepository kokRepository;
     private final ZimRepository zimRepository;
     private final UserRepository userRepository;
+    private final RealEstateRepository realEstateRepository;
+    private final HighlightRepository highlightRepository;
     private final FurnitureOptionRepository furnitureOptionRepository;
+    private final ImpressionRepository impressionRepository;
+    private final OptionRepository optionRepository;
+    private final DetailOptionRepository detailOptionRepository;
+    private final FileUploadUtils fileUploadUtils;
+
 
 
     @Transactional
@@ -378,5 +391,129 @@ public class KokService {
                 .map(FurnitureOption::getFurnitureName)
                 .toList();
         return furnitureStringList;
+    }
+
+    @Transactional
+    public PostKokResponse registerKok(long userId, List<MultipartFile> multipartFiles, PostKokRequest postKokRequest) {
+
+        log.info("[KokService.registerKok]");
+
+        try {
+
+            Kok kok = new Kok();
+
+            User user = userRepository.findByUserId(userId);
+
+            RealEstate realEstate = realEstateRepository.findById(postKokRequest.getRealEstateId()).get();
+
+            List<CheckedHighlight> checkedHighlights = postKokRequest.getCheckedHighlight()
+                    .stream()
+                    .map(checkedHighlight ->
+                            CheckedHighlight.builder()
+                                    .kok(kok)
+                                    .highlight(highlightRepository.findByUserAndTitle(user, checkedHighlight))
+                                    .build())
+                    .toList();
+
+            List<CheckedFurniture> checkedFurnitures = postKokRequest.getCheckedFurnitureOptions()
+                    .stream()
+                    .map(checkedFurniture ->
+                            CheckedFurniture.builder()
+                                    .furnitureOption(furnitureOptionRepository.findByFurnitureName(checkedFurniture))
+                                    .kok(kok)
+                                    .build())
+                    .toList();
+
+            Star star = Star.builder()
+                    .facilityStar(postKokRequest.getReviewInfo().getFacilityStarCount())
+                    .infraStar(postKokRequest.getReviewInfo().getInfraStarCount())
+                    .structureStar(postKokRequest.getReviewInfo().getStructureStarCount())
+                    .vibeStar(postKokRequest.getReviewInfo().getVibeStarCount())
+                    .kok(kok)
+                    .build();
+
+            List<CheckedImpression> checkedImpressions = postKokRequest.getReviewInfo().getCheckedImpressions()
+                    .stream()
+                    .map(checkedImpression ->
+                            CheckedImpression.builder()
+                                    .impression(impressionRepository.findByUserAndImpressionTitle(user, checkedImpression))
+                                    .kok(kok)
+                                    .build())
+                    .toList();
+
+            List<PostKokRequest.Option> kokOptions = Stream.of(postKokRequest.getCheckedOuterOptions(), postKokRequest.getCheckedInnerOptions(), postKokRequest.getCheckedContractOptions())
+                    .flatMap(Collection::stream)
+                    .toList();
+
+
+            List<String> stringList = kokOptions.stream().map(option -> {
+                return (option.getCheckedDetailOptionIds().toString());
+            }).toList();
+
+            List<CheckedOption> checkedOptions = kokOptions.stream().map(kokOption -> CheckedOption.builder()
+                            .option(optionRepository.findByOptionId(kokOption.getOptionId()))
+                            .kok(kok)
+                            .build())
+                    .toList();
+
+
+            List<Long> detailOptionIds = kokOptions.stream()
+                    .flatMap(option -> option.getCheckedDetailOptionIds().stream())
+                    .collect(Collectors.toList());
+
+
+            List<CheckedDetailOption> checkedDetailOptions = detailOptionIds.stream()
+                    .map(id -> CheckedDetailOption.builder()
+                            .detailOption(detailOptionRepository.findByDetailOptionId(id))
+                            .kok(kok)
+                            .build())
+                    .toList();
+
+
+            List<String> uploadedUrls = multipartFiles.stream()
+                    .map(fileUploadUtils::uploadFile)
+                    .collect(Collectors.toList());
+
+
+            List<KokImage> kokImages = uploadedUrls.stream()
+                    .map(url -> {
+                        OptionCategory category = OptionCategory.OUTER;
+                        if (url.contains("OUTER")) {
+                            category = OptionCategory.OUTER;
+                        } else if (url.contains("INNER")) {
+                            category = OptionCategory.INNER;
+                        } else if (url.contains("CONTRACT")) {
+                            category = OptionCategory.CONTRACT;
+                        }
+                        return KokImage.builder()
+                                .category(category.getDescription())
+                                .imageUrl(url)
+                                .kok(kok)
+                                .option(null)
+                                .build();
+                    })
+                    .collect(Collectors.toList());
+
+            kok.setDirection(postKokRequest.getDirection());
+            kok.setReview(postKokRequest.getReviewInfo().getReviewText());
+            kok.setRealEstate(realEstate);
+            kok.setUser(user);
+            kok.setCheckedFurniturs(checkedFurnitures);
+            kok.setCheckedImpressions(checkedImpressions);
+            kok.setCheckedHighlights(checkedHighlights);
+            kok.setCheckedDetailOptions(checkedDetailOptions);
+            kok.setCheckedOptions(checkedOptions);
+            kok.setKokImages(kokImages);
+            kok.setStar(star);
+
+            Long kokId = kokRepository.save(kok).getKokId();
+
+
+            return new PostKokResponse(kokId);
+
+        } catch (Exception e) {
+            throw new KokException(KOK_REGISTRATION_FAILURE);
+        }
+
     }
 }

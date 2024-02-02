@@ -1,6 +1,8 @@
 package com.project.zipkok.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +10,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "KokImage")
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class KokImage {
 
     @Id

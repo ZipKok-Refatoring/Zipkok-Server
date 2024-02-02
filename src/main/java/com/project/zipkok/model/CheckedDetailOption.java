@@ -1,6 +1,8 @@
 package com.project.zipkok.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.mapping.Join;
@@ -9,6 +11,8 @@ import org.hibernate.mapping.Join;
 @Table(name = "CheckedDetailOption")
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CheckedDetailOption {
 
     @Id

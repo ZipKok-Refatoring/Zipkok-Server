@@ -1,6 +1,8 @@
 package com.project.zipkok.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +13,8 @@ import java.util.List;
 @Table(name = "Impression")
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Impression {
 
     @Id

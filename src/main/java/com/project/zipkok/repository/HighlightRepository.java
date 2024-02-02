@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface HighlightRepository extends JpaRepository<Highlight, Long> {
     List<Highlight> findAllByUser(User user);
+    Highlight findByUserAndTitle(User user, String title);
 }

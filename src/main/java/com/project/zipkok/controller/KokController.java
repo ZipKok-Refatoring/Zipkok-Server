@@ -1,18 +1,27 @@
 package com.project.zipkok.controller;
 
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
+import com.project.zipkok.common.exception.KokException;
 import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.dto.*;
 import com.project.zipkok.service.KokService;
+import com.project.zipkok.util.FileUploadUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Slf4j
 @RestController
@@ -95,6 +104,19 @@ public class KokController {
         log.info("[KokController.getKokCongInfo]");
 
         return new BaseResponse<GetKokConfigInfoResponse>(MEMBER_SETTING_INFO_QUERY_SUCCESS, kokService.getKokConfigInfo(userId, kokId));
+    }
+
+    @Operation(summary = "콕 등록", description = "콕 작성하기")
+    @PostMapping(value = "", consumes = {APPLICATION_JSON_VALUE, MULTIPART_FORM_DATA_VALUE})
+    public BaseResponse<PostKokResponse> registerKok(@Parameter(hidden=true) @PreAuthorize long userId, @RequestPart(value = "file", required = false) List<MultipartFile> multipartFiles, @Validated @RequestPart(value = "data", required = false) PostKokRequest postKokRequest, BindingResult bindingResult){
+        log.info("[KokController.registerKok]");
+
+        if(bindingResult.hasErrors()){
+            throw new KokException(KOK_REGISTRATION_FAILURE);
+        }
+
+        return new BaseResponse<>(KOK_REGISTRATION_SUCCESS, kokService.registerKok(userId, multipartFiles, postKokRequest));
+
     }
 
 
