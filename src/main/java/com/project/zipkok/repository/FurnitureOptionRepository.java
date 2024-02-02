@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FurnitureOptionRepository extends JpaRepository<FurnitureOption, Long> {
+    FurnitureOption findByFurnitureName(String name);
 }
