@@ -37,12 +37,12 @@ public class GetZimLoadResponse {
 
         private String agent;
 
-        private TransactionType transactionType;
+        private String transactionType;
 
-        private RealEstateType realEstateType;
+        private String realEstateType;
     }
 
-    public void addRealEstateInfo(long realEstateId, String imageURL, Long deposit, Long price, String address, String agent,TransactionType transactionType, RealEstateType realEstateType){
+    public void addRealEstateInfo(long realEstateId, String imageURL, Long deposit, Long price, String address, String agent,String transactionType, String realEstateType){
         this.realEstateInfo.add(new RealEstateInfo(realEstateId,imageURL,deposit,price,address,agent, transactionType, realEstateType));
     }
 

@@ -164,7 +164,7 @@ public class UserService {
         //dto field 값 set
         getMyPageResponse.setNickname(user.getNickname());
         getMyPageResponse.setImageUrl(user.getProfileImgUrl());
-        getMyPageResponse.setRealEstateType(user.getReslEstateType());
+        getMyPageResponse.setRealEstateType(user.getReslEstateType().getDescription());
 
         getMyPageResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
 
@@ -172,11 +172,11 @@ public class UserService {
 
         //관심매물유형에 따라 dto field 값 set 작업 분기처리
         if(user.getTransactionType() == null){
-            getMyPageResponse.setTransactionType(TransactionType.MONTHLY);
+            getMyPageResponse.setTransactionType(TransactionType.MONTHLY.getDescription());
             transactionType = "월세";
         }
         else{
-            getMyPageResponse.setTransactionType(user.getTransactionType());
+            getMyPageResponse.setTransactionType(user.getTransactionType().getDescription());
             transactionType = user.getTransactionType().getDescription();
         }
 
@@ -211,12 +211,12 @@ public class UserService {
         getMyPageDetailResponse.setBirthday(user.getBirthday());
         getMyPageDetailResponse.setGender(user.getGender());
         getMyPageDetailResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
-        getMyPageDetailResponse.setRealEstateType(user.getReslEstateType());
+        getMyPageDetailResponse.setRealEstateType(user.getReslEstateType().getDescription());
 
         if (user.getTransactionType() == null) {
-            getMyPageDetailResponse.setTransactionType(TransactionType.MONTHLY);
+            getMyPageDetailResponse.setTransactionType(TransactionType.MONTHLY.getDescription());
         } else {
-            getMyPageDetailResponse.setTransactionType(user.getTransactionType());
+            getMyPageDetailResponse.setTransactionType(user.getTransactionType().getDescription());
         }
 
         getMyPageDetailResponse.setMpriceMin(transactionPriceConfig.getMPriceMin());

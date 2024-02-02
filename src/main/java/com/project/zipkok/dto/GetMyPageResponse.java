@@ -19,9 +19,9 @@ public class GetMyPageResponse {
 
     private String address;
 
-    private RealEstateType realEstateType;
+    private String realEstateType;
 
-    private TransactionType transactionType;
+    private String transactionType;
 
     private Long priceMax;
 
