@@ -90,6 +90,7 @@ public class UserService {
         user.setTransactionPriceConfig(new TransactionPriceConfig(user));
         user.setHighlights(this.makeDefaultHighlights(user));
         user.setOptions(this.makeDefaultOptions(user));
+        user.setImpressions(this.makeDefaultImpressions(user));
 
         this.userRepository.save(user);
 
@@ -390,6 +391,22 @@ public class UserService {
         
         return defaultOptions;
     }
+
+    private List<Impression> makeDefaultImpressions(User user) {
+        List<String> impressionNames = List.of("깔끔해요", "조용해요", "세련돼요", "심플해요", "더러워요", "냄새나요", "시끄러워요", "좁아요", "그냥 그래요", "쌈@뽕 해요", "별로예요");
+
+        List<Impression> defaultImpressions = new ArrayList<>();
+
+        for(String impressionName : impressionNames) {
+            defaultImpressions.add(Impression.builder()
+                    .user(user)
+                    .impressionTitle(impressionName)
+                    .build());
+        }
+
+        return defaultImpressions;
+    }
+
 
     @Transactional
     public Object updateKokOption(long userId, PostUpdateKokOptionRequest postUpdateKokOptionRequest) {

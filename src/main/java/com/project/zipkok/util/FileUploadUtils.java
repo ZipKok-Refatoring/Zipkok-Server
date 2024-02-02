@@ -3,6 +3,7 @@ package com.project.zipkok.util;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.project.zipkok.common.exception.s3.FileUploadException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+
+import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.CANNOT_SAVE_FILE;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -35,9 +38,9 @@ public class FileUploadUtils {
             amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
             return amazonS3Client.getResourceUrl(bucket, fileName);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            throw new FileUploadException(CANNOT_SAVE_FILE);
         }
     }
 
@@ -47,7 +50,7 @@ public class FileUploadUtils {
 
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            throw new FileUploadException(CANNOT_SAVE_FILE);
         }
     }
 }
