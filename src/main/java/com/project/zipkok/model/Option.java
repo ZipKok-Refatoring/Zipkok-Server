@@ -3,9 +3,7 @@ package com.project.zipkok.model;
 import com.project.zipkok.common.enums.OptionCategory;
 import jakarta.persistence.*;
 import jdk.jfr.Unsigned;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +13,8 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Option {
 
     @Id

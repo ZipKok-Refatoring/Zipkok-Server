@@ -1,10 +1,7 @@
 package com.project.zipkok.model;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +11,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Setter
+@AllArgsConstructor
+@Builder
 public class Highlight {
 
     @Id

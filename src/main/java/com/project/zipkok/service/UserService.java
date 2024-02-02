@@ -2,6 +2,7 @@ package com.project.zipkok.service;
 
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.enums.*;
+import com.project.zipkok.common.exception.s3.FileUploadException;
 import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.KokOptionLoadException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
@@ -26,7 +27,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.FileAlreadyExistsException;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -162,7 +165,7 @@ public class UserService {
         //dto field 값 set
         getMyPageResponse.setNickname(user.getNickname());
         getMyPageResponse.setImageUrl(user.getProfileImgUrl());
-        getMyPageResponse.setRealEstateType(user.getReslEstateType());
+        getMyPageResponse.setRealEstateType(user.getReslEstateType().getDescription());
 
         getMyPageResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
 
@@ -170,11 +173,11 @@ public class UserService {
 
         //관심매물유형에 따라 dto field 값 set 작업 분기처리
         if(user.getTransactionType() == null){
-            getMyPageResponse.setTransactionType(TransactionType.MONTHLY);
+            getMyPageResponse.setTransactionType(TransactionType.MONTHLY.getDescription());
             transactionType = "월세";
         }
         else{
-            getMyPageResponse.setTransactionType(user.getTransactionType());
+            getMyPageResponse.setTransactionType(user.getTransactionType().getDescription());
             transactionType = user.getTransactionType().getDescription();
         }
 
@@ -209,12 +212,12 @@ public class UserService {
         getMyPageDetailResponse.setBirthday(user.getBirthday());
         getMyPageDetailResponse.setGender(user.getGender());
         getMyPageDetailResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
-        getMyPageDetailResponse.setRealEstateType(user.getReslEstateType());
+        getMyPageDetailResponse.setRealEstateType(user.getReslEstateType().getDescription());
 
         if (user.getTransactionType() == null) {
-            getMyPageDetailResponse.setTransactionType(TransactionType.MONTHLY);
+            getMyPageDetailResponse.setTransactionType(TransactionType.MONTHLY.getDescription());
         } else {
-            getMyPageDetailResponse.setTransactionType(user.getTransactionType());
+            getMyPageDetailResponse.setTransactionType(user.getTransactionType().getDescription());
         }
 
         getMyPageDetailResponse.setMpriceMin(transactionPriceConfig.getMPriceMin());
@@ -496,7 +499,7 @@ public class UserService {
     public Object signout(long userId) {
         log.info("{UserService.signout}");
 
-        try{
+        try {
             User user = this.userRepository.findByUserId(userId);
 
             //redis에 user Refresh token 삭제
@@ -506,10 +509,47 @@ public class UserService {
 
             this.userRepository.delete(user);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new UserBadRequestException(SIGNOUT_FAIL);
         }
 
+        return null;
+    }
+
+    public Object updateMyInfo(long userId, MultipartFile file, PutUpdateMyInfoRequest putUpdateMyInfoRequest) {
+        log.info("{UserService.updateMyInfo}");
+
+        String url = this.fileUploadUtils.uploadFile(file);
+
+        if(url == null){
+            throw new FileUploadException(CANNOT_SAVE_FILE);
+        }
+
+        User user = this.userRepository.findByUserId(userId);
+
+        user.setNickname(putUpdateMyInfoRequest.getNickname());
+        user.setBirthday(putUpdateMyInfoRequest.getBirthday());
+        user.setGender(putUpdateMyInfoRequest.getGender());
+        user.setReslEstateType(putUpdateMyInfoRequest.getRealEstateType());
+        user.setTransactionType(putUpdateMyInfoRequest.getTransactionType());
+        user.setProfileImgUrl(url);
+
+        DesireResidence desireResidence = user.getDesireResidence();
+        desireResidence.setAddress(putUpdateMyInfoRequest.getAddress());
+        desireResidence.setLatitude(putUpdateMyInfoRequest.getLatitude());
+        desireResidence.setLongitude(putUpdateMyInfoRequest.getLongitude());
+
+        TransactionPriceConfig transactionPriceConfig = user.getTransactionPriceConfig();
+        transactionPriceConfig.setMPriceMin(putUpdateMyInfoRequest.getMpriceMin());
+        transactionPriceConfig.setMPriceMax(putUpdateMyInfoRequest.getMpriceMax());
+        transactionPriceConfig.setMDepositMin(putUpdateMyInfoRequest.getMdepositMin());
+        transactionPriceConfig.setMDepositMax(putUpdateMyInfoRequest.getMdepositMax());
+        transactionPriceConfig.setYDepositMin(putUpdateMyInfoRequest.getYdepositMin());
+        transactionPriceConfig.setYDepositMax(putUpdateMyInfoRequest.getYdepositMax());
+        transactionPriceConfig.setPurchaseMin(putUpdateMyInfoRequest.getPurchaseMin());
+        transactionPriceConfig.setPurchaseMax(putUpdateMyInfoRequest.getPurchaseMax());
+
+        this.userRepository.save(user);
         return null;
     }
 }
