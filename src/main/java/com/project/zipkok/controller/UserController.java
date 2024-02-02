@@ -1,5 +1,6 @@
 package com.project.zipkok.controller;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
@@ -182,16 +183,19 @@ public class UserController {
     }
 
 
-    /*@Operation(summary = "테스트", description = "테스트API")
-    @PostMapping(value = "/upload", consumes = {APPLICATION_JSON_VALUE, MULTIPART_FORM_DATA_VALUE})
-    public void upload(@Parameter(hidden=true) @PreAuthorize long userId, @RequestPart(value = "file", required = false) MultipartFile file, @RequestPart(value = "data", required = false) PostZimRegisterRequest registerRequest, BindingResult bindingResult){
-        log.info("{UserController.upload}");
+    @Operation(summary = "로그아웃 API", description = "회원 로그아웃을 위한 api입니다.")
+    @GetMapping("/logout")
+    public BaseResponse<Object> logout(@Parameter(hidden=true) @PreAuthorize long userId){
+        log.info("{UserController.logout}");
 
-        if(bindingResult.hasErrors()){
-            throw new RuntimeException("upload failed");
-        }
+        return new BaseResponse<>(LOGOUT_SUCCESS, this.userService.logout(userId));
+    }
 
-        String url = fileUploadUtils.uploadFile(file);
-        log.info(url + "\n" + registerRequest);
-    }*/
+    @Operation(summary = "회원탈퇴 API", description = "회원탈퇴를 위한 api입니다.")
+    @GetMapping("/signout")
+    public BaseResponse<Object> signout(@Parameter(hidden=true) @PreAuthorize long userId){
+        log.info("{UserController.signout}");
+
+        return new BaseResponse<>(SIGNOUT_SUCCESS, this.userService.signout(userId));
+    }
 }

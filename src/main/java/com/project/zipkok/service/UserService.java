@@ -6,6 +6,7 @@ import com.project.zipkok.common.exception.s3.FileUploadException;
 import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.KokOptionLoadException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
+import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.common.service.RedisService;
 import com.project.zipkok.config.RedisConfig;
@@ -473,6 +474,48 @@ public class UserService {
     }
 
     @Transactional
+    public Object logout(long userId) {
+        log.info("{UserService.logout}");
+
+        try{
+            User user = this.userRepository.findByUserId(userId);
+
+            //user table status를 disable로 설정
+            user.setStatus("disable");
+
+            //redis에 user Refresh token 삭제
+            this.redisService.deleteValues(user.getEmail());
+
+            this.userRepository.save(user);
+
+        }catch(Exception e){
+            throw new UserBadRequestException(LOGOUT_FAIL);
+        }
+
+        return null;
+    }
+
+    @Transactional
+    public Object signout(long userId) {
+        log.info("{UserService.signout}");
+
+        try {
+            User user = this.userRepository.findByUserId(userId);
+
+            //redis에 user Refresh token 삭제
+            this.redisService.deleteValues(user.getEmail());
+
+            this.fileUploadUtils.deleteFile(user.getProfileImgUrl());
+
+            this.userRepository.delete(user);
+
+        } catch (Exception e) {
+            throw new UserBadRequestException(SIGNOUT_FAIL);
+        }
+
+        return null;
+    }
+
     public Object updateMyInfo(long userId, MultipartFile file, PutUpdateMyInfoRequest putUpdateMyInfoRequest) {
         log.info("{UserService.updateMyInfo}");
 
@@ -507,7 +550,6 @@ public class UserService {
         transactionPriceConfig.setPurchaseMax(putUpdateMyInfoRequest.getPurchaseMax());
 
         this.userRepository.save(user);
-
         return null;
     }
 }
