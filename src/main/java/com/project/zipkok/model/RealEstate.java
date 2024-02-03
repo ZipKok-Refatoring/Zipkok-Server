@@ -3,6 +3,8 @@ package com.project.zipkok.model;
 import com.project.zipkok.common.enums.RealEstateType;
 import com.project.zipkok.common.enums.TransactionType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +15,8 @@ import java.util.List;
 @Table(name = "RealEstate")
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RealEstate {
 
     @Id
@@ -49,7 +53,7 @@ public class RealEstate {
     private String detail;
 
     @Column(name = "area_size")
-    private float areaSize;
+    private Float areaSize;
 
     @Column(name = "pyeongsu")
     private long pyeongsu;
@@ -62,7 +66,7 @@ public class RealEstate {
     private int floorNum;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    private String status = "active";
 
     @ManyToOne
     @JoinColumn(name = "user_id")
