@@ -59,6 +59,19 @@ public class GetRealEstateResponse {
     @JsonProperty("isKokked")
     private boolean isKokked;
 
+    private List<RealEstateBriefInfo> neighborRealEstates;
+
+    @Builder
+    @AllArgsConstructor
+    @Getter
+    public static class RealEstateBriefInfo {
+        private Long realEstateId;
+        private String imageUrl;
+        private String address;
+        private Long deposit;
+        private Long price;
+    }
+
     public boolean getIsKokked() {
         return isKokked;
     }

@@ -38,7 +38,7 @@ public class RealEstateService {
 
         log.info("[RealEstateService.getRealEstateInfo]");
 
-        try {
+//        try {
             RealEstate realEstate = realEstateRepository.findById(realEstateId).get();
             User user = userRepository.findByUserId(userId);
 
@@ -57,6 +57,17 @@ public class RealEstateService {
             if (kokRepository.findFirstByUserAndRealEstate(user, realEstate) != null) {
                 isKokked = true;
             }
+
+            List<GetRealEstateResponse.RealEstateBriefInfo> neighborRealEstates = realEstateRepository.findAllByProximity(realEstate.getLatitude(), realEstate.getLongitude())
+                    .stream()
+                    .map(result -> GetRealEstateResponse.RealEstateBriefInfo.builder()
+                            .realEstateId(result.getRealEstateId())
+                            .imageUrl(result.getImageUrl())
+                            .address(result.getAddress())
+                            .deposit(result.getDeposit())
+                            .price(result.getPrice())
+                            .build())
+                    .toList();
 
 
             GetRealEstateResponse response = GetRealEstateResponse.builder()
@@ -77,12 +88,13 @@ public class RealEstateService {
                     .longitude(realEstate.getLongitude())
                     .isZimmed(isZimmed)
                     .isKokked(isKokked)
+                    .neighborRealEstates(neighborRealEstates)
                     .build();
 
             return response;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new RealEstateException(INVALID_PROPERTY_ID);
-        }
+//        } catch (Exception e) {
+//            log.error(e.getMessage());
+//            throw new RealEstateException(INVALID_PROPERTY_ID);
+//        }
     }
 }
