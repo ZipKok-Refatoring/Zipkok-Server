@@ -113,7 +113,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     PROPERTY_REGISTRATION_SUCCESS(8000, HttpStatus.OK.value(), "매물 등록 성공"),
     PROPERTY_DETAIL_QUERY_SUCCESS(8001, HttpStatus.OK.value(), "매물 상세 정보 조회 성공"),
     PROPERTY_MAP_QUERY_SUCCESS(8002, HttpStatus.OK.value(), "지도 상 매물 정보 조회 성공"),
-    PROPERTY_REGISTRATION_FAILURE(8003, HttpStatus.BAD_REQUEST.value(), "매물 등록에 실패"),
+    PROPERTY_REGISTRATION_FAILURE(8003, HttpStatus.BAD_REQUEST.value(), "매물 등록 실패"),
     PROPERTY_NOT_FOUND(8004, HttpStatus.NOT_FOUND.value(), "해당 주소에 매물이 존재하지 않음"),
     INVALID_PROPERTY_NAME(8005, HttpStatus.BAD_REQUEST.value(), "매물이름 정보가 없거나 형식이 잘못됨"),
     INVALID_RENTAL_PRICE_FORMAT(8006, HttpStatus.BAD_REQUEST.value(), "보증금/월세/매매가 정보가 없거나 형식이 잘못됨"),
