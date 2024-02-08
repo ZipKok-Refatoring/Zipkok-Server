@@ -62,7 +62,7 @@ public class UserService {
                         user.getNickname(),
                         user.getProfileImgUrl(),
                         user.getDesireResidence().getAddress(),
-                        user.getReslEstateType().getDescription(),
+                        user.getRealEstateType().getDescription(),
                         user.getTransactionType().getDescription(),
                         user.getTransactionPriceConfig().getMPriceMax(),
                         user.getTransactionPriceConfig().getMPriceMin(),
@@ -124,7 +124,7 @@ public class UserService {
         //User table에 realEstateType 수정
         User user = this.userRepository.findByUserId(userId);
 
-        user.setReslEstateType(realEstateType);
+        user.setRealEstateType(realEstateType);
         this.userRepository.save(user);
 
 
@@ -166,7 +166,7 @@ public class UserService {
         //dto field 값 set
         getMyPageResponse.setNickname(user.getNickname());
         getMyPageResponse.setImageUrl(user.getProfileImgUrl());
-        getMyPageResponse.setRealEstateType(user.getReslEstateType().getDescription());
+        getMyPageResponse.setRealEstateType(user.getRealEstateType().getDescription());
 
         getMyPageResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
 
@@ -213,7 +213,7 @@ public class UserService {
         getMyPageDetailResponse.setBirthday(user.getBirthday());
         getMyPageDetailResponse.setGender(user.getGender());
         getMyPageDetailResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
-        getMyPageDetailResponse.setRealEstateType(user.getReslEstateType().getDescription());
+        getMyPageDetailResponse.setRealEstateType(user.getRealEstateType().getDescription());
 
         if (user.getTransactionType() == null) {
             getMyPageDetailResponse.setTransactionType(TransactionType.MONTHLY.getDescription());
@@ -533,6 +533,7 @@ public class UserService {
         return null;
     }
 
+    @Transactional
     public Object updateMyInfo(long userId, MultipartFile file, PutUpdateMyInfoRequest putUpdateMyInfoRequest) {
         log.info("{UserService.updateMyInfo}");
 
@@ -547,7 +548,7 @@ public class UserService {
         user.setNickname(putUpdateMyInfoRequest.getNickname());
         user.setBirthday(putUpdateMyInfoRequest.getBirthday());
         user.setGender(putUpdateMyInfoRequest.getGender());
-        user.setReslEstateType(putUpdateMyInfoRequest.getRealEstateType());
+        user.setRealEstateType(putUpdateMyInfoRequest.getRealEstateType());
         user.setTransactionType(putUpdateMyInfoRequest.getTransactionType());
         user.setProfileImgUrl(url);
 
@@ -567,6 +568,35 @@ public class UserService {
         transactionPriceConfig.setPurchaseMax(putUpdateMyInfoRequest.getPurchaseMax());
 
         this.userRepository.save(user);
+        return null;
+    }
+
+    @Transactional
+    public Object updateFilter(long userId, PatchUpdateFilterRequest patchUpdateFilterRequest) {
+        log.info("{UserService.updateFilter}");
+
+        User user = this.userRepository.findByUserId(userId);
+
+        user.setTransactionType(patchUpdateFilterRequest.getTransactionType());
+        user.setRealEstateType(patchUpdateFilterRequest.getRealEstateType());
+
+        String filterInfo = patchUpdateFilterRequest.getTransactionType().getDescription();
+
+        if(filterInfo.equals("월세")){
+            user.getTransactionPriceConfig().setMPriceMin(patchUpdateFilterRequest.getPriceMin());
+            user.getTransactionPriceConfig().setMPriceMax(patchUpdateFilterRequest.getPriceMax());
+            user.getTransactionPriceConfig().setMDepositMin(patchUpdateFilterRequest.getDepositMin());
+            user.getTransactionPriceConfig().setMDepositMax(patchUpdateFilterRequest.getDepositMax());
+        }else if(filterInfo.equals("전세")){
+            user.getTransactionPriceConfig().setYDepositMin(patchUpdateFilterRequest.getDepositMin());
+            user.getTransactionPriceConfig().setYDepositMax(patchUpdateFilterRequest.getDepositMax());
+        }else if(filterInfo.equals("매매")){
+            user.getTransactionPriceConfig().setPurchaseMin(patchUpdateFilterRequest.getPriceMin());
+            user.getTransactionPriceConfig().setPurchaseMax(patchUpdateFilterRequest.getPriceMax());
+        }
+
+        this.userRepository.save(user);
+
         return null;
     }
 }

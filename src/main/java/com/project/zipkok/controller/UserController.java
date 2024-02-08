@@ -198,4 +198,33 @@ public class UserController {
 
         return new BaseResponse<>(SIGNOUT_SUCCESS, this.userService.signout(userId));
     }
+
+    @Operation(summary = "필터 API", description = "필터정보 수정을 위한 api입니다.")
+    @PatchMapping("/filter")
+    public BaseResponse<Object> updateFilter(@Parameter(hidden=true) @PreAuthorize long userId, @Validated @RequestBody PatchUpdateFilterRequest patchUpdateFilterRequest, BindingResult bindingResult){
+        log.info("{UserController.updateFilter}");
+
+        if(bindingResult.hasFieldErrors("transactionType")){
+            throw new UserBadRequestException(INVALID_TRANSACTION_TYPE);
+        }
+        if(bindingResult.hasFieldErrors("realEstateType")){
+            throw new UserBadRequestException(INVALID_INTEREST_TYPE);
+        }
+        if(bindingResult.hasFieldErrors("realEstateType")){
+            throw new UserBadRequestException(INVALID_INTEREST_TYPE);
+        }
+        if(bindingResult.hasFieldErrors("priceMin") ||
+                bindingResult.hasFieldErrors("depositMin")){
+            throw  new UserBadRequestException(INVALID_MIN_PRICE);
+        }
+        if(bindingResult.hasFieldErrors("priceMax") ||
+                bindingResult.hasFieldErrors("depositMax")){
+            throw new UserBadRequestException(INVALID_MAX_PRICE);
+        }
+        if(bindingResult.hasFieldErrors("isSmallerThanMax")){
+            throw new UserBadRequestException(MIN_IS_BIGGER_THAN_MAX);
+        }
+
+        return new BaseResponse<>(MEMBER_FILTER_UPDATE_SUCCESS, this.userService.updateFilter(userId, patchUpdateFilterRequest));
+    }
 }

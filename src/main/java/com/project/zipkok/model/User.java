@@ -47,7 +47,7 @@ public class User {
 
     @Column(name = "realestate_type", nullable = true)
     @Enumerated(EnumType.STRING)
-    private RealEstateType reslEstateType;
+    private RealEstateType realEstateType;
 
     @Column(name = "transaction_type", nullable = true)
     @Enumerated(EnumType.STRING)
