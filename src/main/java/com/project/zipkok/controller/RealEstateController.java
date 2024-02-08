@@ -3,6 +3,7 @@ package com.project.zipkok.controller;
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.exception.RealEstateException;
 import com.project.zipkok.common.response.BaseResponse;
+import com.project.zipkok.dto.GetRealEstateOnMapResponse;
 import com.project.zipkok.dto.GetRealEstateResponse;
 import com.project.zipkok.dto.PostRealEstateRequest;
 import com.project.zipkok.dto.PostRealEstateResponse;
@@ -63,5 +64,23 @@ public class RealEstateController {
         }
 
         return new BaseResponse<>(PROPERTY_REGISTRATION_SUCCESS, realEstateService.registerRealEstate(userId, postRealEstateRequest));
+    }
+
+    @Operation(summary = "홈 화면 지도 API", description = "지도 상에 띄울 매물을 받기 위한 api입니다.")
+    @GetMapping("")
+    public BaseResponse<GetRealEstateOnMapResponse> realEstateOnMap(@Parameter(hidden=true) @PreAuthorize long userId, @RequestParam("southWestLat") Double southWestLat, @RequestParam("southWestLon") Double southWestLon, @RequestParam("northEastLat") Double northEastLat, @RequestParam("northEastLon") Double northEastLon){
+        log.info("{UserController.signout}");
+
+        if(southWestLat == null ||
+            northEastLat == null){
+            throw new RealEstateException(INVALID_LATITUDE_FORMAT);
+        }
+        if(southWestLon == null ||
+                northEastLon == null){
+            throw new RealEstateException(INVALID_LONGITUDE_FORMAT);
+        }
+
+
+        return new BaseResponse<>(PROPERTY_MAP_QUERY_SUCCESS, this.realEstateService.getRealEstate(userId, southWestLat,southWestLon,northEastLat,northEastLon));
     }
 }

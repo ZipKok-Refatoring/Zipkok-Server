@@ -3,6 +3,7 @@ package com.project.zipkok.service;
 import com.project.zipkok.common.exception.DatabaseException;
 import com.project.zipkok.common.exception.InternalServerErrorException;
 import com.project.zipkok.common.exception.RealEstateException;
+import com.project.zipkok.dto.GetRealEstateOnMapResponse;
 import com.project.zipkok.dto.GetRealEstateResponse;
 import com.project.zipkok.dto.PostRealEstateRequest;
 import com.project.zipkok.dto.PostRealEstateResponse;
@@ -22,8 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.INVALID_PROPERTY_ID;
-import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.PROPERTY_REGISTRATION_FAILURE;
+import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
 @Service
@@ -132,5 +132,90 @@ public class RealEstateService {
         } catch (Exception e) {
             throw new RealEstateException(PROPERTY_REGISTRATION_FAILURE);
         }
+    }
+
+    public GetRealEstateOnMapResponse getRealEstate(long userId, Double southWestLat, Double southWestLon, Double northEastLat, Double northEastLon) {
+        log.info("{UserService.getRealEstate}");
+
+        List<RealEstate> realEstateList = this.realEstateRepository.findByLatitudeBetweenAndLongitudeBetween(southWestLat,northEastLat,southWestLon,northEastLon);
+        User user = this.userRepository.findByUserId(userId);
+
+        if(realEstateList == null || realEstateList.isEmpty()){
+            throw new RealEstateException(PROPERTY_NOT_FOUND);
+        }
+
+        GetRealEstateOnMapResponse getRealEstateOnMapResponse = new GetRealEstateOnMapResponse();
+
+        String userTransactionType = user.getTransactionType().getDescription();
+        String userRealEstateType = user.getReslEstateType().getDescription();
+
+        //filter 정보 mapping
+        getRealEstateOnMapResponse.setFilter(GetRealEstateOnMapResponse.Filter.builder()
+                .transactionType(userTransactionType)
+                .realEstateType(userRealEstateType)
+                .depositMin(null)
+                .depositMax(null)
+                .priceMin(null)
+                .priceMax(null).build()
+        );
+
+        if(userTransactionType.equals("월세")){
+            getRealEstateOnMapResponse.getFilter().setDepositMin(user.getTransactionPriceConfig().getMDepositMin());
+            getRealEstateOnMapResponse.getFilter().setDepositMax(user.getTransactionPriceConfig().getMDepositMax());
+            getRealEstateOnMapResponse.getFilter().setPriceMin(user.getTransactionPriceConfig().getMPriceMin());
+            getRealEstateOnMapResponse.getFilter().setPriceMax(user.getTransactionPriceConfig().getMPriceMax());
+        }else if(userTransactionType.equals("전세")) {
+            getRealEstateOnMapResponse.getFilter().setDepositMin(user.getTransactionPriceConfig().getYDepositMin());
+            getRealEstateOnMapResponse.getFilter().setDepositMax(user.getTransactionPriceConfig().getYDepositMax());
+        }else if(userTransactionType.equals("매매")){
+            getRealEstateOnMapResponse.getFilter().setPriceMin(user.getTransactionPriceConfig().getPurchaseMin());
+            getRealEstateOnMapResponse.getFilter().setPriceMax(user.getTransactionPriceConfig().getPurchaseMax());
+        }
+
+
+        //realEstateInfo mapping
+        List<GetRealEstateOnMapResponse.RealEstateInfo> realEstateInfoList = realEstateList
+                .stream()
+                .filter(result -> result.getTransactionType().getDescription().equals(userTransactionType) && result.getRealEstateType().getDescription().equals(userRealEstateType))
+                .filter(result -> filterPriceConfig(result, getRealEstateOnMapResponse.getFilter()))
+                .filter(result -> result.getUser() == null || result.getUser().getUserId().equals(userId))
+                .map(result -> GetRealEstateOnMapResponse.RealEstateInfo.builder()
+                        .realEstateId(result.getRealEstateId())
+                        .imageURL(result.getImageUrl())
+                        .deposit(result.getDeposit())
+                        .price(result.getPrice())
+                        .transactionType(result.getTransactionType().getDescription())
+                        .realEstateType(result.getRealEstateType().getDescription())
+                        .address(result.getAddress())
+                        .detailAddress(result.getDetailAddress())
+                        .latitude(result.getLatitude())
+                        .longitude(result.getLongitude())
+                        .agent(result.getAgent())
+                        .isZimmed(this.zimRepository.findFirstByUserAndRealEstate(user, result))
+                        .isKokked(this.kokRepository.findFirstByUserAndRealEstate(user, result))
+                        .build())
+                .toList();
+
+
+        getRealEstateOnMapResponse.setRealEstateInfoList(realEstateInfoList);
+
+        return getRealEstateOnMapResponse;
+    }
+
+    private boolean filterPriceConfig(RealEstate realEstate, GetRealEstateOnMapResponse.Filter filter){
+        String transactionType = realEstate.getTransactionType().getDescription();
+        long deposit = realEstate.getDeposit();
+        long price = realEstate.getPrice();
+
+        if(transactionType.equals("월세")){
+            if(deposit < filter.getDepositMin() || deposit > filter.getDepositMax()){ return false; }
+            if(price < filter.getPriceMin() || price > filter.getPriceMax()) { return false; }
+        }else if(transactionType.equals("전세")) {
+            if(deposit < filter.getDepositMin() || deposit > filter.getDepositMax()){ return false; }
+        }else if(transactionType.equals("매매")){
+            if(price < filter.getPriceMin() || price > filter.getPriceMax()) { return false; }
+        }
+
+        return true;
     }
 }
