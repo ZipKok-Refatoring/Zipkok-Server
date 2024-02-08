@@ -197,7 +197,7 @@ public class RealEstateService {
             GetLoginMapRealEstateResponse getLoginMapRealEstateResponse = new GetLoginMapRealEstateResponse();
 
             userTransactionType = user.getTransactionType();
-            userRealEstateType = user.getReslEstateType();
+            userRealEstateType = user.getRealEstateType();
 
             //filter 정보 mapping
             getLoginMapRealEstateResponse.setFilter(GetLoginMapRealEstateResponse.Filter.builder()
