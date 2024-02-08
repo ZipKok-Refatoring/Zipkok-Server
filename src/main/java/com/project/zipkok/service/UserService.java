@@ -92,9 +92,6 @@ public class UserService {
         user.setOptions(this.makeDefaultOptions(user));
         user.setImpressions(this.makeDefaultImpressions(user));
 
-        user.setTransactionType(TransactionType.MONTHLY);
-        user.setReslEstateType(RealEstateType.ONEROOM);
-
         this.userRepository.save(user);
 
         long userId = this.userRepository.findByEmail(email).getUserId();
