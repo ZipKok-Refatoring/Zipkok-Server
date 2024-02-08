@@ -123,6 +123,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_LATITUDE_FORMAT(8010, HttpStatus.BAD_REQUEST.value(), "위도 정보가 없거나 형식이 잘못됨"),
     INVALID_LONGITUDE_FORMAT(8011, HttpStatus.BAD_REQUEST.value(), "경도 정보가 없거나 형식이 잘못됨"),
     INVALID_REALESTATE_ID(8012, HttpStatus.BAD_REQUEST.value(), "매물 아이디 형식이 잘못됨"),
+    MIN_POINT_IS_BIGGER_THAN_MAX_POINT(8013, HttpStatus.BAD_REQUEST.value(), "최소좌표값은 최대좌표값보다 클 수 없음"),
 
 
     /**

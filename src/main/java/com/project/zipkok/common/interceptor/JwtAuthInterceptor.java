@@ -36,13 +36,21 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
 
         String method = request.getMethod();
         String url = request.getRequestURI();
+        String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if((method.equals(HttpMethod.OPTIONS.name()) || method.equals(HttpMethod.POST.name())) && url.equals("/user")){
             return true;
         }
-        log.info("[POST & OPTIONS /user must not pass this log]");
+        if((method.equals(HttpMethod.OPTIONS.name()) || method.equals(HttpMethod.GET.name())) && url.equals("/realEstate")){
+            try {
+                validateToken(accessToken);
+            } catch (JwtNoTokenException e) {
+                request.setAttribute("userId", -1);
+                return true;
+            }
+        }
 
-        String accessToken = resolveAccessToken(request);
+        accessToken = resolveAccessToken(accessToken);
         validateAccessToken(accessToken);
 
         String email = jwtProvider.getEmail(accessToken);
@@ -62,8 +70,7 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private String resolveAccessToken(HttpServletRequest request) {
-        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+    private String resolveAccessToken(String token) {
         validateToken(token);
         return token.substring(JWT_TOKEN_PREFIX.length());
     }

@@ -5,10 +5,7 @@ import com.project.zipkok.common.enums.OAuthProvider;
 import com.project.zipkok.common.enums.RealEstateType;
 import com.project.zipkok.common.enums.TransactionType;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +15,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Setter
+@Builder
+@AllArgsConstructor
 public class User {
 
     @Id
