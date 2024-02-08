@@ -3,10 +3,7 @@ package com.project.zipkok.controller;
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.exception.RealEstateException;
 import com.project.zipkok.common.response.BaseResponse;
-import com.project.zipkok.dto.GetRealEstateOnMapResponse;
-import com.project.zipkok.dto.GetRealEstateResponse;
-import com.project.zipkok.dto.PostRealEstateRequest;
-import com.project.zipkok.dto.PostRealEstateResponse;
+import com.project.zipkok.dto.*;
 import com.project.zipkok.service.RealEstateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -68,19 +65,24 @@ public class RealEstateController {
 
     @Operation(summary = "홈 화면 지도 API", description = "지도 상에 띄울 매물을 받기 위한 api입니다.")
     @GetMapping("")
-    public BaseResponse<GetRealEstateOnMapResponse> realEstateOnMap(@Parameter(hidden=true) @PreAuthorize long userId, @RequestParam("southWestLat") Double southWestLat, @RequestParam("southWestLon") Double southWestLon, @RequestParam("northEastLat") Double northEastLat, @RequestParam("northEastLon") Double northEastLon){
-        log.info("{UserController.signout}");
+    public BaseResponse<GetMapRealEstateResponse> realEstateOnMap(@Parameter(hidden=true) @PreAuthorize long userId,
+                                                                       @Validated @ModelAttribute GetRealEstateOnMapRequest getRealEstateOnMapRequest,
+                                                                       BindingResult bindingResult){
+        log.info("{UserController.realEstateOnMap}");
 
-        if(southWestLat == null ||
-            northEastLat == null){
+        if(bindingResult.hasFieldErrors("southWestLat") ||
+                bindingResult.hasFieldErrors("northEastLat")){
             throw new RealEstateException(INVALID_LATITUDE_FORMAT);
         }
-        if(southWestLon == null ||
-                northEastLon == null){
+        if(bindingResult.hasFieldErrors("southWestLon") ||
+                bindingResult.hasFieldErrors("northEastLon")){
             throw new RealEstateException(INVALID_LONGITUDE_FORMAT);
+        }
+        if(bindingResult.hasErrors()){
+            throw new RealEstateException(MIN_POINT_IS_BIGGER_THAN_MAX_POINT);
         }
 
 
-        return new BaseResponse<>(PROPERTY_MAP_QUERY_SUCCESS, this.realEstateService.getRealEstate(userId, southWestLat,southWestLon,northEastLat,northEastLon));
+        return new BaseResponse<>(PROPERTY_MAP_QUERY_SUCCESS, this.realEstateService.getRealEstate(userId, getRealEstateOnMapRequest));
     }
 }
