@@ -52,14 +52,14 @@ public class FileUploadUtils {
 
             MultipartFile file = downloadAsMultipartFile(bucket, key);
 
-            String fileName = dirName + "/" + deleteFile(key);
+            String newKey = dirName + "/" + deleteFile(key);
 
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
 
-            amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
-            return amazonS3Client.getResourceUrl(bucket, fileName);
+            amazonS3Client.putObject(bucket, newKey, file.getInputStream(), metadata);
+            return amazonS3Client.getResourceUrl(bucket, newKey);
 
         } catch (Exception e) {
             log.error(e.getMessage());

@@ -545,7 +545,7 @@ public class UserService {
 
             this.redisService.deleteValues(user.getEmail());
 
-            String updatedImgUrl = this.fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "pending/");
+            String updatedImgUrl = this.fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "pending");
 
             user.setProfileImgUrl(updatedImgUrl);
             user.setStatus("pending");
