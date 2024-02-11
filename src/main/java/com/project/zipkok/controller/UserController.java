@@ -192,11 +192,11 @@ public class UserController {
     }
 
     @Operation(summary = "회원탈퇴 API", description = "회원탈퇴를 위한 api입니다.")
-    @GetMapping("/signout")
-    public BaseResponse<Object> signout(@Parameter(hidden=true) @PreAuthorize long userId){
-        log.info("{UserController.signout}");
+    @DeleteMapping("")
+    public BaseResponse<Object> deregistration(@Parameter(hidden=true) @PreAuthorize long userId){
+        log.info("[UserController.deregistration]");
 
-        return new BaseResponse<>(SIGNOUT_SUCCESS, this.userService.signout(userId));
+        return new BaseResponse<>(DEREGISTRATION_SUCCESS, this.userService.deregister(userId));
     }
 
     @Operation(summary = "필터 API", description = "필터정보 수정을 위한 api입니다.")

@@ -29,6 +29,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.time.Duration;
 import java.util.*;
@@ -527,7 +530,29 @@ public class UserService {
             this.userRepository.delete(user);
 
         } catch (Exception e) {
-            throw new UserBadRequestException(SIGNOUT_FAIL);
+            throw new UserBadRequestException(DEREGISTRATION_FAIL);
+        }
+
+        return null;
+    }
+
+    @Transactional
+    public Object deregister(long userId) {
+        log.info("[UserService.deregister]");
+
+        try {
+            User user = this.userRepository.findByUserId(userId);
+
+            this.redisService.deleteValues(user.getEmail());
+
+            String updatedImgUrl = this.fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "pending/");
+
+            user.setProfileImgUrl(updatedImgUrl);
+            user.setStatus("pending");
+
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new UserBadRequestException(DEREGISTRATION_FAIL);
         }
 
         return null;
@@ -598,5 +623,19 @@ public class UserService {
         this.userRepository.save(user);
 
         return null;
+    }
+
+    public static String extractKeyFromUrl(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            String key = url.getPath().substring(1);
+            String returnKey = URLDecoder.decode(key, StandardCharsets.UTF_8.name());
+            log.info(returnKey);
+            return returnKey;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

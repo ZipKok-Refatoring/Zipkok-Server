@@ -26,13 +26,12 @@ public interface GetMapRealEstateResponse {
         private RealEstateType realEstateType;
     }
 
-//    List<RealEstateInfo> realEstateInfoList = new ArrayList<>();
     @Getter
     @Setter
     @NoArgsConstructor
     @SuperBuilder
     @AllArgsConstructor
-    public static class RealEstateInfo{
+    public static class RealEstateInfo {
         private Long realEstateId;
         private String imageURL;
         private Long deposit;
@@ -46,6 +45,8 @@ public interface GetMapRealEstateResponse {
         private String agent;
         private boolean isZimmed;
         private boolean isKokked;
+
+    }
 
 
 //        public static class RealEstateInfoBuilder{
@@ -70,5 +71,5 @@ public interface GetMapRealEstateResponse {
 //                return this;
 //            }
 //        }
-    }
+
 }
