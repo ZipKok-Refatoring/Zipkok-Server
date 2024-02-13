@@ -168,29 +168,30 @@ public class UserService {
 
         //관심매물유형에 따라 dto field 값 set 작업 분기처리
         if(user.getTransactionType() == null){
-            getMyPageResponse.setTransactionType(TransactionType.MONTHLY.getDescription());
-            transactionType = "월세";
+            getMyPageResponse.setTransactionType(null);
+            getMyPageResponse.setPriceMax(null);
+            getMyPageResponse.setPriceMin(null);
+            getMyPageResponse.setDepositMax(null);
+            getMyPageResponse.setDepositMin(null);
         }
         else{
             getMyPageResponse.setTransactionType(user.getTransactionType().getDescription());
             transactionType = user.getTransactionType().getDescription();
+            if(transactionType.equals("월세")){
+                getMyPageResponse.setPriceMax(transactionPriceConfig.getMPriceMax());
+                getMyPageResponse.setPriceMin(transactionPriceConfig.getMPriceMin());
+                getMyPageResponse.setDepositMax(transactionPriceConfig.getMDepositMax());
+                getMyPageResponse.setDepositMin(transactionPriceConfig.getMDepositMin());
+            }
+            else if(transactionType.equals("전세")){
+                getMyPageResponse.setDepositMax(transactionPriceConfig.getYDepositMax());
+                getMyPageResponse.setDepositMin(transactionPriceConfig.getYDepositMin());
+            }
+            else if(transactionType.equals("매매")){
+                getMyPageResponse.setPriceMax(transactionPriceConfig.getPurchaseMax());
+                getMyPageResponse.setPriceMin(transactionPriceConfig.getPurchaseMin());
+            }
         }
-
-        if(transactionType.equals("월세")){
-            getMyPageResponse.setPriceMax(transactionPriceConfig.getMPriceMax());
-            getMyPageResponse.setPriceMin(transactionPriceConfig.getMPriceMin());
-            getMyPageResponse.setDepositMax(transactionPriceConfig.getMDepositMax());
-            getMyPageResponse.setDepositMin(transactionPriceConfig.getMDepositMin());
-        }
-        else if(transactionType.equals("전세")){
-            getMyPageResponse.setDepositMax(transactionPriceConfig.getYDepositMax());
-            getMyPageResponse.setDepositMin(transactionPriceConfig.getYDepositMin());
-        }
-        else if(transactionType.equals("매매")){
-            getMyPageResponse.setPriceMax(transactionPriceConfig.getPurchaseMax());
-            getMyPageResponse.setPriceMin(transactionPriceConfig.getPurchaseMin());
-        }
-
         return getMyPageResponse;
     }
 
@@ -210,7 +211,7 @@ public class UserService {
         getMyPageDetailResponse.setRealEstateType(user.getRealEstateType() == null ? null : user.getRealEstateType().getDescription());
 
         if (user.getTransactionType() == null) {
-            getMyPageDetailResponse.setTransactionType(TransactionType.MONTHLY.getDescription());
+            getMyPageDetailResponse.setTransactionType(null);
         } else {
             getMyPageDetailResponse.setTransactionType(user.getTransactionType().getDescription());
         }
@@ -553,20 +554,23 @@ public class UserService {
     public Object updateMyInfo(long userId, MultipartFile file, PutUpdateMyInfoRequest putUpdateMyInfoRequest) {
         log.info("{UserService.updateMyInfo}");
 
-        String url = this.fileUploadUtils.uploadFile(file);
-
-        if(url == null){
-            throw new FileUploadException(CANNOT_SAVE_FILE);
-        }
-
         User user = this.userRepository.findByUserId(userId);
+
+        if(file != null) {
+            String url = this.fileUploadUtils.uploadFile(file);
+
+            if(url == null){
+                throw new FileUploadException(CANNOT_SAVE_FILE);
+            }
+
+            user.setProfileImgUrl(url);
+        }
 
         user.setNickname(putUpdateMyInfoRequest.getNickname());
         user.setBirthday(putUpdateMyInfoRequest.getBirthday());
         user.setGender(putUpdateMyInfoRequest.getGender());
         user.setRealEstateType(putUpdateMyInfoRequest.getRealEstateType());
         user.setTransactionType(putUpdateMyInfoRequest.getTransactionType());
-        user.setProfileImgUrl(url);
 
         DesireResidence desireResidence = user.getDesireResidence();
         desireResidence.setAddress(putUpdateMyInfoRequest.getAddress());

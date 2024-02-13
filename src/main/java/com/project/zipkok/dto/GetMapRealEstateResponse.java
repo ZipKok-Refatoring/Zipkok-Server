@@ -1,5 +1,6 @@
 package com.project.zipkok.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.zipkok.common.enums.RealEstateType;
 import com.project.zipkok.common.enums.TransactionType;
 import com.project.zipkok.model.Kok;
@@ -43,7 +44,13 @@ public interface GetMapRealEstateResponse {
         private Double latitude;
         private Double longitude;
         private String agent;
+
+        @JsonProperty("isZimmed")
+        @Getter(AccessLevel.NONE)
         private boolean isZimmed;
+
+        @JsonProperty("isKokked")
+        @Getter(AccessLevel.NONE)
         private boolean isKokked;
 
     }
