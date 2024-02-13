@@ -19,10 +19,10 @@ public class DesireResidence {
     private String address;
 
     @Column(name = "latitude", nullable = true)
-    private double latitude;
+    private Double latitude;
 
     @Column(name = "longitude", nullable = true)
-    private double longitude;
+    private Double longitude;
 
     @Column(name = "status", nullable = false)
     private String status = "active";

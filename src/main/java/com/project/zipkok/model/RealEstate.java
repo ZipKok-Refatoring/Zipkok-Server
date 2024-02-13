@@ -63,7 +63,7 @@ public class RealEstate {
     private RealEstateType realEstateType;
 
     @Column(name = "floor_num")
-    private int floorNum;
+    private Integer floorNum;
 
     @Column(name = "status", nullable = false)
     private String status = "active";

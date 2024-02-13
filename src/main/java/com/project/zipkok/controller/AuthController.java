@@ -19,6 +19,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.INVALID_REFRESH_TOKEN;
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.TOKEN_REISSUE_SUCCESS;
 
@@ -34,7 +36,7 @@ public class AuthController {
 
     @Operation(summary = "인가코드를 받아 서비스의 회원여부를 응답하는 API ", description = "authorizaion code를 쿼리 파라미터로 추가한뒤, 요청해주세요")
     @GetMapping("/oauth/kakao/callback")
-    public BaseResponse<GetLoginResponse> loginKakao(@RequestParam("code") String authorizationCode) {
+    public BaseResponse<GetLoginResponse> loginKakao(@RequestParam("code") String authorizationCode) throws IOException {
         log.info("AuthController.loginKakao");
         KakaoLoginParams params = new KakaoLoginParams(authorizationCode);
         return new BaseResponse<GetLoginResponse>(oAuthLoginService.login(params));

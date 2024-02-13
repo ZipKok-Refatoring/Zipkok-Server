@@ -157,12 +157,14 @@ public class KokService {
                 .options(kok.getCheckedOptions()
                         .stream()
                         .filter(checkedOption -> checkedOption.getOption().getCategory().equals(OptionCategory.OUTER))
+                        .filter(checkedOption -> checkedOption.getOption().isVisible())
                         .map(checkedOption -> GetKokOuterInfoResponse.OuterOption.builder()
                                 .option(checkedOption.getOption().getName())
                                 .orderNumber((int) checkedOption.getOption().getOrderNum())
                                 .detailOptions(kok.getCheckedDetailOptions()
                                         .stream()
                                         .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().getOption().equals(checkedOption.getOption()))
+                                        .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().isVisible())
                                         .map(CheckedDetailOption::getDetailOption)
                                         .map(DetailOption::getName)
                                         .collect(Collectors.toList()))
@@ -192,12 +194,14 @@ public class KokService {
                 .options(kok.getCheckedOptions()
                         .stream()
                         .filter(checkedOption -> checkedOption.getOption().getCategory().equals(OptionCategory.INNER))
+                        .filter(checkedOption -> checkedOption.getOption().isVisible())
                         .map(checkedOption -> GetKokInnerInfoResponse.InnerOption.builder()
                                 .option(checkedOption.getOption().getName())
                                 .orderNumber((int) checkedOption.getOption().getOrderNum())
                                 .detailOptions(kok.getCheckedDetailOptions()
                                         .stream()
                                         .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().getOption().equals(checkedOption.getOption()))
+                                        .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().isVisible())
                                         .map(CheckedDetailOption::getDetailOption)
                                         .map(DetailOption::getName)
                                         .collect(Collectors.toList()))
@@ -219,7 +223,7 @@ public class KokService {
 
         List<String> contractImages = kok.getKokImages()
                 .stream()
-                .filter(kokImage -> kokImage.getOption().getCategory().equals(OptionCategory.CONTRACT))
+                .filter(kokImage -> kokImage.getCategory().equals(OptionCategory.CONTRACT.getDescription()))
                 .map(KokImage::getImageUrl)
                 .toList();
 
@@ -227,12 +231,14 @@ public class KokService {
                 .options(kok.getCheckedOptions()
                         .stream()
                         .filter(checkedOption -> checkedOption.getOption().getCategory().equals(OptionCategory.CONTRACT))
+                        .filter(checkedOption -> checkedOption.getOption().isVisible())
                         .map(checkedOption -> GetKokContractResponse.ContractOptions.builder()
                                 .option(checkedOption.getOption().getName())
                                 .orderNumber((int) checkedOption.getOption().getOrderNum())
                                 .detailOptions(kok.getCheckedDetailOptions()
                                         .stream()
                                         .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().getOption().equals(checkedOption.getOption()))
+                                        .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().isVisible())
                                         .map(CheckedDetailOption::getDetailOption)
                                         .map(DetailOption::getName)
                                         .collect(Collectors.toList()))
@@ -398,7 +404,7 @@ public class KokService {
 
         log.info("[KokService.registerKok]");
 
-        try {
+//        try {
 
             Kok kok = new Kok();
 
@@ -406,7 +412,7 @@ public class KokService {
 
             RealEstate realEstate = realEstateRepository.findById(postKokRequest.getRealEstateId()).get();
 
-            List<CheckedHighlight> checkedHighlights = postKokRequest.getCheckedHighlight()
+            List<CheckedHighlight> checkedHighlights = postKokRequest.getCheckedHighlights()
                     .stream()
                     .map(checkedHighlight ->
                             CheckedHighlight.builder()
@@ -511,9 +517,9 @@ public class KokService {
 
             return new PostKokResponse(kokId);
 
-        } catch (Exception e) {
-            throw new KokException(KOK_REGISTRATION_FAILURE);
-        }
+//        } catch (Exception e) {
+//            throw new KokException(KOK_REGISTRATION_FAILURE);
+//        }
 
     }
 }
