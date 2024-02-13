@@ -47,6 +47,13 @@ dependencies {
 
 	//ModelMapper
 	implementation 'org.modelmapper:modelmapper:2.4.2'
+
+	//Jsoup
+	implementation group: 'org.jsoup', name: 'jsoup', version: '1.16.1'
+
+	//selenium
+	implementation 'org.seleniumhq.selenium:selenium-java:4.0.0'
+
 }
 
 tasks.named('test') {
