@@ -398,7 +398,7 @@ public class KokService {
 
         log.info("[KokService.registerKok]");
 
-        try {
+//        try {
 
             Kok kok = new Kok();
 
@@ -511,9 +511,9 @@ public class KokService {
 
             return new PostKokResponse(kokId);
 
-        } catch (Exception e) {
-            throw new KokException(KOK_REGISTRATION_FAILURE);
-        }
+//        } catch (Exception e) {
+//            throw new KokException(KOK_REGISTRATION_FAILURE);
+//        }
 
     }
 }

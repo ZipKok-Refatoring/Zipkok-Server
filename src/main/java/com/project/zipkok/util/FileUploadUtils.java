@@ -6,8 +6,6 @@ import com.project.zipkok.common.exception.s3.FileUploadException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.CANNOT_SAVE_FILE;
+import static com.project.zipkok.service.UserService.extractLastPartFromKey;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -52,7 +51,7 @@ public class FileUploadUtils {
 
             MultipartFile file = downloadAsMultipartFile(bucket, key);
 
-            String newKey = dirName + "/" + deleteFile(key);
+            String newKey = dirName + extractLastPartFromKey(deleteFile(key));
 
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());

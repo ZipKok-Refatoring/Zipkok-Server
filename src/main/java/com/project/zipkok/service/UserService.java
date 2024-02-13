@@ -1,15 +1,10 @@
 package com.project.zipkok.service;
 
-import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.enums.*;
 import com.project.zipkok.common.exception.s3.FileUploadException;
-import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.KokOptionLoadException;
-import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
 import com.project.zipkok.common.exception.user.UserBadRequestException;
-import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.common.service.RedisService;
-import com.project.zipkok.config.RedisConfig;
 import com.project.zipkok.dto.*;
 import com.project.zipkok.model.DesireResidence;
 import com.project.zipkok.model.TransactionPriceConfig;
@@ -25,20 +20,16 @@ import com.project.zipkok.util.jwt.JwtProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileAlreadyExistsException;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.MEMBER_NOT_FOUND;
-import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.SERVER_ERROR;
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
@@ -545,7 +536,7 @@ public class UserService {
 
             this.redisService.deleteValues(user.getEmail());
 
-            String updatedImgUrl = this.fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "pending");
+            String updatedImgUrl = this.fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "pending/");
 
             user.setProfileImgUrl(updatedImgUrl);
             user.setStatus("pending");
@@ -638,4 +629,18 @@ public class UserService {
             return null;
         }
     }
+
+    public static String extractLastPartFromKey(String inputString) {
+        int lastIndex = inputString.lastIndexOf('/');
+
+        if (lastIndex != -1) {
+            return inputString.substring(lastIndex + 1);
+        } else {
+            return inputString;
+        }
+    }
+
+
+
+
 }
