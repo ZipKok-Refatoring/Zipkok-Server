@@ -1,12 +1,10 @@
 package com.project.zipkok.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +42,7 @@ public class PostUpdateKokOptionRequest {
         private Long orderNumber;
 
         @NotNull
+        @JsonProperty("isVisible")
         private boolean isVisible;
 
         @NotNull
