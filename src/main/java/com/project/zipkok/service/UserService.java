@@ -160,7 +160,7 @@ public class UserService {
         //dto field 값 set
         getMyPageResponse.setNickname(user.getNickname());
         getMyPageResponse.setImageUrl(user.getProfileImgUrl());
-        getMyPageResponse.setRealEstateType(user.getRealEstateType().getDescription());
+        getMyPageResponse.setRealEstateType(user.getRealEstateType() == null ? null : user.getRealEstateType().getDescription());
 
         getMyPageResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
 
@@ -207,7 +207,7 @@ public class UserService {
         getMyPageDetailResponse.setBirthday(user.getBirthday());
         getMyPageDetailResponse.setGender(user.getGender());
         getMyPageDetailResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
-        getMyPageDetailResponse.setRealEstateType(user.getRealEstateType().getDescription());
+        getMyPageDetailResponse.setRealEstateType(user.getRealEstateType() == null ? null : user.getRealEstateType().getDescription());
 
         if (user.getTransactionType() == null) {
             getMyPageDetailResponse.setTransactionType(TransactionType.MONTHLY.getDescription());
