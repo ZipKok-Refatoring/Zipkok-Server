@@ -219,7 +219,7 @@ public class KokService {
 
         List<String> contractImages = kok.getKokImages()
                 .stream()
-                .filter(kokImage -> kokImage.getOption().getCategory().equals(OptionCategory.CONTRACT))
+                .filter(kokImage -> kokImage.getCategory().equals(OptionCategory.CONTRACT.getDescription()))
                 .map(KokImage::getImageUrl)
                 .toList();
 
@@ -406,7 +406,7 @@ public class KokService {
 
             RealEstate realEstate = realEstateRepository.findById(postKokRequest.getRealEstateId()).get();
 
-            List<CheckedHighlight> checkedHighlights = postKokRequest.getCheckedHighlight()
+            List<CheckedHighlight> checkedHighlights = postKokRequest.getCheckedHighlights()
                     .stream()
                     .map(checkedHighlight ->
                             CheckedHighlight.builder()
