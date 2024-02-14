@@ -57,6 +57,8 @@ public class HtmlCrawling {
             // 각 매물 요소를 클릭하고 정보를 추출
             for (WebElement element : elements) {
 
+                String img_url = element.findElement(By.cssSelector("img")).getAttribute("src");
+
                 // 매물 id 값 뽑아서 정보 추출
                 element.click();
                 Thread.sleep(1000);
@@ -69,7 +71,7 @@ public class HtmlCrawling {
                         driver.switchTo().window(tab);
                         Thread.sleep(3000);
                         // 정보 추출 코드 작성
-                        extractRealEstateInfo();
+                        extractRealEstateInfo(img_url);
 
                         driver.close();
                         driver.switchTo().window(currentTab);
@@ -84,7 +86,7 @@ public class HtmlCrawling {
         }
     }
 
-    private void extractRealEstateInfo() throws InterruptedException {
+    private void extractRealEstateInfo(String img_url) throws InterruptedException {
 
         try {
             // address parsing
@@ -173,6 +175,7 @@ public class HtmlCrawling {
             String agent = driver.findElement(By.cssSelector("div.styled__Name-sc-1h4thfr-16.iwgGHR")).getText();
 
             RealEstate realEstate = RealEstate.builder()
+                    .imageUrl(img_url)
                     .address(address)
                     .latitude(latitude)
                     .longitude(longitude)
