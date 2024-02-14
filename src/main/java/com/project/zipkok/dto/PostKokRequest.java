@@ -20,7 +20,7 @@ public class PostKokRequest {
     private Long realEstateId;
 
     @NotNull
-    private List<String> checkedHighlight = new ArrayList<>();
+    private List<String> checkedHighlights = new ArrayList<>();
 
     @NotNull
     private List<String> checkedFurnitureOptions = new ArrayList<>();

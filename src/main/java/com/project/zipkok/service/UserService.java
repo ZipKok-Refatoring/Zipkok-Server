@@ -1,15 +1,10 @@
 package com.project.zipkok.service;
 
-import com.project.zipkok.common.argument_resolver.PreAuthorize;
 import com.project.zipkok.common.enums.*;
 import com.project.zipkok.common.exception.s3.FileUploadException;
-import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.KokOptionLoadException;
-import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
 import com.project.zipkok.common.exception.user.UserBadRequestException;
-import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.common.service.RedisService;
-import com.project.zipkok.config.RedisConfig;
 import com.project.zipkok.dto.*;
 import com.project.zipkok.model.DesireResidence;
 import com.project.zipkok.model.TransactionPriceConfig;
@@ -25,17 +20,16 @@ import com.project.zipkok.util.jwt.JwtProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.FileAlreadyExistsException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.MEMBER_NOT_FOUND;
-import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.SERVER_ERROR;
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
@@ -166,7 +160,7 @@ public class UserService {
         //dto field 값 set
         getMyPageResponse.setNickname(user.getNickname());
         getMyPageResponse.setImageUrl(user.getProfileImgUrl());
-        getMyPageResponse.setRealEstateType(user.getRealEstateType().getDescription());
+        getMyPageResponse.setRealEstateType(user.getRealEstateType() == null ? null : user.getRealEstateType().getDescription());
 
         getMyPageResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
 
@@ -174,29 +168,30 @@ public class UserService {
 
         //관심매물유형에 따라 dto field 값 set 작업 분기처리
         if(user.getTransactionType() == null){
-            getMyPageResponse.setTransactionType(TransactionType.MONTHLY.getDescription());
-            transactionType = "월세";
+            getMyPageResponse.setTransactionType(null);
+            getMyPageResponse.setPriceMax(null);
+            getMyPageResponse.setPriceMin(null);
+            getMyPageResponse.setDepositMax(null);
+            getMyPageResponse.setDepositMin(null);
         }
         else{
             getMyPageResponse.setTransactionType(user.getTransactionType().getDescription());
             transactionType = user.getTransactionType().getDescription();
+            if(transactionType.equals("월세")){
+                getMyPageResponse.setPriceMax(transactionPriceConfig.getMPriceMax());
+                getMyPageResponse.setPriceMin(transactionPriceConfig.getMPriceMin());
+                getMyPageResponse.setDepositMax(transactionPriceConfig.getMDepositMax());
+                getMyPageResponse.setDepositMin(transactionPriceConfig.getMDepositMin());
+            }
+            else if(transactionType.equals("전세")){
+                getMyPageResponse.setDepositMax(transactionPriceConfig.getYDepositMax());
+                getMyPageResponse.setDepositMin(transactionPriceConfig.getYDepositMin());
+            }
+            else if(transactionType.equals("매매")){
+                getMyPageResponse.setPriceMax(transactionPriceConfig.getPurchaseMax());
+                getMyPageResponse.setPriceMin(transactionPriceConfig.getPurchaseMin());
+            }
         }
-
-        if(transactionType.equals("월세")){
-            getMyPageResponse.setPriceMax(transactionPriceConfig.getMPriceMax());
-            getMyPageResponse.setPriceMin(transactionPriceConfig.getMPriceMin());
-            getMyPageResponse.setDepositMax(transactionPriceConfig.getMDepositMax());
-            getMyPageResponse.setDepositMin(transactionPriceConfig.getMDepositMin());
-        }
-        else if(transactionType.equals("전세")){
-            getMyPageResponse.setDepositMax(transactionPriceConfig.getYDepositMax());
-            getMyPageResponse.setDepositMin(transactionPriceConfig.getYDepositMin());
-        }
-        else if(transactionType.equals("매매")){
-            getMyPageResponse.setPriceMax(transactionPriceConfig.getPurchaseMax());
-            getMyPageResponse.setPriceMin(transactionPriceConfig.getPurchaseMin());
-        }
-
         return getMyPageResponse;
     }
 
@@ -213,10 +208,10 @@ public class UserService {
         getMyPageDetailResponse.setBirthday(user.getBirthday());
         getMyPageDetailResponse.setGender(user.getGender());
         getMyPageDetailResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
-        getMyPageDetailResponse.setRealEstateType(user.getRealEstateType().getDescription());
+        getMyPageDetailResponse.setRealEstateType(user.getRealEstateType() == null ? null : user.getRealEstateType().getDescription());
 
         if (user.getTransactionType() == null) {
-            getMyPageDetailResponse.setTransactionType(TransactionType.MONTHLY.getDescription());
+            getMyPageDetailResponse.setTransactionType(null);
         } else {
             getMyPageDetailResponse.setTransactionType(user.getTransactionType().getDescription());
         }
@@ -527,7 +522,29 @@ public class UserService {
             this.userRepository.delete(user);
 
         } catch (Exception e) {
-            throw new UserBadRequestException(SIGNOUT_FAIL);
+            throw new UserBadRequestException(DEREGISTRATION_FAIL);
+        }
+
+        return null;
+    }
+
+    @Transactional
+    public Object deregister(long userId) {
+        log.info("[UserService.deregister]");
+
+        try {
+            User user = this.userRepository.findByUserId(userId);
+
+            this.redisService.deleteValues(user.getEmail());
+
+            String updatedImgUrl = this.fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "pending/");
+
+            user.setProfileImgUrl(updatedImgUrl);
+            user.setStatus("pending");
+
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new UserBadRequestException(DEREGISTRATION_FAIL);
         }
 
         return null;
@@ -537,20 +554,23 @@ public class UserService {
     public Object updateMyInfo(long userId, MultipartFile file, PutUpdateMyInfoRequest putUpdateMyInfoRequest) {
         log.info("{UserService.updateMyInfo}");
 
-        String url = this.fileUploadUtils.uploadFile(file);
-
-        if(url == null){
-            throw new FileUploadException(CANNOT_SAVE_FILE);
-        }
-
         User user = this.userRepository.findByUserId(userId);
+
+        if(file != null) {
+            String url = this.fileUploadUtils.uploadFile(file);
+
+            if(url == null){
+                throw new FileUploadException(CANNOT_SAVE_FILE);
+            }
+
+            user.setProfileImgUrl(url);
+        }
 
         user.setNickname(putUpdateMyInfoRequest.getNickname());
         user.setBirthday(putUpdateMyInfoRequest.getBirthday());
         user.setGender(putUpdateMyInfoRequest.getGender());
         user.setRealEstateType(putUpdateMyInfoRequest.getRealEstateType());
         user.setTransactionType(putUpdateMyInfoRequest.getTransactionType());
-        user.setProfileImgUrl(url);
 
         DesireResidence desireResidence = user.getDesireResidence();
         desireResidence.setAddress(putUpdateMyInfoRequest.getAddress());
@@ -599,4 +619,32 @@ public class UserService {
 
         return null;
     }
+
+    public static String extractKeyFromUrl(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            String key = url.getPath().substring(1);
+            String returnKey = URLDecoder.decode(key, StandardCharsets.UTF_8.name());
+            log.info(returnKey);
+            return returnKey;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String extractLastPartFromKey(String inputString) {
+        int lastIndex = inputString.lastIndexOf('/');
+
+        if (lastIndex != -1) {
+            return inputString.substring(lastIndex + 1);
+        } else {
+            return inputString;
+        }
+    }
+
+
+
+
 }
