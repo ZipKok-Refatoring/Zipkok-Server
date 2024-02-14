@@ -5,6 +5,7 @@ import com.project.zipkok.common.enums.TransactionType;
 import com.project.zipkok.dto.GetAddressResponse;
 import com.project.zipkok.model.RealEstate;
 import com.project.zipkok.service.AddressService;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -55,9 +56,9 @@ public class HtmlCrawling {
             for (String tab : allTabs) {
                 if (!tab.equals(currentTab)) {
                     driver.switchTo().window(tab);
-                    Thread.sleep(1000);
+                    Thread.sleep(3000);
                     // 정보 추출 코드 작성
-                    //extractRealEstateInfo();
+                    extractRealEstateInfo();
                     
                     driver.close();
                     driver.switchTo().window(currentTab);
@@ -70,61 +71,105 @@ public class HtmlCrawling {
 
     private void extractRealEstateInfo() throws InterruptedException {
 
-        // address parsing
-        String address = driver.findElement(By.cssSelector("p.styled__Address-ze8x26-1.lKcXv")).getText();
+        try {
+            // address parsing
+            String address = driver.findElement(By.cssSelector("p.styled__Address-ze8x26-1.lKcXv")).getText();
 
-        // 위도, 경도 parsing
-        GetAddressResponse getAddressResponse = this.addressService.getAddresses(address, 1,1);
-        Double latitude = Double.parseDouble(getAddressResponse.getDocuments().get(0).getLatitude());
-        Double longitude = Double.parseDouble(getAddressResponse.getDocuments().get(0).getLongitude());
+            // 위도, 경도 parsing
+            //GetAddressResponse getAddressResponse = this.addressService.getAddresses(address, 1, 1);
+            //Double latitude = Double.parseDouble(getAddressResponse.getDocuments().get(0).getLatitude());
+            //Double longitude = Double.parseDouble(getAddressResponse.getDocuments().get(0).getLongitude());
 
-        // transactionType parsing
-        String transactionType = driver.findElement(By.cssSelector("div.styled__ListHeader-mttebe-0.gfmTEV")).getText();
-        if(transactionType.equals("월세")) transactionType = "MONTHLY";
-        else if (transactionType.equals("전세")) transactionType = "YEARLY";
-        else if(transactionType.equals("매매")) transactionType = "PURCHASE";
+            // transactionType parsing
+            String transactionType = driver.findElement(By.cssSelector("div.styled__ListHeader-mttebe-0.gfmTEV")).getText();
+            if (transactionType.equals("월세")) transactionType = "MONTHLY";
+            else if (transactionType.equals("전세")) transactionType = "YEARLY";
+            else if (transactionType.equals("매매")) transactionType = "PURCHASE";
 
-        // deposit, price parsing
-        String config = driver.findElement(By.cssSelector("div.styled__ListContent-mttebe-1.bQSaMO")).getText();
-        Long deposit = null;
-        Long price = null;
-        if(config.contains("/")){
-            deposit = Long.parseLong(config.substring(0,config.indexOf("/")));
-            price = Long.parseLong(config.substring(config.indexOf("/")+1));
-        }
-        else if(transactionType.equals("전세")){
-            if(config.contains("억")){
-                deposit = Long.parseLong(config.substring(0, config.indexOf("억")) + "0000");
-            }else deposit = Long.parseLong(config);
-            price = 0L;
-        }
-        else if(transactionType.equals("매매")){
-            if(config.contains("억")){
-                price = Long.parseLong(config.substring(0, config.indexOf("억")) + "0000");
-            }else price = Long.parseLong(config);
-            deposit = 0L;
-        }
+            // deposit, price parsing
+            String config = driver.findElement(By.cssSelector("div.styled__ListContent-mttebe-1.bQSaMO")).getText();
+            Long deposit = null;
+            Long price = null;
+            if (config.contains("/")) {
+                deposit = Long.parseLong(config.substring(0, config.indexOf("/")));
+                price = Long.parseLong(config.substring(config.indexOf("/") + 1));
+            } else if (transactionType.equals("YEARLY")) {
+                if (config.contains("억")) {
+                    deposit = Long.parseLong(config.substring(0, config.indexOf("억")) + "0000");
+                } else deposit = Long.parseLong(config);
+                price = 0L;
+            } else if (transactionType.equals("PURCHASE")) {
+                if (config.contains("억")) {
+                    price = Long.parseLong(config.substring(0, config.indexOf("억")) + "0000");
+                } else price = Long.parseLong(config);
+                deposit = 0L;
+            }
 
-        // 관리비 parsing
-        String fee_config = driver.findElement(By.cssSelector("div.styled__MaintenanceCostWrap-mttebe-2.SFyWA")).getText();
-        Integer administrative_fee = Integer.parseInt(fee_config.substring(fee_config.indexOf(" ")+1, fee_config.indexOf("만")));
+            // 관리비 parsing
+            String fee_config = driver.findElement(By.cssSelector("div.styled__MaintenanceCostWrap-mttebe-2.SFyWA")).getText();
+            Integer administrative_fee;
+            if(fee_config.contains("없음")) administrative_fee =0;
+            else administrative_fee = Integer.parseInt(fee_config.substring(fee_config.indexOf(" ") + 1, fee_config.indexOf("만")));
 
-        // realEstateType parsing
-        String realEstateType = driver.findElement(By.cssSelector("div.styled__ListContent-ialnoa-7.iMduqg")).getText();
-        if(realEstateType.equals("원룸")) realEstateType = "ONEROOM";
-        else if(realEstateType.equals("투룸"))
+            // 면적 parsing
+            String area_config = driver.findElements(By.cssSelector("div.styled__ListContent-ialnoa-7.iMduqg")).get(2).getText();
+            Float area_size = Float.parseFloat(area_config.substring(0, area_config.indexOf("㎡")));
+            Integer pyeongsu = (int)(area_size * 0.3025);
 
-        RealEstate.builder()
-                .address(address)
-                .latitude(latitude)
-                .longitude(longitude)
-                .transactionType(TransactionType.valueOf(transactionType))
-                .deposit(deposit)
-                .price(price)
-                .administrativeFee(administrative_fee)
-                .realEstateType(RealEstateType.valueOf(realEstateType))
-                .build();
+            // realEstateType parsing
+            String realEstateType = driver.findElement(By.cssSelector("div.styled__ListContent-ialnoa-7.iMduqg")).getText();
+            if (realEstateType.contains("원룸")) realEstateType = "ONEROOM";
+            else if (realEstateType.contains("투룸")) realEstateType = "TWOROOM";
+            else if (realEstateType.contains("오피스텔")) realEstateType = "OFFICETELL";
+            else if ( realEstateType.contains("아파트")) realEstateType = "APARTMENT";
 
+            // floor_num parsing
+            String floor_num_config = driver.findElements(By.cssSelector("div.styled__ListContent-ialnoa-7.iMduqg")).get(1).getText();
+            Integer floor_num;
+            String detail = null;
+            String subString = floor_num_config.substring(0,floor_num_config.indexOf("층"));
+
+            if(subString.equals("반지")){
+                floor_num = -1;
+                detail = "반지하";
+            }
+            else {
+                floor_num = Integer.parseInt(subString);
+            }
+
+            //agent parsing
+            String agent = driver.findElement(By.cssSelector("div.styled__Name-sc-1h4thfr-16.iwgGHR")).getText();
+
+            RealEstate realEstate = RealEstate.builder()
+                    .address(address)
+                    .latitude(10)
+                    .longitude(10)
+                    .transactionType(TransactionType.valueOf(transactionType))
+                    .deposit(deposit)
+                    .price(price)
+                    .administrativeFee(administrative_fee)
+                    .areaSize(area_size)
+                    .pyeongsu(pyeongsu)
+                    .realEstateType(RealEstateType.valueOf(realEstateType))
+                    .floorNum(floor_num)
+                    .agent(agent)
+                    .detail(detail)
+                    .build();
+
+            System.out.println("address = " + realEstate.getAddress());
+            System.out.println("latitude = " + realEstate.getLatitude());
+            System.out.println("longitude = " + realEstate.getLongitude());
+            System.out.println("transactionType = " + realEstate.getTransactionType().getDescription());
+            System.out.println("deposit = " + realEstate.getDeposit());
+            System.out.println("price = " + realEstate.getPrice());
+            System.out.println("administrativeFee = " + realEstate.getAdministrativeFee());
+            System.out.println("areaSize = " + realEstate.getAreaSize());
+            System.out.println("pyeongsu = " + realEstate.getPyeongsu());
+            System.out.println("realEstateType = " + realEstate.getRealEstateType().getDescription());
+            System.out.println("floorNum = " + realEstate.getFloorNum());
+            System.out.println("detail = " + realEstate.getDetail());
+            System.out.println("agent = " + realEstate.getAgent());
+            System.out.println("====================================\n\n");
 //        String imageURL;
 //        String address;
 //        String detail_address;
@@ -142,6 +187,9 @@ public class HtmlCrawling {
 //        String agent;
 
 
+        }catch (Exception e ){
+            System.out.println(e.getMessage());
+        }
 
         driver.navigate().back();
     }
