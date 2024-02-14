@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
+import static java.time.LocalTime.now;
 
 @Slf4j
 @Service
@@ -476,13 +477,10 @@ public class KokService {
                     .toList();
 
 
-            List<String> uploadedUrls = multipartFiles.stream()
-                    .map(fileUploadUtils::uploadFile)
-                    .collect(Collectors.toList());
+        List<KokImage> kokImages = multipartFiles.stream()
+                    .map(file -> {
 
-
-            List<KokImage> kokImages = uploadedUrls.stream()
-                    .map(url -> {
+                        String url = file.getName();
                         OptionCategory category = OptionCategory.OUTER;
                         if (url.contains("OUTER")) {
                             category = OptionCategory.OUTER;
@@ -491,14 +489,17 @@ public class KokService {
                         } else if (url.contains("CONTRACT")) {
                             category = OptionCategory.CONTRACT;
                         }
+
+                        url = fileUploadUtils.uploadFile(user.getUserId().toString() + "/" + now(), file);
+
                         return KokImage.builder()
                                 .category(category.getDescription())
                                 .imageUrl(url)
                                 .kok(kok)
                                 .option(null)
                                 .build();
-                    })
-                    .collect(Collectors.toList());
+                    }).collect(Collectors.toList());
+
 
             kok.setDirection(postKokRequest.getDirection());
             kok.setReview(postKokRequest.getReviewInfo().getReviewText());

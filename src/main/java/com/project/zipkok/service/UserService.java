@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -43,6 +44,7 @@ public class UserService {
     private final HighlightRepository highlightRepository;
     private final OptionRepository optionRepository;
     private final DetailOptionRepository detailOptionRepository;
+    private final KokImageRepository kokImageRepository;
 
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
@@ -539,6 +541,22 @@ public class UserService {
 
             String updatedImgUrl = this.fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "pending/");
 
+            user.getKoks()
+                    .stream()
+                    .map(kok -> kok.getKokImages()
+                            .stream()
+                            .map(kokImage -> {
+                                try {
+                                    kokImage.setImageUrl(this.fileUploadUtils.updateFileDir(extractKeyFromUrl(kokImage.getImageUrl()), "pending/"));
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                kokImageRepository.save(kokImage);
+                                return null;
+                            }));
+
+
+
             user.setProfileImgUrl(updatedImgUrl);
             user.setStatus("pending");
 
@@ -557,7 +575,7 @@ public class UserService {
         User user = this.userRepository.findByUserId(userId);
 
         if(file != null) {
-            String url = this.fileUploadUtils.uploadFile(file);
+            String url = this.fileUploadUtils.uploadFile(user.getUserId().toString() + "/profile", file);
 
             if(url == null){
                 throw new FileUploadException(CANNOT_SAVE_FILE);
@@ -634,8 +652,8 @@ public class UserService {
         }
     }
 
-    public static String extractLastPartFromKey(String inputString) {
-        int lastIndex = inputString.lastIndexOf('/');
+    public static String removeFirstDirPart(String inputString) {
+        int lastIndex = inputString.indexOf('/');
 
         if (lastIndex != -1) {
             return inputString.substring(lastIndex + 1);

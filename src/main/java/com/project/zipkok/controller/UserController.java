@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -118,8 +119,8 @@ public class UserController {
     }
 
     @Operation(summary = "프로필 수정하기 API", description = "프로필 수정하기 기능을 담당하는 API입니다.")
-    @PutMapping("")
-    public BaseResponse<Object> updateMyInfo(@Parameter(hidden = true) @PreAuthorize long userId, @RequestPart(value = "file", required = false) MultipartFile file, @RequestPart(value = "data", required = false) PutUpdateMyInfoRequest putUpdateMyInfoRequest , BindingResult bindingResult){
+    @PutMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public BaseResponse<Object> updateMyInfo(@Parameter(hidden = true) @PreAuthorize long userId, @RequestPart(value = "data", required = false) PutUpdateMyInfoRequest putUpdateMyInfoRequest, @RequestPart(value = "file", required = false) MultipartFile file, BindingResult bindingResult){
         log.info("{UserController.updateMyInfo}");
 
         if(bindingResult.hasFieldErrors("nickname")){

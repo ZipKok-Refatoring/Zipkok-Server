@@ -6,6 +6,7 @@ import com.project.zipkok.common.oauth.request.OAuthLoginParams;
 import com.project.zipkok.common.oauth.response.OAuthInfoResponse;
 import com.project.zipkok.dto.GetLoginResponse;
 import com.project.zipkok.model.User;
+import com.project.zipkok.repository.KokImageRepository;
 import com.project.zipkok.repository.UserRepository;
 import com.project.zipkok.util.FileUploadUtils;
 import com.project.zipkok.util.jwt.AuthTokens;
@@ -28,6 +29,7 @@ public class OAuthLoginService {
     private final RequestOAuthInfoService requestOAuthInfoService;
     private final RedisService redisService;
     private final FileUploadUtils fileUploadUtils;
+    private final KokImageRepository kokImageRepository;
 
     public GetLoginResponse login(OAuthLoginParams params) throws IOException {
         OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
@@ -40,6 +42,21 @@ public class OAuthLoginService {
 
                 if(user.getStatus().equals("pending")) {
                     String newProfileUrl = fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "");
+
+                    user.getKoks()
+                            .stream()
+                            .map(kok -> kok.getKokImages()
+                                    .stream()
+                                    .map(kokImage -> {
+                                        try {
+                                            kokImage.setImageUrl(this.fileUploadUtils.updateFileDir(extractKeyFromUrl(kokImage.getImageUrl()), ""));
+                                        } catch (IOException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                        kokImageRepository.save(kokImage);
+                                        return null;
+                                    }));
+
                     user.setProfileImgUrl(newProfileUrl);
                 }
 
