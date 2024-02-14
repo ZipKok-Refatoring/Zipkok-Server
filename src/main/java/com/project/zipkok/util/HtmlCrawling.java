@@ -4,6 +4,8 @@ import com.project.zipkok.common.enums.RealEstateType;
 import com.project.zipkok.common.enums.TransactionType;
 import com.project.zipkok.dto.GetAddressResponse;
 import com.project.zipkok.model.RealEstate;
+import com.project.zipkok.repository.RealEstateRepository;
+import com.project.zipkok.repository.UserRepository;
 import com.project.zipkok.service.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
@@ -26,9 +28,9 @@ public class HtmlCrawling {
     @Value("${crawling.workspace_path}")
     private String workspacePath;
 
-    // WebDriver 객체 생성
     ChromeDriver driver = new ChromeDriver();
     private final AddressService addressService;
+    private final RealEstateRepository realEstateRepository;
 
     public void parsingHTML(String url) throws IOException, InterruptedException {
         // 현재 package의 workspace 경로
@@ -47,31 +49,37 @@ public class HtmlCrawling {
         driver.get(url);
         Thread.sleep(1000);
 
-        // 매물 요소들을 선택하여 리스트로 가져오기
-        List<WebElement> elements = driver.findElements(By.cssSelector("li.styled__CardItem-sc-5dgg47-3.cVNfk"));
+        for(int i =0;i<10;i++) {
+            System.out.println(i);
+            // 매물 요소들을 선택하여 리스트로 가져오기
+            List<WebElement> elements = driver.findElements(By.cssSelector("li.styled__CardItem-sc-5dgg47-3.cVNfk"));
 
+            // 각 매물 요소를 클릭하고 정보를 추출
+            for (WebElement element : elements) {
 
-        // 각 매물 요소를 클릭하고 정보를 추출
-        for (WebElement element : elements) {
-            // 매물 id 값 뽑아서 정보 추출
-            element.click();
-            Thread.sleep(1000);
-            
-            //tab 정보 가져오기
-            String currentTab = driver.getWindowHandle();
-            Set<String> allTabs = driver.getWindowHandles();
-            for (String tab : allTabs) {
-                if (!tab.equals(currentTab)) {
-                    driver.switchTo().window(tab);
-                    Thread.sleep(3000);
-                    // 정보 추출 코드 작성
-                    extractRealEstateInfo();
-                    
-                    driver.close();
-                    driver.switchTo().window(currentTab);
+                // 매물 id 값 뽑아서 정보 추출
+                element.click();
+                Thread.sleep(1000);
+
+                //tab 정보 가져오기
+                String currentTab = driver.getWindowHandle();
+                Set<String> allTabs = driver.getWindowHandles();
+                for (String tab : allTabs) {
+                    if (!tab.equals(currentTab)) {
+                        driver.switchTo().window(tab);
+                        Thread.sleep(3000);
+                        // 정보 추출 코드 작성
+                        extractRealEstateInfo();
+
+                        driver.close();
+                        driver.switchTo().window(currentTab);
+                    }
                 }
+
+                Thread.sleep(1000);
             }
-            
+            //해당 페이지의 모든 매물 추출이 끝나면 그 다음 페이지 클릭
+            driver.findElements(By.cssSelector("button.styled__PageBtn-d24fjp-2.caslEP")).get(Math.min(i,2)).click();
             Thread.sleep(1000);
         }
     }
@@ -118,20 +126,25 @@ public class HtmlCrawling {
             if(fee_config.contains("없음")) administrative_fee =0;
             else administrative_fee = Integer.parseInt(fee_config.substring(fee_config.indexOf(" ") + 1, fee_config.indexOf("만")));
 
-            // 면적 parsing
-            String area_config = driver.findElements(By.cssSelector("div.styled__ListContent-ialnoa-7.iMduqg")).get(2).getText();
-            Float area_size = Float.parseFloat(area_config.substring(0, area_config.indexOf("㎡")));
-            Integer pyeongsu = (int)(area_size * 0.3025);
+            int index =0;
 
             // realEstateType parsing
             String realEstateType = driver.findElement(By.cssSelector("div.styled__ListContent-ialnoa-7.iMduqg")).getText();
             if (realEstateType.contains("원룸")) realEstateType = "ONEROOM";
             else if (realEstateType.contains("투룸")) realEstateType = "TWOROOM";
             else if (realEstateType.contains("오피스텔")) realEstateType = "OFFICETELL";
-            else if ( realEstateType.contains("아파트")) realEstateType = "APARTMENT";
+            else{
+                index++;
+                realEstateType = "APARTMENT";
+            }
+
+            // 면적 parsing
+            String area_config = driver.findElements(By.cssSelector("div.styled__ListContent-ialnoa-7.iMduqg")).get(index+2).getText();
+            Float area_size = Float.parseFloat(area_config.substring(0, area_config.indexOf("㎡")));
+            Integer pyeongsu = (int)(area_size * 0.3025);
 
             // floor_num parsing
-            String floor_num_config = driver.findElements(By.cssSelector("div.styled__ListContent-ialnoa-7.iMduqg")).get(1).getText();
+            String floor_num_config = driver.findElements(By.cssSelector("div.styled__ListContent-ialnoa-7.iMduqg")).get(index+1).getText();
             Integer floor_num;
             String detail = null;
             String subString = floor_num_config.substring(0,floor_num_config.indexOf("층"));
@@ -139,6 +152,18 @@ public class HtmlCrawling {
             if(subString.equals("반지")){
                 floor_num = -1;
                 detail = "반지하";
+            }
+            else if(subString.equals("고")){
+                floor_num = 0;
+                detail = "고층";
+            }
+            else if(subString.equals("중")){
+                floor_num = 0;
+                detail = "중층";
+            }
+            else if(subString.equals("저")){
+                floor_num = 0;
+                detail = "저층";
             }
             else {
                 floor_num = Integer.parseInt(subString);
@@ -161,6 +186,7 @@ public class HtmlCrawling {
                     .floorNum(floor_num)
                     .agent(agent)
                     .detail(detail)
+                    .status("active")
                     .build();
 
             System.out.println("address = " + realEstate.getAddress());
@@ -176,22 +202,10 @@ public class HtmlCrawling {
             System.out.println("floorNum = " + realEstate.getFloorNum());
             System.out.println("detail = " + realEstate.getDetail());
             System.out.println("agent = " + realEstate.getAgent());
-            System.out.println("====================================\n\n");
-//        String imageURL;
-//        String address;
-//        String detail_address;
-//        Double latitude;
-//        Double longitude;
-//        String Transaction_type;
-//        String deposit;
-//        String price;
-//        String administrative_fee;
-//        String detail;
-//        Integer area_size;
-//        Integer pyeongsu;
-//        String realEstate_type;
-//        Integer floor_num;
-//        String agent;
+
+            this.realEstateRepository.save(realEstate);
+
+            System.out.println("=================저장완료===================\n\n");
 
 
         }catch (Exception e ){
