@@ -5,11 +5,13 @@ import com.project.zipkok.common.enums.TransactionType;
 import com.project.zipkok.dto.GetAddressResponse;
 import com.project.zipkok.model.RealEstate;
 import com.project.zipkok.service.AddressService;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -17,15 +19,20 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 
+@Component
+@RequiredArgsConstructor
 public class HtmlCrawling {
+
+    @Value("${crawling.workspace_path}")
+    private String workspacePath;
 
     // WebDriver 객체 생성
     ChromeDriver driver = new ChromeDriver();
-    AddressService addressService = new AddressService();
+    private final AddressService addressService;
 
     public void parsingHTML(String url) throws IOException, InterruptedException {
-        // 현재 package의 workspace 경로, Windows는 [ chromedriver.exe ]
-        Path path = Paths.get("C:\\Users\\권민혁\\Downloads\\chromedriver-win64(121.0.6167.85)\\chromedriver-win64\\chromedriver.exe");  // 현재 package의
+        // 현재 package의 workspace 경로
+        Path path = Paths.get(workspacePath);
 
         // WebDriver 경로 설정
         System.setProperty("webdriver.chrome.driver", path.toString());
@@ -75,10 +82,10 @@ public class HtmlCrawling {
             // address parsing
             String address = driver.findElement(By.cssSelector("p.styled__Address-ze8x26-1.lKcXv")).getText();
 
-            // 위도, 경도 parsing
-            //GetAddressResponse getAddressResponse = this.addressService.getAddresses(address, 1, 1);
-            //Double latitude = Double.parseDouble(getAddressResponse.getDocuments().get(0).getLatitude());
-            //Double longitude = Double.parseDouble(getAddressResponse.getDocuments().get(0).getLongitude());
+//             위도, 경도 parsing
+            GetAddressResponse getAddressResponse = this.addressService.getAddresses(address, 1, 1);
+            Double latitude = Double.parseDouble(getAddressResponse.getDocuments().get(0).getLatitude());
+            Double longitude = Double.parseDouble(getAddressResponse.getDocuments().get(0).getLongitude());
 
             // transactionType parsing
             String transactionType = driver.findElement(By.cssSelector("div.styled__ListHeader-mttebe-0.gfmTEV")).getText();
@@ -142,8 +149,8 @@ public class HtmlCrawling {
 
             RealEstate realEstate = RealEstate.builder()
                     .address(address)
-                    .latitude(10)
-                    .longitude(10)
+                    .latitude(latitude)
+                    .longitude(longitude)
                     .transactionType(TransactionType.valueOf(transactionType))
                     .deposit(deposit)
                     .price(price)
