@@ -165,3 +165,7 @@ logging:
   org.hibernate.orm.jdbc.bind:
 
 
+crawling:
+  workspace_path: ${CRAWLING_WORKSPACE_PATH}
+
+

@@ -35,7 +35,6 @@ public class AddressService {
 
         String apiKey = "KakaoAK " + key;
 
-
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("Authorization", apiKey);
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
