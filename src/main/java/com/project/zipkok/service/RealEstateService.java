@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,10 +42,15 @@ public class RealEstateService {
             RealEstate realEstate = realEstateRepository.findById(realEstateId).get();
             User user = userRepository.findByUserId(userId);
 
-            List<String> realEstateImages = realEstate.getRealEstateImages()
+            List<String> realEstateImages = new ArrayList<>();
+
+            realEstateImages.add(realEstate.getImageUrl());
+
+            realEstate.getRealEstateImages()
                     .stream()
                     .map(RealEstateImage::getImageUrl)
-                    .collect(Collectors.toList());
+                    .map(realEstateImages::add);
+
 
             boolean isZimmed = false;
             boolean isKokked = false;
