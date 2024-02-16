@@ -43,4 +43,8 @@ public class GetMyPageDetailResponse {
     private Long priceMin;
 
     private Long priceMax;
+
+    private double latitude;
+
+    private double longitude;
 }
