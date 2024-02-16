@@ -1,6 +1,6 @@
 package com.project.zipkok;
 
-import com.project.zipkok.util.HtmlCrawling;
+//import com.project.zipkok.util.HtmlCrawling;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
