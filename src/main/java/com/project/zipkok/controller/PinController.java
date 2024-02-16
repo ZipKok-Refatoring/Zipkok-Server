@@ -30,22 +30,8 @@ public class PinController {
 
     @Operation(summary = "지도에서 핀 조회 API", description = "지도에서 핀 조회할때 사용하는 API")
     @GetMapping("")
-    public BaseResponse<GetPinResponse> getPin(@Parameter(hidden=true) @PreAuthorize long userId,
-                                               @Validated @ModelAttribute GetPinRequest getPinRequest,
-                                               BindingResult bindingResult){
+    public BaseResponse<GetPinResponse> getPin(@Parameter(hidden=true) @PreAuthorize long userId){
         log.info("{PinController.getPin}");
-
-        if(bindingResult.hasFieldErrors("southWestLat") ||
-                bindingResult.hasFieldErrors("northEastLat")){
-            throw new RealEstateException(INVALID_LATITUDE_FORMAT);
-        }
-        if(bindingResult.hasFieldErrors("southWestLon") ||
-                bindingResult.hasFieldErrors("northEastLon")){
-            throw new RealEstateException(INVALID_LONGITUDE_FORMAT);
-        }
-        if(bindingResult.hasErrors()){
-            throw new RealEstateException(MIN_POINT_IS_BIGGER_THAN_MAX_POINT);
-        }
 
         return new BaseResponse<>(PIN_LOAD_SUCCESS, this.pinService.getPin(userId));
     }
