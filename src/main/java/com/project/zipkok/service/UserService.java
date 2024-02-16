@@ -546,9 +546,7 @@ public class UserService {
             if(user.getProfileImgUrl() != null) {
                 updatedImgUrl = this.fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "pending/");
             }
-
-            log.info(String.valueOf(user.getKoks().get(0).getKokId()));
-
+            
             if(!user.getKoks().isEmpty()) {
                 user.getKoks()
                         .stream()
