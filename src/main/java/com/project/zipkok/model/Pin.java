@@ -1,13 +1,17 @@
 package com.project.zipkok.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import org.checkerframework.checker.units.qual.A;
 
 @Entity
 @Table(name = "Pin")
 @NoArgsConstructor
 @Getter
+@Builder
+@AllArgsConstructor
+@Setter
 public class Pin {
 
     @Id

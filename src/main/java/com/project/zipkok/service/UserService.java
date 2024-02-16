@@ -549,28 +549,30 @@ public class UserService {
 
             log.info(String.valueOf(user.getKoks().get(0).getKokId()));
 
-            user.getKoks()
-                    .stream()
-                    .forEach(kok -> {
-                        log.info("가져온 콕 아이디"+ String.valueOf(kok.getKokId()));
-                        log.info("첫번째 콕이미지 url"+ kok.getKokImages().get(0).getImageUrl());
-                                kok.getKokImages()
-                                        .stream()
-                                        .forEach(kokImage -> {
-                                            log.info(kokImage.getImageUrl());
-                                            try {
-                                                kokImage.setImageUrl(this.fileUploadUtils.updateFileDir(extractKeyFromUrl(kokImage.getImageUrl()), "pending/"));
-
+            if(!user.getKoks().isEmpty()) {
+                user.getKoks()
+                        .stream()
+                        .forEach(kok -> {
+                                    log.info("가져온 콕 아이디" + String.valueOf(kok.getKokId()));
+                                    log.info("첫번째 콕이미지 url" + kok.getKokImages().get(0).getImageUrl());
+                                    kok.getKokImages()
+                                            .stream()
+                                            .forEach(kokImage -> {
                                                 log.info(kokImage.getImageUrl());
-                                            } catch (IOException e) {
-                                                log.error(e.getMessage());
-                                                throw new RuntimeException(e);
-                                            }
-                                            kokImageRepository.save(kokImage);
+                                                try {
+                                                    kokImage.setImageUrl(this.fileUploadUtils.updateFileDir(extractKeyFromUrl(kokImage.getImageUrl()), "pending/"));
 
-                                        });
-                            }
-                    );
+                                                    log.info(kokImage.getImageUrl());
+                                                } catch (IOException e) {
+                                                    log.error(e.getMessage());
+                                                    throw new RuntimeException(e);
+                                                }
+                                                kokImageRepository.save(kokImage);
+
+                                            });
+                                }
+                        );
+            }
 
 
 
@@ -579,6 +581,7 @@ public class UserService {
 
             userRepository.save(user);
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new UserBadRequestException(DEREGISTRATION_FAIL);
         }
 
