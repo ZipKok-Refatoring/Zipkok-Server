@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
-@Slf4j
-@RestController
-@RequestMapping("/crawling")
-@RequiredArgsConstructor
-@Tag(name = "Crawling API", description = "매물 크롤링 API : 크롤링을 위한 api입니다. 사용하지 말아주세요 !!")
-public class CrawlingController {
-
-    private final HtmlCrawling htmlCrawling;
-    @GetMapping("")
-    @Operation(summary = "크롤링을 위한 api 입니다. 사용하지 말아주세요!")
-    public void crawling(@RequestParam("uri") String uri) throws IOException, InterruptedException {
-        log.info("[AddressController.searchAddress]");
-
-        htmlCrawling.parsingHTML(uri);
-
-    }
-}
+//@Slf4j
+//@RestController
+//@RequestMapping("/crawling")
+//@RequiredArgsConstructor
+//@Tag(name = "Crawling API", description = "매물 크롤링 API : 크롤링을 위한 api입니다. 사용하지 말아주세요 !!")
+//public class CrawlingController {
+//
+//    private final HtmlCrawling htmlCrawling;
+//    @GetMapping("")
+//    @Operation(summary = "크롤링을 위한 api 입니다. 사용하지 말아주세요!")
+//    public void crawling(@RequestParam("uri") String uri) throws IOException, InterruptedException {
+//        log.info("[AddressController.searchAddress]");
+//
+//        htmlCrawling.parsingHTML(uri);
+//
+//    }
+//}
