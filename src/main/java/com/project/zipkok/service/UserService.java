@@ -546,7 +546,7 @@ public class UserService {
             if(user.getProfileImgUrl() != null) {
                 updatedImgUrl = this.fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "pending/");
             }
-            
+
             if(!user.getKoks().isEmpty()) {
                 user.getKoks()
                         .stream()
@@ -578,6 +578,42 @@ public class UserService {
             user.setStatus("pending");
 
             userRepository.save(user);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new UserBadRequestException(DEREGISTRATION_FAIL);
+        }
+
+        return null;
+    }
+
+    @Transactional
+    public Object deregisterV2(long userId) {
+
+        log.info("[UserService.deregisterV2");
+
+        try {
+            User user = this.userRepository.findByUserId(userId);
+
+            this.redisService.deleteValues(user.getEmail());
+
+            if(user.getProfileImgUrl() != null) {
+                this.fileUploadUtils.deleteFile(extractKeyFromUrl(user.getProfileImgUrl()));
+            }
+
+            if(!user.getKoks().isEmpty()) {
+                user.getKoks()
+                        .stream()
+                        .forEach(kok -> {
+                                    kok.getKokImages()
+                                            .stream()
+                                            .forEach(kokImage -> {
+                                                this.fileUploadUtils.deleteFile(extractKeyFromUrl(kokImage.getImageUrl()));
+                                            });
+                                }
+                        );
+            }
+
+            userRepository.delete(user);
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new UserBadRequestException(DEREGISTRATION_FAIL);

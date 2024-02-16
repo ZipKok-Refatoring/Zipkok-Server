@@ -197,7 +197,7 @@ public class UserController {
     public BaseResponse<Object> deregistration(@Parameter(hidden=true) @PreAuthorize long userId){
         log.info("[UserController.deregistration]");
 
-        return new BaseResponse<>(DEREGISTRATION_SUCCESS, this.userService.deregister(userId));
+        return new BaseResponse<>(DEREGISTRATION_SUCCESS, this.userService.deregisterV2(userId));
     }
 
     @Operation(summary = "필터 API", description = "필터정보 수정을 위한 api입니다.")
