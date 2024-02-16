@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.kerberos.KerberosKey;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -489,7 +492,8 @@ public class KokService {
                             category = OptionCategory.CONTRACT;
                         }
 
-                        url = fileUploadUtils.uploadFile(user.getUserId().toString() + "/" + now(), file);
+                        url = fileUploadUtils.uploadFile(user.getUserId().toString() + "/" + System.currentTimeMillis(), file);
+
 
                         return KokImage.builder()
                                 .category(category.getDescription())

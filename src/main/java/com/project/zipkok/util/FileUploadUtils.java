@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.CANNOT_SAVE_FILE;
-import static com.project.zipkok.service.UserService.removeFirstDirPart;
+import static com.project.zipkok.service.UserService.removePendingDirPart;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -47,13 +47,10 @@ public class FileUploadUtils {
         log.info("[FileUploadUtils.updateFileDir]");
 
         try {
-
-            log.info(key);
-
             MultipartFile file = downloadAsMultipartFile(bucket, key);
 
             if(key.contains("pending/")) {
-                key = removeFirstDirPart(deleteFile(key));
+                key = removePendingDirPart(deleteFile(key));
             } else {
                 key = deleteFile(key);
             }

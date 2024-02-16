@@ -539,18 +539,21 @@ public class UserService {
 
             this.redisService.deleteValues(user.getEmail());
 
-            String updatedImgUrl = this.fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "pending/");
+            String updatedImgUrl = null;
+            if(user.getProfileImgUrl() != null) {
+                updatedImgUrl = this.fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "pending/");
+            }
 
             log.info(String.valueOf(user.getKoks().get(0).getKokId()));
 
             user.getKoks()
                     .stream()
-                    .map(kok -> {
+                    .forEach(kok -> {
                         log.info("가져온 콕 아이디"+ String.valueOf(kok.getKokId()));
                         log.info("첫번째 콕이미지 url"+ kok.getKokImages().get(0).getImageUrl());
                                 kok.getKokImages()
                                         .stream()
-                                        .map(kokImage -> {
+                                        .forEach(kokImage -> {
                                             log.info(kokImage.getImageUrl());
                                             try {
                                                 kokImage.setImageUrl(this.fileUploadUtils.updateFileDir(extractKeyFromUrl(kokImage.getImageUrl()), "pending/"));
@@ -561,9 +564,8 @@ public class UserService {
                                                 throw new RuntimeException(e);
                                             }
                                             kokImageRepository.save(kokImage);
-                                            return kokImage;
+
                                         });
-                                        return kok;
                             }
                     );
 
@@ -664,14 +666,12 @@ public class UserService {
         }
     }
 
-    public static String removeFirstDirPart(String inputString) {
-        int lastIndex = inputString.indexOf('/');
-
-        if (lastIndex != -1) {
-            return inputString.substring(lastIndex + 1);
-        } else {
-            return inputString;
+    public static String removePendingDirPart(String inputString) {
+        String prefixToRemove = "pending/";
+        if (inputString.startsWith(prefixToRemove)) {
+            return inputString.substring(prefixToRemove.length());
         }
+        return inputString;
     }
 
 

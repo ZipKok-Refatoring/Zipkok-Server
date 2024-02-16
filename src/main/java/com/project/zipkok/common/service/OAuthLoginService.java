@@ -45,16 +45,15 @@ public class OAuthLoginService {
 
                     user.getKoks()
                             .stream()
-                            .map(kok -> kok.getKokImages()
+                            .forEach(kok -> kok.getKokImages()
                                     .stream()
-                                    .map(kokImage -> {
+                                    .forEach(kokImage -> {
                                         try {
                                             kokImage.setImageUrl(this.fileUploadUtils.updateFileDir(extractKeyFromUrl(kokImage.getImageUrl()), ""));
                                         } catch (IOException e) {
                                             throw new RuntimeException(e);
                                         }
                                         kokImageRepository.save(kokImage);
-                                        return null;
                                     }));
 
                     user.setProfileImgUrl(newProfileUrl);
