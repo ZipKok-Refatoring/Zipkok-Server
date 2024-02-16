@@ -150,7 +150,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     PIN_UPDATE_SUCCESS(11006, HttpStatus.OK.value(), "핀 수정 성공"),
     PIN_UPDATE_FAIL(11007, HttpStatus.BAD_REQUEST.value(), "핀 수정 실패"),
     PIN_DELETE_SUCCESS(11008, HttpStatus.OK.value(), "핀 삭제 성공"),
-    PIN_DELETE_FAIL(11009, HttpStatus.BAD_REQUEST.value(), "핀 삭제 실패");
+    PIN_DELETE_FAIL(11009, HttpStatus.BAD_REQUEST.value(), "핀 삭제 실패"),
+    INVALID_PIN_FORMAT(11010, HttpStatus.BAD_REQUEST.value(), "핀 정보 형식 오류");
 
 
 

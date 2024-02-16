@@ -3,6 +3,8 @@ package com.project.zipkok.service;
 import com.project.zipkok.common.exception.PinException;
 import com.project.zipkok.dto.GetPinResponse;
 import com.project.zipkok.dto.PinInfo;
+import com.project.zipkok.dto.PostPinRequest;
+import com.project.zipkok.dto.PostPinResponse;
 import com.project.zipkok.model.Pin;
 import com.project.zipkok.model.User;
 import com.project.zipkok.repository.PinRepository;
@@ -38,7 +40,7 @@ public class PinService {
                                 .id(pin.getPinId())
                                 .name(pin.getPinNickname())
                                 .address(PinInfo.PinAddressInfo.builder()
-                                        .addressName(pin.getAddress() + " " + pin.getDetailAddress())
+                                        .addressName(pin.getAddress())
                                         .x(pin.getLatitude())
                                         .y(pin.getLongitude())
                                         .build())
@@ -67,12 +69,32 @@ public class PinService {
                 .id(pin.getPinId())
                 .name(pin.getPinNickname())
                 .address(PinInfo.PinAddressInfo.builder()
-                        .addressName(pin.getAddress() + " " + pin.getDetailAddress())
+                        .addressName(pin.getAddress())
                         .x(pin.getLatitude())
                         .y(pin.getLongitude())
                         .build())
                 .build();
 
         return response;
+    }
+
+    @Transactional
+    public PostPinResponse registerPin(long userId, PostPinRequest postPinRequest) {
+        log.info("[PinService.registerPin]");
+
+        User user = userRepository.findByUserId(userId);
+
+        Pin pin = Pin.builder()
+                .user(user)
+                .pinNickname(postPinRequest.getName())
+                .address(postPinRequest.getAddress().getAddressName())
+                .latitude(postPinRequest.getAddress().getX())
+                .longitude(postPinRequest.getAddress().getY())
+                .build();
+
+        PostPinResponse response = new PostPinResponse(pinRepository.save(pin).getPinId());
+
+        return response;
+
     }
 }

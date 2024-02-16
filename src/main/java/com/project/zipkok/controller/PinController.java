@@ -1,6 +1,7 @@
 package com.project.zipkok.controller;
 
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
+import com.project.zipkok.common.exception.PinException;
 import com.project.zipkok.common.exception.RealEstateException;
 import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.dto.*;
@@ -54,6 +55,21 @@ public class PinController {
         log.info("{PinController.getPin}");
 
         return new BaseResponse<>(PIN_LOAD_SUCCESS, this.pinService.getPinDetail(userId, pinId));
+    }
+
+    @Operation(summary = "핀 등 API", description = "핀을 등록하는 API")
+    @PostMapping("")
+    public BaseResponse<PostPinResponse> registerPin(@Parameter(hidden=true) @PreAuthorize long userId,
+                                                     @Validated @RequestBody PostPinRequest postPinRequest,
+                                                     BindingResult bindingResult){
+        log.info("{PinController.getPin}");
+
+        if(bindingResult.hasErrors()){
+            throw new PinException(INVALID_PIN_FORMAT);
+        }
+
+
+        return new BaseResponse<>(PIN_LOAD_SUCCESS, this.pinService.registerPin(userId, postPinRequest));
     }
 
 }
