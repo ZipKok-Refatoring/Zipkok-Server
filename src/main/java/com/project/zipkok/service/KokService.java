@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.kerberos.KerberosKey;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
+import static java.time.LocalTime.now;
 
 @Slf4j
 @Service
@@ -476,13 +480,9 @@ public class KokService {
                     .toList();
 
 
-            List<String> uploadedUrls = multipartFiles.stream()
-                    .map(fileUploadUtils::uploadFile)
-                    .collect(Collectors.toList());
-
-
-            List<KokImage> kokImages = uploadedUrls.stream()
-                    .map(url -> {
+        List<KokImage> kokImages = multipartFiles.stream()
+                    .map(file -> {
+                        String url = file.getOriginalFilename();
                         OptionCategory category = OptionCategory.OUTER;
                         if (url.contains("OUTER")) {
                             category = OptionCategory.OUTER;
@@ -491,14 +491,18 @@ public class KokService {
                         } else if (url.contains("CONTRACT")) {
                             category = OptionCategory.CONTRACT;
                         }
+
+                        url = fileUploadUtils.uploadFile(user.getUserId().toString() + "/" + System.currentTimeMillis(), file);
+
+
                         return KokImage.builder()
                                 .category(category.getDescription())
                                 .imageUrl(url)
                                 .kok(kok)
                                 .option(null)
                                 .build();
-                    })
-                    .collect(Collectors.toList());
+                    }).collect(Collectors.toList());
+
 
             kok.setDirection(postKokRequest.getDirection());
             kok.setReview(postKokRequest.getReviewInfo().getReviewText());

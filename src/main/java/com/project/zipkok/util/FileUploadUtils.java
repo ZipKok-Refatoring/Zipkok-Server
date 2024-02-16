@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.CANNOT_SAVE_FILE;
-import static com.project.zipkok.service.UserService.extractLastPartFromKey;
+import static com.project.zipkok.service.UserService.removePendingDirPart;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,17 +25,16 @@ public class FileUploadUtils {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public String uploadFile(MultipartFile file) {
+    public String uploadFile(String key, MultipartFile file) {
 
         try {
-            String fileName = file.getOriginalFilename();
 
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
 
-            amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
-            return amazonS3Client.getResourceUrl(bucket, fileName);
+            amazonS3Client.putObject(bucket, key, file.getInputStream(), metadata);
+            return amazonS3Client.getResourceUrl(bucket, key);
 
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -48,10 +47,15 @@ public class FileUploadUtils {
         log.info("[FileUploadUtils.updateFileDir]");
 
         try {
-
             MultipartFile file = downloadAsMultipartFile(bucket, key);
 
-            String newKey = dirName + extractLastPartFromKey(deleteFile(key));
+            if(key.contains("pending/")) {
+                key = removePendingDirPart(deleteFile(key));
+            } else {
+                key = deleteFile(key);
+            }
+
+            String newKey = dirName + key;
 
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());

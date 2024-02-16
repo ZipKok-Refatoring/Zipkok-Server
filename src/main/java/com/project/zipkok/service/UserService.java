@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -43,6 +44,7 @@ public class UserService {
     private final HighlightRepository highlightRepository;
     private final OptionRepository optionRepository;
     private final DetailOptionRepository detailOptionRepository;
+    private final KokImageRepository kokImageRepository;
 
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
@@ -540,7 +542,37 @@ public class UserService {
 
             this.redisService.deleteValues(user.getEmail());
 
-            String updatedImgUrl = this.fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "pending/");
+            String updatedImgUrl = null;
+            if(user.getProfileImgUrl() != null) {
+                updatedImgUrl = this.fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "pending/");
+            }
+
+            log.info(String.valueOf(user.getKoks().get(0).getKokId()));
+
+            user.getKoks()
+                    .stream()
+                    .forEach(kok -> {
+                        log.info("가져온 콕 아이디"+ String.valueOf(kok.getKokId()));
+                        log.info("첫번째 콕이미지 url"+ kok.getKokImages().get(0).getImageUrl());
+                                kok.getKokImages()
+                                        .stream()
+                                        .forEach(kokImage -> {
+                                            log.info(kokImage.getImageUrl());
+                                            try {
+                                                kokImage.setImageUrl(this.fileUploadUtils.updateFileDir(extractKeyFromUrl(kokImage.getImageUrl()), "pending/"));
+
+                                                log.info(kokImage.getImageUrl());
+                                            } catch (IOException e) {
+                                                log.error(e.getMessage());
+                                                throw new RuntimeException(e);
+                                            }
+                                            kokImageRepository.save(kokImage);
+
+                                        });
+                            }
+                    );
+
+
 
             user.setProfileImgUrl(updatedImgUrl);
             user.setStatus("pending");
@@ -560,7 +592,7 @@ public class UserService {
         User user = this.userRepository.findByUserId(userId);
 
         if(file != null) {
-            String url = this.fileUploadUtils.uploadFile(file);
+            String url = this.fileUploadUtils.uploadFile(user.getUserId().toString() + "/profile", file);
 
             if(url == null){
                 throw new FileUploadException(CANNOT_SAVE_FILE);
@@ -637,14 +669,12 @@ public class UserService {
         }
     }
 
-    public static String extractLastPartFromKey(String inputString) {
-        int lastIndex = inputString.lastIndexOf('/');
-
-        if (lastIndex != -1) {
-            return inputString.substring(lastIndex + 1);
-        } else {
-            return inputString;
+    public static String removePendingDirPart(String inputString) {
+        String prefixToRemove = "pending/";
+        if (inputString.startsWith(prefixToRemove)) {
+            return inputString.substring(prefixToRemove.length());
         }
+        return inputString;
     }
 
 
