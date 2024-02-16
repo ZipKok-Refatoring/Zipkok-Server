@@ -541,19 +541,31 @@ public class UserService {
 
             String updatedImgUrl = this.fileUploadUtils.updateFileDir(extractKeyFromUrl(user.getProfileImgUrl()), "pending/");
 
+            log.info(String.valueOf(user.getKoks().get(0).getKokId()));
+
             user.getKoks()
                     .stream()
-                    .map(kok -> kok.getKokImages()
-                            .stream()
-                            .map(kokImage -> {
-                                try {
-                                    kokImage.setImageUrl(this.fileUploadUtils.updateFileDir(extractKeyFromUrl(kokImage.getImageUrl()), "pending/"));
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
-                                kokImageRepository.save(kokImage);
-                                return null;
-                            }));
+                    .map(kok -> {
+                        log.info("가져온 콕 아이디"+ String.valueOf(kok.getKokId()));
+                        log.info("첫번째 콕이미지 url"+ kok.getKokImages().get(0).getImageUrl());
+                                kok.getKokImages()
+                                        .stream()
+                                        .map(kokImage -> {
+                                            log.info(kokImage.getImageUrl());
+                                            try {
+                                                kokImage.setImageUrl(this.fileUploadUtils.updateFileDir(extractKeyFromUrl(kokImage.getImageUrl()), "pending/"));
+
+                                                log.info(kokImage.getImageUrl());
+                                            } catch (IOException e) {
+                                                log.error(e.getMessage());
+                                                throw new RuntimeException(e);
+                                            }
+                                            kokImageRepository.save(kokImage);
+                                            return kokImage;
+                                        });
+                                        return kok;
+                            }
+                    );
 
 
 

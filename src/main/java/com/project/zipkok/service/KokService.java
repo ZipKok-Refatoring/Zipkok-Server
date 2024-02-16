@@ -479,8 +479,7 @@ public class KokService {
 
         List<KokImage> kokImages = multipartFiles.stream()
                     .map(file -> {
-
-                        String url = file.getName();
+                        String url = file.getOriginalFilename();
                         OptionCategory category = OptionCategory.OUTER;
                         if (url.contains("OUTER")) {
                             category = OptionCategory.OUTER;

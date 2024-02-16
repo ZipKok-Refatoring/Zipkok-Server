@@ -105,7 +105,7 @@ public class RealEstateService {
 
     public PostRealEstateResponse registerRealEstate(long userId, PostRealEstateRequest postRealEstateRequest) {
 
-        try {
+//        try {
             User user = userRepository.findByUserId(userId);
 
             RealEstate realEstate = RealEstate.builder()
@@ -131,9 +131,9 @@ public class RealEstateService {
             Long realEstateId = realEstateRepository.save(realEstate).getRealEstateId();
 
             return new PostRealEstateResponse(realEstateId);
-        } catch (Exception e) {
-            throw new RealEstateException(PROPERTY_REGISTRATION_FAILURE);
-        }
+//        } catch (Exception e) {
+//            throw new RealEstateException(PROPERTY_REGISTRATION_FAILURE);
+//        }
     }
 
     public GetMapRealEstateResponse getRealEstate(long userId, GetRealEstateOnMapRequest getRealEstateOnMapRequest) {

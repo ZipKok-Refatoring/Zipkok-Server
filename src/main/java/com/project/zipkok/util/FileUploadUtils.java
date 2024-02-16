@@ -48,6 +48,8 @@ public class FileUploadUtils {
 
         try {
 
+            log.info(key);
+
             MultipartFile file = downloadAsMultipartFile(bucket, key);
 
             if(key.contains("pending/")) {

@@ -119,7 +119,7 @@ public class UserController {
     }
 
     @Operation(summary = "프로필 수정하기 API", description = "프로필 수정하기 기능을 담당하는 API입니다.")
-    @PutMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "", consumes = {APPLICATION_JSON_VALUE, MULTIPART_FORM_DATA_VALUE})
     public BaseResponse<Object> updateMyInfo(@Parameter(hidden = true) @PreAuthorize long userId, @RequestPart(value = "data", required = false) PutUpdateMyInfoRequest putUpdateMyInfoRequest, @RequestPart(value = "file", required = false) MultipartFile file, BindingResult bindingResult){
         log.info("{UserController.updateMyInfo}");
 
