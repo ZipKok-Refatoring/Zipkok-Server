@@ -87,6 +87,7 @@ public class PinService {
                 .address(postPinRequest.getAddress().getAddressName())
                 .latitude(postPinRequest.getAddress().getX())
                 .longitude(postPinRequest.getAddress().getY())
+                .status("active")
                 .build();
 
         PostPinResponse response = new PostPinResponse(pinRepository.save(pin).getPinId());
@@ -119,7 +120,6 @@ public class PinService {
         return null;
     }
 
-    @Transactional
     public Object deletePin(long userId, DeletePinRequest deletePinRequest) {
 
         log.info("[PinService.deletePin]");
@@ -130,11 +130,9 @@ public class PinService {
 
         if(pin == null) {
             throw new PinException(PIN_NOT_FOUND);
-        } else if (!user.getPins().contains(pin)) {
-            throw new PinException(PIN_NOT_FOUND);
         }
 
-        pinRepository.delete(pin);
+        this.pinRepository.delete(pin);
 
         return null;
 

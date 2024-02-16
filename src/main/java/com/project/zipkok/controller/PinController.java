@@ -8,6 +8,7 @@ import com.project.zipkok.dto.*;
 import com.project.zipkok.service.PinService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +52,8 @@ public class PinController {
 
     @Operation(summary = "핀 상세정보 조회 API", description = "핀의 상세정보를 조회하는 API")
     @GetMapping("/{pinId}")
-    public BaseResponse<PinInfo> getPinDetail(@Parameter(hidden=true) @PreAuthorize long userId, @PathVariable Long pinId){
+    public BaseResponse<PinInfo> getPinDetail(@Parameter(hidden=true) @PreAuthorize long userId,
+                                              @Parameter(name = "pinId", in = ParameterIn.PATH) @PathVariable(value = "pinId") Long pinId){
         log.info("{PinController.getPin}");
 
         return new BaseResponse<>(PIN_LOAD_SUCCESS, this.pinService.getPinDetail(userId, pinId));
@@ -69,7 +71,7 @@ public class PinController {
         }
 
 
-        return new BaseResponse<>(PIN_LOAD_SUCCESS, this.pinService.registerPin(userId, postPinRequest));
+        return new BaseResponse<>(PIN_REGISTRATION_SUCCESS, this.pinService.registerPin(userId, postPinRequest));
     }
 
     @Operation(summary = "핀 수정 API", description = "핀을 수정하는 API")
