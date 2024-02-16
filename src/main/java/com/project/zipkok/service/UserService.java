@@ -56,8 +56,8 @@ public class UserService {
                         user.getNickname(),
                         user.getProfileImgUrl(),
                         user.getDesireResidence().getAddress(),
-                        user.getRealEstateType().getDescription(),
-                        user.getTransactionType().getDescription(),
+                        user.getRealEstateType().toString(),
+                        user.getTransactionType().toString(),
                         user.getTransactionPriceConfig().getMPriceMax(),
                         user.getTransactionPriceConfig().getMPriceMin(),
                         user.getTransactionPriceConfig().getMDepositMax(),
@@ -160,7 +160,7 @@ public class UserService {
         //dto field 값 set
         getMyPageResponse.setNickname(user.getNickname());
         getMyPageResponse.setImageUrl(user.getProfileImgUrl());
-        getMyPageResponse.setRealEstateType(user.getRealEstateType() == null ? null : user.getRealEstateType().getDescription());
+        getMyPageResponse.setRealEstateType(user.getRealEstateType() == null ? null : user.getRealEstateType().toString());
 
         getMyPageResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
 
@@ -175,7 +175,7 @@ public class UserService {
             getMyPageResponse.setDepositMin(null);
         }
         else{
-            getMyPageResponse.setTransactionType(user.getTransactionType().getDescription());
+            getMyPageResponse.setTransactionType(user.getTransactionType().toString());
             transactionType = user.getTransactionType().getDescription();
             if(transactionType.equals("월세")){
                 getMyPageResponse.setPriceMax(transactionPriceConfig.getMPriceMax());
@@ -208,12 +208,12 @@ public class UserService {
         getMyPageDetailResponse.setBirthday(user.getBirthday());
         getMyPageDetailResponse.setGender(user.getGender());
         getMyPageDetailResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
-        getMyPageDetailResponse.setRealEstateType(user.getRealEstateType() == null ? null : user.getRealEstateType().getDescription());
+        getMyPageDetailResponse.setRealEstateType(user.getRealEstateType() == null ? null : user.getRealEstateType().toString());
 
         if (user.getTransactionType() == null) {
             getMyPageDetailResponse.setTransactionType(null);
         } else {
-            getMyPageDetailResponse.setTransactionType(user.getTransactionType().getDescription());
+            getMyPageDetailResponse.setTransactionType(user.getTransactionType().toString());
         }
 
         getMyPageDetailResponse.setMpriceMin(transactionPriceConfig.getMPriceMin());
