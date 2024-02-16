@@ -57,7 +57,7 @@ public class PinController {
         return new BaseResponse<>(PIN_LOAD_SUCCESS, this.pinService.getPinDetail(userId, pinId));
     }
 
-    @Operation(summary = "핀 등 API", description = "핀을 등록하는 API")
+    @Operation(summary = "핀 등록 API", description = "핀을 등록하는 API")
     @PostMapping("")
     public BaseResponse<PostPinResponse> registerPin(@Parameter(hidden=true) @PreAuthorize long userId,
                                                      @Validated @RequestBody PostPinRequest postPinRequest,
@@ -70,6 +70,20 @@ public class PinController {
 
 
         return new BaseResponse<>(PIN_LOAD_SUCCESS, this.pinService.registerPin(userId, postPinRequest));
+    }
+
+    @Operation(summary = "핀 수정 API", description = "핀을 수정하는 API")
+    @PutMapping("")
+    public BaseResponse<Object> updatePin(@Parameter(hidden=true) @PreAuthorize long userId,
+                                                     @Validated @RequestBody PinInfo putPinRequest,
+                                                     BindingResult bindingResult){
+        log.info("{PinController.updatePin}");
+
+        if(bindingResult.hasErrors()){
+            throw new PinException(INVALID_PIN_FORMAT);
+        }
+
+        return new BaseResponse<>(PIN_LOAD_SUCCESS, this.pinService.updatePin(userId, putPinRequest));
     }
 
 }

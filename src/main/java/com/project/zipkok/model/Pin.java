@@ -1,10 +1,8 @@
 package com.project.zipkok.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 import org.checkerframework.checker.units.qual.A;
 
 @Entity
@@ -13,6 +11,7 @@ import org.checkerframework.checker.units.qual.A;
 @Getter
 @Builder
 @AllArgsConstructor
+@Setter
 public class Pin {
 
     @Id

@@ -97,4 +97,28 @@ public class PinService {
         return response;
 
     }
+
+    @Transactional
+    public Object updatePin(long userId, PinInfo putPinRequest) {
+        log.info("[PinService.updatePin]");
+
+        User user = userRepository.findByUserId(userId);
+
+        Pin pin = pinRepository.findByPinId(putPinRequest.getId());
+
+        if(pin == null) {
+            throw new PinException(PIN_NOT_FOUND);
+        } else if (!user.getPins().contains(pin)) {
+            throw new PinException(PIN_NOT_FOUND);
+        }
+
+        pin.setPinNickname(putPinRequest.getName());
+        pin.setAddress(putPinRequest.getAddress().getAddressName());
+        pin.setLatitude(putPinRequest.getAddress().getX());
+        pin.setLongitude(putPinRequest.getAddress().getY());
+
+        pinRepository.save(pin);
+
+        return null;
+    }
 }
