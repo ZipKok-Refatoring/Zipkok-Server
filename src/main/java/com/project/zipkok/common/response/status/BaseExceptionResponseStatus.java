@@ -136,8 +136,23 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     /**
      * 10000 : S3 예외
      */
-    CANNOT_SAVE_FILE(10001, HttpStatus.SERVICE_UNAVAILABLE.value(), "파일 저장이 실패했습니다.");
-    
+    CANNOT_SAVE_FILE(10001, HttpStatus.SERVICE_UNAVAILABLE.value(), "파일 저장이 실패했습니다."),
+
+    /**
+     * 11000 : Pin 예외
+     */
+    PIN_LOAD_SUCCESS(11000, HttpStatus.OK.value(), "핀 정보 로드 성공"),
+    PIN_LOAD_FAIL(11001, HttpStatus.BAD_REQUEST.value(), "핀 정보 로드 실패"),
+    PIN_NOT_FOUND(11002, HttpStatus.NOT_FOUND.value(), "id에 해당하는 pin 이 없음"),
+    PIN_REGISTRATION_SUCCESS(11003, HttpStatus.OK.value(), "핀 등록 성공"),
+    PIN_REGISTRATION_FAIL(11004, HttpStatus.BAD_REQUEST.value(), "핀 등록 실패"),
+    PIN_ALREADY_EXISTS(11005, HttpStatus.CONFLICT.value(), "이미 존재하는 핀"),
+    PIN_UPDATE_SUCCESS(11006, HttpStatus.OK.value(), "핀 수정 성공"),
+    PIN_UPDATE_FAIL(11007, HttpStatus.BAD_REQUEST.value(), "핀 수정 실패"),
+    PIN_DELETE_SUCCESS(11008, HttpStatus.OK.value(), "핀 삭제 성공"),
+    PIN_DELETE_FAIL(11009, HttpStatus.BAD_REQUEST.value(), "핀 삭제 실패");
+
+
 
     private final int code;
     private final int status;
