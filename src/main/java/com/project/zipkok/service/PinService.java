@@ -1,10 +1,7 @@
 package com.project.zipkok.service;
 
 import com.project.zipkok.common.exception.PinException;
-import com.project.zipkok.dto.GetPinResponse;
-import com.project.zipkok.dto.PinInfo;
-import com.project.zipkok.dto.PostPinRequest;
-import com.project.zipkok.dto.PostPinResponse;
+import com.project.zipkok.dto.*;
 import com.project.zipkok.model.Pin;
 import com.project.zipkok.model.User;
 import com.project.zipkok.repository.PinRepository;
@@ -120,5 +117,26 @@ public class PinService {
         pinRepository.save(pin);
 
         return null;
+    }
+
+    @Transactional
+    public Object deletePin(long userId, DeletePinRequest deletePinRequest) {
+
+        log.info("[PinService.deletePin]");
+
+        User user = userRepository.findByUserId(userId);
+
+        Pin pin = pinRepository.findByPinId(deletePinRequest.getId());
+
+        if(pin == null) {
+            throw new PinException(PIN_NOT_FOUND);
+        } else if (!user.getPins().contains(pin)) {
+            throw new PinException(PIN_NOT_FOUND);
+        }
+
+        pinRepository.delete(pin);
+
+        return null;
+
     }
 }

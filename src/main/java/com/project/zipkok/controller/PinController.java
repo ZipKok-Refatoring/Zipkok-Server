@@ -83,7 +83,21 @@ public class PinController {
             throw new PinException(INVALID_PIN_FORMAT);
         }
 
-        return new BaseResponse<>(PIN_LOAD_SUCCESS, this.pinService.updatePin(userId, putPinRequest));
+        return new BaseResponse<>(PIN_UPDATE_SUCCESS, this.pinService.updatePin(userId, putPinRequest));
+    }
+
+    @Operation(summary = "핀 삭제 API", description = "핀을 삭제하는 API")
+    @DeleteMapping("")
+    public BaseResponse<Object> deletePin(@Parameter(hidden=true) @PreAuthorize long userId,
+                                          @Validated @RequestBody DeletePinRequest deletePinRequest,
+                                          BindingResult bindingResult){
+        log.info("{PinController.deletePin}");
+
+        if(bindingResult.hasErrors()){
+            throw new PinException(INVALID_PIN_FORMAT);
+        }
+
+        return new BaseResponse<>(PIN_DELETE_SUCCESS, this.pinService.deletePin(userId, deletePinRequest));
     }
 
 }
