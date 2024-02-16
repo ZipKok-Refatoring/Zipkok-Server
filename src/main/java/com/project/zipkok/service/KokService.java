@@ -77,6 +77,7 @@ public class KokService {
         GetKokResponse response = GetKokResponse.builder()
                 .koks(responseKoks.stream().map(kok -> GetKokResponse.Koks.builder()
                         .kokId(kok.getKokId())
+                        .realEstateId(kok.getRealEstate().getRealEstateId())
                         .imageUrl(Optional.ofNullable(kok.getRealEstate().getRealEstateImages())
                                 .filter(images -> !images.isEmpty())
                                 .map(images -> images.get(0).getImageUrl())

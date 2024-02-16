@@ -18,6 +18,9 @@ public class GetKokResponse {
         private Long kokId;
 
         @Getter
+        private Long realEstateId;
+
+        @Getter
         private String imageUrl;
 
         @Getter
