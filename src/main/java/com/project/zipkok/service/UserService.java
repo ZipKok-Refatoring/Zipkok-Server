@@ -225,8 +225,8 @@ public class UserService {
         getMyPageDetailResponse.setPriceMin(transactionPriceConfig.getPurchaseMin());
         getMyPageDetailResponse.setPriceMax(transactionPriceConfig.getPurchaseMax());
 
-        getMyPageDetailResponse.setLatitude(user.getDesireResidence().getLatitude());
-        getMyPageDetailResponse.setLongitude(user.getDesireResidence().getLongitude());
+        getMyPageDetailResponse.setLatitude(user.getDesireResidence().getLatitude() == null ? null :user.getDesireResidence().getLatitude());
+        getMyPageDetailResponse.setLongitude(user.getDesireResidence().getLongitude()== null ? null :user.getDesireResidence().getLongitude());
 
 //        ModelMapper modelMapper = new ModelMapper();
 //
