@@ -90,6 +90,9 @@ public class UserController {
         if(bindingResult.hasFieldErrors("realEstateType")){
             throw new OnBoardingBadRequestException(INVALID_INTEREST_TYPE);
         }
+        if(bindingResult.hasFieldErrors("transactionType")){
+            throw new OnBoardingBadRequestException(INVALID_TRANSACTION_TYPE);
+        }
         if(bindingResult.hasFieldErrors("isSmallerthanMax")){
             throw new OnBoardingBadRequestException(MIN_IS_BIGGER_THAN_MAX);
         }

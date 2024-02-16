@@ -108,6 +108,7 @@ public class UserService {
         double latitude = patchOnBoardingRequest.getLatitude();
         double longitude = patchOnBoardingRequest.getLongitude();
         RealEstateType realEstateType = patchOnBoardingRequest.getRealEstateType();
+        TransactionType transactionType = patchOnBoardingRequest.getTransactionType();
         long mpriceMin = patchOnBoardingRequest.getMpriceMin();
         long mpriceMax = patchOnBoardingRequest.getMpriceMax();
         long mdepositMin = patchOnBoardingRequest.getMdepositMin();
@@ -121,6 +122,7 @@ public class UserService {
         User user = this.userRepository.findByUserId(userId);
 
         user.setRealEstateType(realEstateType);
+        user.setTransactionType(transactionType);
         this.userRepository.save(user);
 
 

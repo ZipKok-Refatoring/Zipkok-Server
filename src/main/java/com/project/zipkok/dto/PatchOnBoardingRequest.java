@@ -1,7 +1,10 @@
 package com.project.zipkok.dto;
 
 import com.project.zipkok.common.enums.RealEstateType;
+import com.project.zipkok.common.enums.TransactionType;
 import com.project.zipkok.common.enums.ValidEnum;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -24,6 +27,9 @@ public class PatchOnBoardingRequest {
 
     @ValidEnum(enumClass = RealEstateType.class)
     private RealEstateType realEstateType;
+
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
 
     @NotNull
     @PositiveOrZero
