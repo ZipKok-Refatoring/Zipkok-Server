@@ -1,5 +1,6 @@
 package com.project.zipkok.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
@@ -33,6 +34,7 @@ public class PinInfo {
     public static class PinAddressInfo {
 
         @NotNull @Size(max = 200)
+        @JsonProperty("address_name")
         private String addressName;
 
         @NotNull
