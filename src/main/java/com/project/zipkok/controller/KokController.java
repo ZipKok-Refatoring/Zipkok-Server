@@ -119,5 +119,18 @@ public class KokController {
 
     }
 
+    @Operation(summary = "콕 수정", description = "콕 수정하기")
+    @PutMapping(value = "", consumes = {APPLICATION_JSON_VALUE, MULTIPART_FORM_DATA_VALUE})
+    public BaseResponse<Object> modifyKok(@Parameter(hidden=true) @PreAuthorize long userId, @RequestPart(value = "file", required = false) List<MultipartFile> multipartFiles, @Validated @RequestPart(value = "data", required = false) PutKokRequest putKokRequest, BindingResult bindingResult){
+        log.info("[KokController.modifyKok]");
+
+        if(bindingResult.hasErrors()){
+            throw new KokException(KOK_MODIFY_FAILURE);
+        }
+
+        return new BaseResponse<>(KOK_MODIFY_SUCCESS, kokService.modifyKok(userId, multipartFiles, putKokRequest));
+
+    }
+
 
 }
