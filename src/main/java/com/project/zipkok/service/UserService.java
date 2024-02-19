@@ -395,7 +395,7 @@ public class UserService {
     }
 
     private List<Impression> makeDefaultImpressions(User user) {
-        List<String> impressionNames = List.of("깔끔해요", "조용해요", "세련돼요", "심플해요", "더러워요", "냄새나요", "시끄러워요", "좁아요", "그냥 그래요", "쌈@뽕 해요", "별로예요");
+        List<String> impressionNames = List.of("깔끔해요", "조용해요", "세련돼요", "심플해요", "더러워요", "냄새나요", "시끄러워요", "좁아요", "그냥 그래요", "마음에 들어요", "별로예요");
 
         List<Impression> defaultImpressions = new ArrayList<>();
 
