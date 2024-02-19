@@ -2,8 +2,6 @@ package com.project.zipkok.service;
 
 import com.project.zipkok.common.enums.OptionCategory;
 import com.project.zipkok.common.exception.KokException;
-import com.project.zipkok.common.exception.NoExistUserException;
-import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.dto.*;
 import com.project.zipkok.model.*;
 import com.project.zipkok.repository.*;
@@ -11,16 +9,9 @@ import com.project.zipkok.util.FileUploadUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.Check;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.security.auth.kerberos.KerberosKey;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -324,7 +315,7 @@ public class KokService {
 
         GetKokConfigInfoResponse response = GetKokConfigInfoResponse.builder()
                 .hilights(hilightsResponse)
-                .checkedHilighs(checkedHilightsResponse)
+                .checkedHilights(checkedHilightsResponse)
                 .furnitureOptions(furnitureOptionsResponse)
                 .checkedFurnitureOptions(checkedFurinirureOptionsResponse)
                 .reviewInfo(reviewInfoResponse)
