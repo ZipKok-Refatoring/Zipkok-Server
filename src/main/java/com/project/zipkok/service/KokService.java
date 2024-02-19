@@ -304,6 +304,10 @@ public class KokService {
         List<String> checkedFurinirureOptionsResponse = null;
         GetKokConfigInfoResponse.ReviewInfo reviewInfoResponse = null;
 
+        List<String> outerKokImagesResponse = null;
+        List<String> innerKokImagesResponse = null;
+        List<String> contractKokImagesResponse = null;
+
         List<GetKokConfigInfoResponse.Option> outerOptionsResponse = makeOptionResponseList(filterOption(user.getOptions(), OptionCategory.OUTER), kok);
         List<GetKokConfigInfoResponse.Option> innerOptionsResponse = makeOptionResponseList(filterOption(user.getOptions(), OptionCategory.INNER), kok);
         List<GetKokConfigInfoResponse.Option> contractOptionsResponse = makeOptionResponseList(filterOption(user.getOptions(), OptionCategory.CONTRACT), kok);
@@ -312,6 +316,9 @@ public class KokService {
             checkedHilightsResponse = makeHilightTitleList(kok.getCheckedHighlights().stream().map(CheckedHighlight::getHighlight).toList());
             checkedFurinirureOptionsResponse = makeFurnitureNameList(kok.getCheckedFurniturs().stream().map(CheckedFurniture::getFurnitureOption).toList());
             reviewInfoResponse = makeReviewInfoResponseList(user, kok);
+            outerKokImagesResponse = makeKokImagesUrlList(kok.getKokImages(), OptionCategory.OUTER);
+            innerKokImagesResponse = makeKokImagesUrlList(kok.getKokImages(), OptionCategory.INNER);
+            contractKokImagesResponse = makeKokImagesUrlList(kok.getKokImages(), OptionCategory.CONTRACT);
         }
 
 
@@ -321,6 +328,9 @@ public class KokService {
                 .furnitureOptions(furnitureOptionsResponse)
                 .checkedFurnitureOptions(checkedFurinirureOptionsResponse)
                 .reviewInfo(reviewInfoResponse)
+                .outerImageUrls(outerKokImagesResponse)
+                .innerImageUrls(innerKokImagesResponse)
+                .contractImageUrls(contractKokImagesResponse)
                 .outerOptions(outerOptionsResponse)
                 .innerOptions(innerOptionsResponse)
                 .contractOptions(contractOptionsResponse)
@@ -328,6 +338,18 @@ public class KokService {
 
         return response;
     }
+
+    private List<String> makeKokImagesUrlList(List<KokImage> kokImages, OptionCategory optionCategory) {
+        if (kokImages != null) {
+            List<String> urlList = kokImages.stream()
+                    .filter(kokImage -> kokImage.getCategory().equals(optionCategory.getDescription()))
+                    .map(KokImage::getImageUrl)
+                    .toList();
+            return urlList;
+        }
+        return null;
+    }
+
 
     private static GetKokConfigInfoResponse.ReviewInfo makeReviewInfoResponseList(User user, Kok kok) {
         GetKokConfigInfoResponse.ReviewInfo reviewInfoResponse = GetKokConfigInfoResponse.ReviewInfo.builder()
