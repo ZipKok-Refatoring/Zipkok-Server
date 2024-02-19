@@ -131,6 +131,7 @@ public class KokService {
                 .latitude(kok.getRealEstate().getLatitude())
                 .longitude(kok.getRealEstate().getLongitude())
                 .isZimmed(isZimmed)
+                .realEstateId(kok.getRealEstate().getRealEstateId())
                 .build();
 
         return response;

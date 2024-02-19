@@ -13,6 +13,7 @@ public class GetKokDetailResponse {
 
     private Long kokId;
     private ImageInfo imageInfo;
+    private Long realEstateId;
 
     @Getter
     @Builder
