@@ -41,7 +41,7 @@ public class GetKokConfigInfoResponse {
         private String optionTitle;
         private Integer orderNumber;
 
-        @JsonProperty("isChecked")
+        @JsonProperty("isVisible")
         @Getter(AccessLevel.NONE)
         private boolean isChecked = false;
 
@@ -55,7 +55,7 @@ public class GetKokConfigInfoResponse {
         private Long detailOptionId;
         private String detailOptionTitle;
 
-        @JsonProperty("isChecked")
+        @JsonProperty("detailOptionIsVisible")
         @Getter(AccessLevel.NONE)
         private boolean isChecked = false;
     }
