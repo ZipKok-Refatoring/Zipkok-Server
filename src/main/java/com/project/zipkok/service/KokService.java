@@ -295,6 +295,7 @@ public class KokService {
         List<String> furnitureOptionsResponse = makeFurnitureNameList(furnitureOptionRepository.findAll());
         List<String> checkedFurinirureOptionsResponse = null;
         GetKokConfigInfoResponse.ReviewInfo reviewInfoResponse = null;
+        String directionResponse = null;
 
         List<String> outerKokImagesResponse = null;
         List<String> innerKokImagesResponse = null;
@@ -308,6 +309,7 @@ public class KokService {
             checkedHilightsResponse = makeHilightTitleList(kok.getCheckedHighlights().stream().map(CheckedHighlight::getHighlight).toList());
             checkedFurinirureOptionsResponse = makeFurnitureNameList(kok.getCheckedFurniturs().stream().map(CheckedFurniture::getFurnitureOption).toList());
             reviewInfoResponse = makeReviewInfoResponseList(user, kok);
+            directionResponse = kok.getDirection();
             outerKokImagesResponse = makeKokImagesUrlList(kok.getKokImages(), OptionCategory.OUTER);
             innerKokImagesResponse = makeKokImagesUrlList(kok.getKokImages(), OptionCategory.INNER);
             contractKokImagesResponse = makeKokImagesUrlList(kok.getKokImages(), OptionCategory.CONTRACT);
@@ -320,6 +322,7 @@ public class KokService {
                 .furnitureOptions(furnitureOptionsResponse)
                 .checkedFurnitureOptions(checkedFurinirureOptionsResponse)
                 .reviewInfo(reviewInfoResponse)
+                .direction(directionResponse)
                 .outerImageUrls(outerKokImagesResponse)
                 .innerImageUrls(innerKokImagesResponse)
                 .contractImageUrls(contractKokImagesResponse)

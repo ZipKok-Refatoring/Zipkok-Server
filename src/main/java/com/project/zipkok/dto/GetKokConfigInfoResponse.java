@@ -15,6 +15,7 @@ public class GetKokConfigInfoResponse {
     private List<String> furnitureOptions;
     private List<String> checkedFurnitureOptions;
     private ReviewInfo reviewInfo;
+    private String direction;
     private List<String> outerImageUrls;
     private List<String> innerImageUrls;
     private List<String> contractImageUrls;
