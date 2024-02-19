@@ -107,6 +107,9 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     KOK_REGISTRATION_FAILURE(7012, HttpStatus.BAD_REQUEST.value(), "콕 등록 실패"),
     INVALID_KOK_ACCESS(7013, HttpStatus.OK.value(), "해당 사용자는 kokId에 해당하는 정보를 열람할 권한이 없습니다."),
 
+    KOK_MODIFY_SUCCESS(7014, HttpStatus.OK.value(), "콕 수정 성공"),
+    KOK_MODIFY_FAILURE(7015, HttpStatus.BAD_REQUEST.value(), "콕 수정 실패"),
+
     /**
      * 8000 : RealEstate 예외
      */

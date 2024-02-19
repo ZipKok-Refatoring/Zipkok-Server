@@ -11,10 +11,13 @@ import java.util.List;
 @Builder
 public class GetKokConfigInfoResponse {
     private List<String> hilights;
-    private List<String> checkedHilighs;
+    private List<String> checkedHilights;
     private List<String> furnitureOptions;
     private List<String> checkedFurnitureOptions;
     private ReviewInfo reviewInfo;
+    private List<String> outerImageUrls;
+    private List<String> innerImageUrls;
+    private List<String> contractImageUrls;
     private List<Option> outerOptions;
     private List<Option> innerOptions;
     private List<Option> contractOptions;
@@ -38,7 +41,7 @@ public class GetKokConfigInfoResponse {
         private String optionTitle;
         private Integer orderNumber;
 
-        @JsonProperty("isChecked")
+        @JsonProperty("isVisible")
         @Getter(AccessLevel.NONE)
         private boolean isChecked = false;
 
@@ -52,7 +55,7 @@ public class GetKokConfigInfoResponse {
         private Long detailOptionId;
         private String detailOptionTitle;
 
-        @JsonProperty("isChecked")
+        @JsonProperty("detailOptionIsVisible")
         @Getter(AccessLevel.NONE)
         private boolean isChecked = false;
     }
