@@ -481,29 +481,33 @@ public class KokService {
                     .toList();
 
 
-        List<KokImage> kokImages = multipartFiles.stream()
-                    .map(file -> {
-                        String url = file.getOriginalFilename();
-                        OptionCategory category = OptionCategory.OUTER;
-                        if (url.contains("OUTER")) {
-                            category = OptionCategory.OUTER;
-                        } else if (url.contains("INNER")) {
-                            category = OptionCategory.INNER;
-                        } else if (url.contains("CONTRACT")) {
-                            category = OptionCategory.CONTRACT;
-                        }
+            if(multipartFiles != null && !multipartFiles.isEmpty()) {
 
-                        url = fileUploadUtils.uploadFile(user.getUserId().toString() + "/" + System.currentTimeMillis(), file);
+                List<KokImage> kokImages = multipartFiles.stream()
+                        .map(file -> {
+                            String url = file.getOriginalFilename();
+                            OptionCategory category = OptionCategory.OUTER;
+                            if (url.contains("OUTER")) {
+                                category = OptionCategory.OUTER;
+                            } else if (url.contains("INNER")) {
+                                category = OptionCategory.INNER;
+                            } else if (url.contains("CONTRACT")) {
+                                category = OptionCategory.CONTRACT;
+                            }
+
+                            url = fileUploadUtils.uploadFile(user.getUserId().toString() + "/" + System.currentTimeMillis(), file);
 
 
-                        return KokImage.builder()
-                                .category(category.getDescription())
-                                .imageUrl(url)
-                                .kok(kok)
-                                .option(null)
-                                .build();
-                    }).collect(Collectors.toList());
+                            return KokImage.builder()
+                                    .category(category.getDescription())
+                                    .imageUrl(url)
+                                    .kok(kok)
+                                    .option(null)
+                                    .build();
+                        }).collect(Collectors.toList());
 
+                kok.setKokImages(kokImages);
+            }
 
             kok.setDirection(postKokRequest.getDirection());
             kok.setReview(postKokRequest.getReviewInfo().getReviewText());
@@ -514,7 +518,6 @@ public class KokService {
             kok.setCheckedHighlights(checkedHighlights);
             kok.setCheckedDetailOptions(checkedDetailOptions);
             kok.setCheckedOptions(checkedOptions);
-            kok.setKokImages(kokImages);
             kok.setStar(star);
 
             Long kokId = kokRepository.save(kok).getKokId();
