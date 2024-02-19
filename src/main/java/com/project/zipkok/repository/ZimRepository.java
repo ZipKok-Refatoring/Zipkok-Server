@@ -12,5 +12,4 @@ public interface ZimRepository extends JpaRepository<Zim, Long> {
     Zim findByUser(User user);
 
     List<Zim> findAllByUser(User user);
-
 }

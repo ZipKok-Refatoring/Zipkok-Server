@@ -104,9 +104,9 @@ public class KokService {
 
         boolean isZimmed = false;
 
-        Zim zim = zimRepository.findByUser(user);
+        Zim zim = zimRepository.findFirstByUserAndRealEstate(user, kok.getRealEstate());
         if (zim != null) {
-            isZimmed = zim.getRealEstate().equals(kok.getRealEstate());
+            isZimmed = true;
         }
 
         validateUserAndKok(user, kok);
