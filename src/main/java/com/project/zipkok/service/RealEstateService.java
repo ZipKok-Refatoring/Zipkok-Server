@@ -49,7 +49,7 @@ public class RealEstateService {
             realEstate.getRealEstateImages()
                     .stream()
                     .map(RealEstateImage::getImageUrl)
-                    .map(realEstateImages::add);
+                    .forEach(realEstateImages::add);
 
 
             boolean isZimmed = false;

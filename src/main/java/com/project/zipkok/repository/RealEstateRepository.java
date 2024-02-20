@@ -16,6 +16,7 @@ public interface RealEstateRepository extends JpaRepository<RealEstate, Long> {
     @Query(nativeQuery = true,
             value = "SELECT *, (ABS(r.latitude - :latitude) + ABS(r.longitude - :longitude)) AS distance " +
                     "FROM RealEstate r " +
+                    "WHERE (r.latitude <> :latitude OR r.longitude <> :longitude) " +
                     "ORDER BY distance " +
                     "LIMIT 5")
     List<RealEstate> findAllByProximity(@Param(value = "latitude") double latitude, @Param(value = "longitude") double longitude);
