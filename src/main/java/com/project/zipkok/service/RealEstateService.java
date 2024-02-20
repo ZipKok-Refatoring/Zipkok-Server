@@ -256,8 +256,8 @@ public class RealEstateService {
 
     private boolean filterPriceConfig(RealEstate realEstate, GetMapRealEstateResponse.Filter filter, boolean isLogin){
         String transactionType = realEstate.getTransactionType().getDescription();
-        long deposit = realEstate.getDeposit();
-        long price = realEstate.getPrice();
+        long deposit = realEstate.getDeposit() * 10000;
+        long price = realEstate.getPrice() * 10000;
 
         if(isLogin){
             GetLoginMapRealEstateResponse.Filter loginFilter = (GetLoginMapRealEstateResponse.Filter) filter;
