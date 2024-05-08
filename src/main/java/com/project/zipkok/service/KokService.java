@@ -48,6 +48,7 @@ public class KokService {
         User user = userRepository.findByUserId(userId);
 
         List<Kok> koks = user.getKoks();
+        List<Zim> zims = user.getZims();
 
         int startIdx = (page - 1) * size;
         List<Kok> responseKoks = koks.stream()
@@ -81,7 +82,7 @@ public class KokService {
                         .realEstateType(kok.getRealEstate().getRealEstateType().toString())
                         .deposit(kok.getRealEstate().getDeposit())
                         .price(kok.getRealEstate().getPrice())
-                        .isZimmed(kok.getRealEstate().getZims().stream().anyMatch(a -> a.equals(zimRepository.findFirstByUserAndRealEstate(user, kok.getRealEstate()))))
+                        .isZimmed(zims.stream().anyMatch(zim -> zim.getRealEstate().equals(kok.getRealEstate())))
                         .build())
                         .collect(Collectors.toList()))
                 .meta(GetKokResponse.Meta.builder()

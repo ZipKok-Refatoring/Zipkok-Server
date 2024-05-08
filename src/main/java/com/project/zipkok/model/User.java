@@ -65,9 +65,6 @@ public class User {
     private List<Zim> zims = new ArrayList<>();
 
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<RealEstate> realEstates = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Kok> koks = new ArrayList<>();
 
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)

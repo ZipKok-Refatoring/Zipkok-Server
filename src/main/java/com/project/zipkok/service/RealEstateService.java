@@ -121,7 +121,7 @@ public class RealEstateService {
                     .pyeongsu(postRealEstateRequest.getPyeongsu())
                     .realEstateType(postRealEstateRequest.getRealEstateType())
                     .floorNum(postRealEstateRequest.getFloorNum())
-                    .user(user)
+                    .userId(userId)
                     .agent(null)
                     .detailAddress(postRealEstateRequest.getDetailAddress())
                     .status("active")
@@ -175,7 +175,7 @@ public class RealEstateService {
 
             List<GetTempRealEstateResponse.RealEstateInfo> realEstateInfoList = realEstateList
                     .stream()
-                    .filter(result -> result.getUser() == null)
+                    .filter(result -> result.getUserId() == null)
                     .map(result -> GetTempRealEstateResponse.RealEstateInfo.builder()
                             .realEstateId(result.getRealEstateId())
                             .imageURL(result.getImageUrl())
@@ -240,7 +240,7 @@ public class RealEstateService {
             //realEstateInfo mapping
             List<GetLoginMapRealEstateResponse.RealEstateInfo> realEstateInfoList = realEstateList
                     .stream()
-                    .filter(result -> result.getUser() == null || result.getUser().getUserId().equals(userId))
+                    .filter(result -> result.getUserId() == null || result.getUserId().equals(userId))
                     .map(result -> GetLoginMapRealEstateResponse.RealEstateInfo.builder()
                             .realEstateId(result.getRealEstateId())
                             .imageURL(result.getImageUrl())
