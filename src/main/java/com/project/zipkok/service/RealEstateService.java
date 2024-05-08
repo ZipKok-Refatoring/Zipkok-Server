@@ -4,9 +4,7 @@ import com.project.zipkok.common.enums.RealEstateType;
 import com.project.zipkok.common.enums.TransactionType;
 import com.project.zipkok.common.exception.RealEstateException;
 import com.project.zipkok.dto.*;
-import com.project.zipkok.model.RealEstate;
-import com.project.zipkok.model.RealEstateImage;
-import com.project.zipkok.model.User;
+import com.project.zipkok.model.*;
 import com.project.zipkok.repository.KokRepository;
 import com.project.zipkok.repository.RealEstateRepository;
 import com.project.zipkok.repository.UserRepository;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
@@ -141,7 +140,6 @@ public class RealEstateService {
 
 
         List<RealEstate> realEstateList = this.realEstateRepository.findByLatitudeBetweenAndLongitudeBetween(getRealEstateOnMapRequest.getSouthWestLat(),getRealEstateOnMapRequest.getNorthEastLat(),getRealEstateOnMapRequest.getSouthWestLon(),getRealEstateOnMapRequest.getNorthEastLon());
-        User user = this.userRepository.findByUserId(userId);
 
         if(realEstateList == null){
             throw new RealEstateException(PROPERTY_NOT_FOUND);
@@ -200,10 +198,21 @@ public class RealEstateService {
 
         } else {
 
+            User user = this.userRepository.findByUserId(userId);
+
             GetLoginMapRealEstateResponse getLoginMapRealEstateResponse = new GetLoginMapRealEstateResponse();
 
             userTransactionType = user.getTransactionType();
             userRealEstateType = user.getRealEstateType();
+
+            Set<RealEstate> zimmedRealEstates = user.getZims().stream()
+                    .map(Zim::getRealEstate)
+                    .collect(Collectors.toSet());
+
+            Set<RealEstate> kokkedRealEstates = user.getKoks().stream()
+                    .map(Kok::getRealEstate)
+                    .collect(Collectors.toSet());
+
 
             //filter 정보 mapping
             getLoginMapRealEstateResponse.setFilter(GetLoginMapRealEstateResponse.Filter.builder()
@@ -244,8 +253,8 @@ public class RealEstateService {
                             .latitude(result.getLatitude())
                             .longitude(result.getLongitude())
                             .agent(result.getAgent() == null ? "직접 등록한 매물" : result.getAgent())
-                            .isZimmed(this.zimRepository.findFirstByUserAndRealEstate(user, result) != null)
-                            .isKokked(this.kokRepository.findFirstByUserAndRealEstate(user, result) != null)
+                            .isZimmed(zimmedRealEstates.contains(result))
+                            .isKokked(kokkedRealEstates.contains(result))
                             .build())
                     .collect(Collectors.toList());
 
