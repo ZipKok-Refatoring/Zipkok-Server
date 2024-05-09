@@ -13,13 +13,14 @@ import java.util.List;
 public interface RealEstateRepository extends JpaRepository<RealEstate, Long> {
     RealEstate findById(long realEstateId);
 
-    @Query(nativeQuery = true,
-            value = "SELECT *, (ABS(r.latitude - :latitude) + ABS(r.longitude - :longitude)) AS distance " +
-                    "FROM RealEstate r " +
-                    "WHERE (r.latitude <> :latitude OR r.longitude <> :longitude) " +
-                    "ORDER BY distance " +
-                    "LIMIT 5")
-    List<RealEstate> findAllByProximity(@Param(value = "latitude") double latitude, @Param(value = "longitude") double longitude);
-
     List<RealEstate> findByLatitudeBetweenAndLongitudeBetween(double minLatitude, double maxLatitude, double minLongitude, double maxLongitude);
+
+    @Query(value = "SELECT r " +
+            "FROM RealEstate r " +
+            "WHERE r.latitude BETWEEN :minLat AND :maxLat " +
+            "AND r.longitude BETWEEN :minLon AND :maxLon " +
+            "AND (r.latitude <> :latitude OR r.longitude <> :longitude) " +
+            "ORDER BY r.realEstateId ASC " +
+            "LIMIT 5")
+    List<RealEstate> findTop5ByLatitudeBetweenAndLongitudeBetween(@Param(value = "latitude") double latitude, @Param(value = "longitude") double longitude, @Param("minLat") double minLat, @Param("maxLat") double maxLat, @Param("minLon") double minLon, @Param("maxLon") double maxLon);
 }

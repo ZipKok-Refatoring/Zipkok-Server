@@ -9,6 +9,7 @@ import com.project.zipkok.repository.KokRepository;
 import com.project.zipkok.repository.RealEstateRepository;
 import com.project.zipkok.repository.UserRepository;
 import com.project.zipkok.repository.ZimRepository;
+import com.project.zipkok.util.GeoLocationUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,6 @@ public class RealEstateService {
     private final ZimRepository zimRepository;
     private final KokRepository kokRepository;
 
-
     @Transactional
     public GetRealEstateResponse getRealEstateInfo(Long userId, Long realEstateId) {
 
@@ -50,19 +50,7 @@ public class RealEstateService {
                     .map(RealEstateImage::getImageUrl)
                     .forEach(realEstateImages::add);
 
-
-            boolean isZimmed = false;
-            boolean isKokked = false;
-
-            if (zimRepository.findFirstByUserAndRealEstate(user, realEstate) != null) {
-                isZimmed = true;
-            }
-
-            if (kokRepository.findFirstByUserAndRealEstate(user, realEstate) != null) {
-                isKokked = true;
-            }
-
-            List<GetRealEstateResponse.RealEstateBriefInfo> neighborRealEstates = realEstateRepository.findAllByProximity(realEstate.getLatitude(), realEstate.getLongitude())
+            List<GetRealEstateResponse.RealEstateBriefInfo> neighborRealEstates = findNearbyRealEstates(realEstate.getLatitude(), realEstate.getLongitude(), 5)
                     .stream()
                     .map(result -> GetRealEstateResponse.RealEstateBriefInfo.builder()
                             .realEstateId(result.getRealEstateId())
@@ -90,8 +78,8 @@ public class RealEstateService {
                     .administrativeFee(realEstate.getAdministrativeFee())
                     .latitude(realEstate.getLatitude())
                     .longitude(realEstate.getLongitude())
-                    .isZimmed(isZimmed)
-                    .isKokked(isKokked)
+                    .isZimmed(zimRepository.existsByUserAndRealEstate(user, realEstate))
+                    .isKokked(kokRepository.existsByUserAndRealEstate(user, realEstate))
                     .neighborRealEstates(neighborRealEstates)
                     .build();
 
@@ -296,5 +284,18 @@ public class RealEstateService {
 
 
         return true;
+    }
+
+    public List<RealEstate> findNearbyRealEstates(double centerLat, double centerLon, int minResults) {
+        double radiusInKm = 0.5;
+        List<RealEstate> nearbyRealEstates;
+
+        do {
+            double[] bounds = GeoLocationUtils.getSquareBounds(centerLat, centerLon, radiusInKm);
+            nearbyRealEstates = realEstateRepository.findTop5ByLatitudeBetweenAndLongitudeBetween(centerLat, centerLon, bounds[0], bounds[1], bounds[2], bounds[3]);
+            radiusInKm += 0.1;
+        } while (nearbyRealEstates.size() < minResults);
+
+        return nearbyRealEstates;
     }
 }
