@@ -47,8 +47,8 @@ public class KokService {
 
         User user = userRepository.findByUserId(userId);
 
-        List<Kok> koks = user.getKoks();
-        List<Zim> zims = user.getZims();
+        List<Kok> koks = user.getKoks().stream().toList();
+        List<Zim> zims = user.getZims().stream().toList();
 
         int startIdx = (page - 1) * size;
         List<Kok> responseKoks = koks.stream()

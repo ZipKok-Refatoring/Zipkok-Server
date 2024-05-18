@@ -2,6 +2,7 @@ package com.project.zipkok.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,7 @@ public class Kok {
     private List<KokImage> kokImages = new ArrayList<>();
 
     @OneToOne(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
-    private Star star = new Star();
+    private Star star;
 
 
     public Kok(RealEstate realEstate, String review, User user) {
