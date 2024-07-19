@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,8 @@ public class KokService {
 
         User user = userRepository.findByUserId(userId);
 
-        List<Kok> koks = user.getKoks();
+        List<Kok> koks = user.getKoks().stream().toList();
+        List<Zim> zims = user.getZims().stream().toList();
 
         int startIdx = (page - 1) * size;
         List<Kok> responseKoks = koks.stream()
@@ -81,7 +83,7 @@ public class KokService {
                         .realEstateType(kok.getRealEstate().getRealEstateType().toString())
                         .deposit(kok.getRealEstate().getDeposit())
                         .price(kok.getRealEstate().getPrice())
-                        .isZimmed(kok.getRealEstate().getZims().stream().anyMatch(a -> a.equals(zimRepository.findFirstByUserAndRealEstate(user, kok.getRealEstate()))))
+                        .isZimmed(zims.stream().anyMatch(zim -> zim.getRealEstate().equals(kok.getRealEstate())))
                         .build())
                         .collect(Collectors.toList()))
                 .meta(GetKokResponse.Meta.builder()
@@ -104,8 +106,7 @@ public class KokService {
 
         boolean isZimmed = false;
 
-        Zim zim = zimRepository.findFirstByUserAndRealEstate(user, kok.getRealEstate());
-        if (zim != null) {
+        if (zimRepository.existsByUserAndRealEstate(user, kok.getRealEstate())) {
             isZimmed = true;
         }
 
