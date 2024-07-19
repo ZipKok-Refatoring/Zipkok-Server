@@ -68,7 +68,7 @@ public class RealEstate {
     @Column(name = "status", nullable = false)
     private String status = "active";
 
-    @Column(name = "user_id")
+    @Column(name = "user_user_id")
     private Long userId;
 
     @Column(name = "agent")

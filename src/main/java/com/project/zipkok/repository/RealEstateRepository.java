@@ -1,7 +1,7 @@
 package com.project.zipkok.repository;
 
-import com.project.zipkok.dto.GetRealEstateResponse;
 import com.project.zipkok.model.RealEstate;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +11,8 @@ import java.util.List;
 
 @Repository
 public interface RealEstateRepository extends JpaRepository<RealEstate, Long> {
+
+    @EntityGraph(attributePaths = {"realEstateImages"})
     RealEstate findById(long realEstateId);
 
     List<RealEstate> findByLatitudeBetweenAndLongitudeBetween(double minLatitude, double maxLatitude, double minLongitude, double maxLongitude);

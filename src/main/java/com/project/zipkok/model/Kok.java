@@ -5,7 +5,9 @@ import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "Kok")
@@ -53,7 +55,8 @@ public class Kok {
     @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<KokImage> kokImages = new ArrayList<>();
 
-    @OneToOne(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "star_id", nullable = false)
     private Star star;
 
 

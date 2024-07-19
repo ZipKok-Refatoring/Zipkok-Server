@@ -63,6 +63,9 @@ public class User {
     @OneToOne(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private TransactionPriceConfig transactionPriceConfig;
 
+    @ElementCollection
+    private Set<Long> realEstateIds = new LinkedHashSet<>();
+
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<Zim> zims = new LinkedHashSet<>();
 

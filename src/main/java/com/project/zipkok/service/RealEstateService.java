@@ -5,10 +5,8 @@ import com.project.zipkok.common.enums.TransactionType;
 import com.project.zipkok.common.exception.RealEstateException;
 import com.project.zipkok.dto.*;
 import com.project.zipkok.model.*;
-import com.project.zipkok.repository.KokRepository;
 import com.project.zipkok.repository.RealEstateRepository;
 import com.project.zipkok.repository.UserRepository;
-import com.project.zipkok.repository.ZimRepository;
 import com.project.zipkok.util.GeoLocationUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +27,6 @@ public class RealEstateService {
 
     private final RealEstateRepository realEstateRepository;
     private final UserRepository userRepository;
-    private final ZimRepository zimRepository;
-    private final KokRepository kokRepository;
 
     @Transactional
     public GetRealEstateResponse getRealEstateInfo(Long userId, Long realEstateId) {
@@ -38,8 +34,9 @@ public class RealEstateService {
         log.info("[RealEstateService.getRealEstateInfo]");
 
 //        try {
-            RealEstate realEstate = realEstateRepository.findById(realEstateId).get();
+            RealEstate realEstate = realEstateRepository.findById(realEstateId.longValue());
             User user = userRepository.findByUserId(userId);
+
 
             List<String> realEstateImages = new ArrayList<>();
 
@@ -78,8 +75,8 @@ public class RealEstateService {
                     .administrativeFee(realEstate.getAdministrativeFee())
                     .latitude(realEstate.getLatitude())
                     .longitude(realEstate.getLongitude())
-                    .isZimmed(zimRepository.existsByUserAndRealEstate(user, realEstate))
-                    .isKokked(kokRepository.existsByUserAndRealEstate(user, realEstate))
+                    .isZimmed(user.getZims().stream().map(Zim::getRealEstate).collect(Collectors.toSet()).contains(realEstate))
+                    .isKokked(user.getKoks().stream().map(Kok::getRealEstate).collect(Collectors.toSet()).contains(realEstate))
                     .neighborRealEstates(neighborRealEstates)
                     .build();
 
