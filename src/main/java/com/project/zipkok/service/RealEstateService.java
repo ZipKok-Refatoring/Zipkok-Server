@@ -4,13 +4,10 @@ import com.project.zipkok.common.enums.RealEstateType;
 import com.project.zipkok.common.enums.TransactionType;
 import com.project.zipkok.common.exception.RealEstateException;
 import com.project.zipkok.dto.*;
-import com.project.zipkok.model.RealEstate;
-import com.project.zipkok.model.RealEstateImage;
-import com.project.zipkok.model.User;
-import com.project.zipkok.repository.KokRepository;
+import com.project.zipkok.model.*;
 import com.project.zipkok.repository.RealEstateRepository;
 import com.project.zipkok.repository.UserRepository;
-import com.project.zipkok.repository.ZimRepository;
+import com.project.zipkok.util.GeoLocationUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
@@ -29,9 +27,6 @@ public class RealEstateService {
 
     private final RealEstateRepository realEstateRepository;
     private final UserRepository userRepository;
-    private final ZimRepository zimRepository;
-    private final KokRepository kokRepository;
-
 
     @Transactional
     public GetRealEstateResponse getRealEstateInfo(Long userId, Long realEstateId) {
@@ -39,8 +34,9 @@ public class RealEstateService {
         log.info("[RealEstateService.getRealEstateInfo]");
 
 //        try {
-            RealEstate realEstate = realEstateRepository.findById(realEstateId).get();
+            RealEstate realEstate = realEstateRepository.findById(realEstateId.longValue());
             User user = userRepository.findByUserId(userId);
+
 
             List<String> realEstateImages = new ArrayList<>();
 
@@ -51,19 +47,7 @@ public class RealEstateService {
                     .map(RealEstateImage::getImageUrl)
                     .forEach(realEstateImages::add);
 
-
-            boolean isZimmed = false;
-            boolean isKokked = false;
-
-            if (zimRepository.findFirstByUserAndRealEstate(user, realEstate) != null) {
-                isZimmed = true;
-            }
-
-            if (kokRepository.findFirstByUserAndRealEstate(user, realEstate) != null) {
-                isKokked = true;
-            }
-
-            List<GetRealEstateResponse.RealEstateBriefInfo> neighborRealEstates = realEstateRepository.findAllByProximity(realEstate.getLatitude(), realEstate.getLongitude())
+            List<GetRealEstateResponse.RealEstateBriefInfo> neighborRealEstates = findNearbyRealEstates(realEstate.getLatitude(), realEstate.getLongitude(), 5)
                     .stream()
                     .map(result -> GetRealEstateResponse.RealEstateBriefInfo.builder()
                             .realEstateId(result.getRealEstateId())
@@ -91,8 +75,8 @@ public class RealEstateService {
                     .administrativeFee(realEstate.getAdministrativeFee())
                     .latitude(realEstate.getLatitude())
                     .longitude(realEstate.getLongitude())
-                    .isZimmed(isZimmed)
-                    .isKokked(isKokked)
+                    .isZimmed(user.getZims().stream().map(Zim::getRealEstate).collect(Collectors.toSet()).contains(realEstate))
+                    .isKokked(user.getKoks().stream().map(Kok::getRealEstate).collect(Collectors.toSet()).contains(realEstate))
                     .neighborRealEstates(neighborRealEstates)
                     .build();
 
@@ -122,7 +106,7 @@ public class RealEstateService {
                     .pyeongsu(postRealEstateRequest.getPyeongsu())
                     .realEstateType(postRealEstateRequest.getRealEstateType())
                     .floorNum(postRealEstateRequest.getFloorNum())
-                    .user(user)
+                    .userId(userId)
                     .agent(null)
                     .detailAddress(postRealEstateRequest.getDetailAddress())
                     .status("active")
@@ -141,7 +125,6 @@ public class RealEstateService {
 
 
         List<RealEstate> realEstateList = this.realEstateRepository.findByLatitudeBetweenAndLongitudeBetween(getRealEstateOnMapRequest.getSouthWestLat(),getRealEstateOnMapRequest.getNorthEastLat(),getRealEstateOnMapRequest.getSouthWestLon(),getRealEstateOnMapRequest.getNorthEastLon());
-        User user = this.userRepository.findByUserId(userId);
 
         if(realEstateList == null){
             throw new RealEstateException(PROPERTY_NOT_FOUND);
@@ -177,7 +160,7 @@ public class RealEstateService {
 
             List<GetTempRealEstateResponse.RealEstateInfo> realEstateInfoList = realEstateList
                     .stream()
-                    .filter(result -> result.getUser() == null)
+                    .filter(result -> result.getUserId() == null)
                     .map(result -> GetTempRealEstateResponse.RealEstateInfo.builder()
                             .realEstateId(result.getRealEstateId())
                             .imageURL(result.getImageUrl())
@@ -200,10 +183,21 @@ public class RealEstateService {
 
         } else {
 
+            User user = this.userRepository.findByUserId(userId);
+
             GetLoginMapRealEstateResponse getLoginMapRealEstateResponse = new GetLoginMapRealEstateResponse();
 
             userTransactionType = user.getTransactionType();
             userRealEstateType = user.getRealEstateType();
+
+            Set<RealEstate> zimmedRealEstates = user.getZims().stream()
+                    .map(Zim::getRealEstate)
+                    .collect(Collectors.toSet());
+
+            Set<RealEstate> kokkedRealEstates = user.getKoks().stream()
+                    .map(Kok::getRealEstate)
+                    .collect(Collectors.toSet());
+
 
             //filter 정보 mapping
             getLoginMapRealEstateResponse.setFilter(GetLoginMapRealEstateResponse.Filter.builder()
@@ -231,7 +225,7 @@ public class RealEstateService {
             //realEstateInfo mapping
             List<GetLoginMapRealEstateResponse.RealEstateInfo> realEstateInfoList = realEstateList
                     .stream()
-                    .filter(result -> result.getUser() == null || result.getUser().getUserId().equals(userId))
+                    .filter(result -> result.getUserId() == null || result.getUserId().equals(userId))
                     .map(result -> GetLoginMapRealEstateResponse.RealEstateInfo.builder()
                             .realEstateId(result.getRealEstateId())
                             .imageURL(result.getImageUrl())
@@ -244,8 +238,8 @@ public class RealEstateService {
                             .latitude(result.getLatitude())
                             .longitude(result.getLongitude())
                             .agent(result.getAgent() == null ? "직접 등록한 매물" : result.getAgent())
-                            .isZimmed(this.zimRepository.findFirstByUserAndRealEstate(user, result) != null)
-                            .isKokked(this.kokRepository.findFirstByUserAndRealEstate(user, result) != null)
+                            .isZimmed(zimmedRealEstates.contains(result))
+                            .isKokked(kokkedRealEstates.contains(result))
                             .build())
                     .collect(Collectors.toList());
 
@@ -287,5 +281,18 @@ public class RealEstateService {
 
 
         return true;
+    }
+
+    public List<RealEstate> findNearbyRealEstates(double centerLat, double centerLon, int minResults) {
+        double radiusInKm = 0.5;
+        List<RealEstate> nearbyRealEstates;
+
+        do {
+            double[] bounds = GeoLocationUtils.getSquareBounds(centerLat, centerLon, radiusInKm);
+            nearbyRealEstates = realEstateRepository.findTop5ByLatitudeBetweenAndLongitudeBetween(centerLat, centerLon, bounds[0], bounds[1], bounds[2], bounds[3]);
+            radiusInKm += 0.1;
+        } while (nearbyRealEstates.size() < minResults);
+
+        return nearbyRealEstates;
     }
 }

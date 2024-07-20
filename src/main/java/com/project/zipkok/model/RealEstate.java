@@ -68,9 +68,8 @@ public class RealEstate {
     @Column(name = "status", nullable = false)
     private String status = "active";
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "user_user_id")
+    private Long userId;
 
     @Column(name = "agent")
     private String agent;
@@ -79,13 +78,7 @@ public class RealEstate {
     private String detailAddress;
 
     @OneToMany(mappedBy = "realEstate",orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Zim> zims = new ArrayList<>();
-
-    @OneToMany(mappedBy = "realEstate",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<RealEstateImage> realEstateImages = new ArrayList<>();
-
-    @OneToMany(mappedBy = "realEstate",orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Kok> koks = new ArrayList<>();
 
     public RealEstate(String address, double latitude, double longitude, TransactionType transactionType, long deposit, long price, RealEstateType realEstateType) {
         this.address = address;

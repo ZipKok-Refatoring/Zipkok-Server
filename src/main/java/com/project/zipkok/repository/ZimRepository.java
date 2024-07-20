@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface ZimRepository extends JpaRepository<Zim, Long> {
-    Zim findFirstByUserAndRealEstate(User user, RealEstate realEstateId);
+    boolean existsByUserAndRealEstate(User user, RealEstate realEstate);
 
     Zim findByUser(User user);
 

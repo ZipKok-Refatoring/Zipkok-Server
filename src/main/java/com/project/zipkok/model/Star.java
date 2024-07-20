@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.type.descriptor.jdbc.TinyIntJdbcType;
 
 @Entity
@@ -32,7 +33,7 @@ public class Star {
     @Column(name = "vibe_star", nullable = false)
     private int vibeStar;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "kok_id", nullable = false)
     private Kok kok;
 

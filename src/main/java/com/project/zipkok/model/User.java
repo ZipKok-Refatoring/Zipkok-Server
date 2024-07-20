@@ -8,7 +8,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "User")
@@ -61,14 +63,14 @@ public class User {
     @OneToOne(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private TransactionPriceConfig transactionPriceConfig;
 
-    @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Zim> zims = new ArrayList<>();
+    @ElementCollection
+    private Set<Long> realEstateIds = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<RealEstate> realEstates = new ArrayList<>();
+    private Set<Zim> zims = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Kok> koks = new ArrayList<>();
+    private Set<Kok> koks = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Option> options = new ArrayList<>();
