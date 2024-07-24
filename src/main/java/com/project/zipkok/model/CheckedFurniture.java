@@ -20,7 +20,7 @@ public class CheckedFurniture {
     private long checkedFurnitureId;
 
     @ManyToOne
-    @JoinColumn(name = "kok_id", nullable = false)
+    @JoinColumn(name = "kok_id", nullable = true)
     private  Kok kok;
 
     @ManyToOne

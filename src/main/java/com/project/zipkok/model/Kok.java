@@ -55,8 +55,8 @@ public class Kok {
     @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<KokImage> kokImages = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "star_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "star_id", nullable = true)
     private Star star;
 
 
