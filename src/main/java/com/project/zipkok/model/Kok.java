@@ -38,7 +38,7 @@ public class Kok {
     private User user;
 
     @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<CheckedFurniture> checkedFurniturs = new ArrayList<>();
+    private List<CheckedFurniture> checkedFurnitures = new ArrayList<>();
 
     @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CheckedImpression> checkedImpressions = new ArrayList<>();

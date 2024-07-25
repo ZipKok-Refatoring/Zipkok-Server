@@ -181,7 +181,7 @@ public class KokService {
         validateUserAndKok(user, kok);
 
         GetKokInnerInfoResponse response = GetKokInnerInfoResponse.builder()
-                .furnitureOptions(kok.getCheckedFurniturs()
+                .furnitureOptions(kok.getCheckedFurnitures()
                         .stream()
                         .map(CheckedFurniture::getFurnitureOption)
                         .map(FurnitureOption::getFurnitureName)
@@ -305,7 +305,7 @@ public class KokService {
 
         if (kok != null) {
             checkedHilightsResponse = makeHilightTitleList(kok.getCheckedHighlights().stream().map(CheckedHighlight::getHighlight).toList());
-            checkedFurinirureOptionsResponse = makeFurnitureNameList(kok.getCheckedFurniturs().stream().map(CheckedFurniture::getFurnitureOption).toList());
+            checkedFurinirureOptionsResponse = makeFurnitureNameList(kok.getCheckedFurnitures().stream().map(CheckedFurniture::getFurnitureOption).toList());
             reviewInfoResponse = makeReviewInfoResponseList(user, kok);
             directionResponse = kok.getDirection();
             outerKokImagesResponse = makeKokImagesUrlList(kok.getKokImages(), OptionCategory.OUTER);
@@ -457,7 +457,7 @@ public class KokService {
                     .realEstate(realEstateRepository.findById(postOrPutKokRequest.getRealEstateId()).get())
                     .user(user)
                     .checkedHighlights(new ArrayList<>())
-                    .checkedFurniturs(new ArrayList<>())
+                    .checkedFurnitures(new ArrayList<>())
                     .checkedImpressions(new ArrayList<>())
                     .checkedOptions(new ArrayList<>())
                     .checkedDetailOptions(new ArrayList<>())
@@ -470,7 +470,7 @@ public class KokService {
         log.info("KokService.clearKok");
 
         kok.getCheckedHighlights().clear();
-        kok.getCheckedFurniturs().clear();
+        kok.getCheckedFurnitures().clear();
         kok.getCheckedImpressions().clear();
         kok.getCheckedOptions().clear();
         kok.getCheckedDetailOptions().clear();
@@ -495,7 +495,7 @@ public class KokService {
 
         postOrPutKokRequest.getCheckedFurnitureOptions()
                 .forEach(checkedFurniture ->
-                        kok.getCheckedFurniturs().add(CheckedFurniture.builder()
+                        kok.getCheckedFurnitures().add(CheckedFurniture.builder()
                                 .furnitureOption(furnitureOptionRepository.findByFurnitureName(checkedFurniture))
                                 .kok(kok)
                                 .build()));
