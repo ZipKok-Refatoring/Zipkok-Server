@@ -5,7 +5,6 @@ import com.project.zipkok.common.exception.KokException;
 import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.dto.*;
 import com.project.zipkok.service.KokService;
-import com.project.zipkok.util.FileUploadUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -108,27 +107,27 @@ public class KokController {
 
     @Operation(summary = "콕 등록", description = "콕 작성하기")
     @PostMapping(value = "", consumes = {APPLICATION_JSON_VALUE, MULTIPART_FORM_DATA_VALUE})
-    public BaseResponse<PostKokResponse> registerKok(@Parameter(hidden=true) @PreAuthorize long userId, @RequestPart(value = "file", required = false) List<MultipartFile> multipartFiles, @Validated @RequestPart(value = "data", required = false) PostKokRequest postKokRequest, BindingResult bindingResult){
+    public BaseResponse<PostOrPutKokResponse> registerKok(@Parameter(hidden=true) @PreAuthorize long userId, @RequestPart(value = "file", required = false) List<MultipartFile> multipartFiles, @Validated @RequestPart(value = "data", required = false) PostOrPutKokRequest postKokRequest, BindingResult bindingResult){
         log.info("[KokController.registerKok]");
 
         if(bindingResult.hasErrors()){
             throw new KokException(KOK_REGISTRATION_FAILURE);
         }
 
-        return new BaseResponse<>(KOK_REGISTRATION_SUCCESS, kokService.registerKok(userId, multipartFiles, postKokRequest));
+        return new BaseResponse<>(KOK_REGISTRATION_SUCCESS, kokService.createOrUpdateKok(userId, multipartFiles, postKokRequest));
 
     }
 
     @Operation(summary = "콕 수정", description = "콕 수정하기")
     @PutMapping(value = "", consumes = {APPLICATION_JSON_VALUE, MULTIPART_FORM_DATA_VALUE})
-    public BaseResponse<Object> modifyKok(@Parameter(hidden=true) @PreAuthorize long userId, @RequestPart(value = "file", required = false) List<MultipartFile> multipartFiles, @Validated @RequestPart(value = "data", required = false) PutKokRequest putKokRequest, BindingResult bindingResult){
+    public BaseResponse<PostOrPutKokResponse> modifyKok(@Parameter(hidden=true) @PreAuthorize long userId, @RequestPart(value = "file", required = false) List<MultipartFile> multipartFiles, @Validated @RequestPart(value = "data", required = false) PostOrPutKokRequest putKokRequest, BindingResult bindingResult){
         log.info("[KokController.modifyKok]");
 
         if(bindingResult.hasErrors()){
             throw new KokException(KOK_MODIFY_FAILURE);
         }
 
-        return new BaseResponse<>(KOK_MODIFY_SUCCESS, kokService.modifyKok(userId, multipartFiles, putKokRequest));
+        return new BaseResponse<>(KOK_MODIFY_SUCCESS, kokService.createOrUpdateKok(userId, multipartFiles, putKokRequest));
 
     }
 

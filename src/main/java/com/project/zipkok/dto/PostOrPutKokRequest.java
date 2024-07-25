@@ -13,11 +13,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class PostKokRequest {
+public class PostOrPutKokRequest {
 
-    @NotNull
     @Positive
     private Long realEstateId;
+
+    @Positive
+    private Long kokId;
 
     @NotNull
     private List<String> checkedHighlights = new ArrayList<>();

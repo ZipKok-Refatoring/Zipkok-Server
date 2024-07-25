@@ -12,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -424,256 +421,161 @@ public class KokService {
     }
 
     @Transactional
-    public PostKokResponse registerKok(long userId, List<MultipartFile> multipartFiles, PostKokRequest postKokRequest) {
+    public PostOrPutKokResponse createOrUpdateKok(long userId, List<MultipartFile> multipartFiles, PostOrPutKokRequest postOrPutKokRequest) {
+        log.info("KokService.postOrPutKok");
 
-        log.info("[KokService.registerKok]");
+        Kok kok = settingKok(userId, multipartFiles, postOrPutKokRequest);
 
-//        try {
+        kokRepository.save(kok);
 
-            Kok kok = new Kok();
-
-            User user = userRepository.findByUserId(userId);
-
-            RealEstate realEstate = realEstateRepository.findById(postKokRequest.getRealEstateId()).get();
-
-            List<CheckedHighlight> checkedHighlights = postKokRequest.getCheckedHighlights()
-                    .stream()
-                    .map(checkedHighlight ->
-                            CheckedHighlight.builder()
-                                    .kok(kok)
-                                    .highlight(highlightRepository.findByUserAndTitle(user, checkedHighlight))
-                                    .build())
-                    .toList();
-
-            List<CheckedFurniture> checkedFurnitures = postKokRequest.getCheckedFurnitureOptions()
-                    .stream()
-                    .map(checkedFurniture ->
-                            CheckedFurniture.builder()
-                                    .furnitureOption(furnitureOptionRepository.findByFurnitureName(checkedFurniture))
-                                    .kok(kok)
-                                    .build())
-                    .toList();
-
-            Star star = Star.builder()
-                    .facilityStar(postKokRequest.getReviewInfo().getFacilityStarCount())
-                    .infraStar(postKokRequest.getReviewInfo().getInfraStarCount())
-                    .structureStar(postKokRequest.getReviewInfo().getStructureStarCount())
-                    .vibeStar(postKokRequest.getReviewInfo().getVibeStarCount())
-                    .kok(kok)
-                    .build();
-
-            List<CheckedImpression> checkedImpressions = postKokRequest.getReviewInfo().getCheckedImpressions()
-                    .stream()
-                    .map(checkedImpression ->
-                            CheckedImpression.builder()
-                                    .impression(impressionRepository.findByUserAndImpressionTitle(user, checkedImpression))
-                                    .kok(kok)
-                                    .build())
-                    .toList();
-
-            List<PostKokRequest.Option> kokOptions = Stream.of(postKokRequest.getCheckedOuterOptions(), postKokRequest.getCheckedInnerOptions(), postKokRequest.getCheckedContractOptions())
-                    .flatMap(Collection::stream)
-                    .toList();
-
-
-            List<String> stringList = kokOptions.stream().map(option -> {
-                return (option.getCheckedDetailOptionIds().toString());
-            }).toList();
-
-            List<CheckedOption> checkedOptions = kokOptions.stream().map(kokOption -> CheckedOption.builder()
-                            .option(optionRepository.findByOptionId(kokOption.getOptionId()))
-                            .kok(kok)
-                            .build())
-                    .toList();
-
-
-            List<Long> detailOptionIds = kokOptions.stream()
-                    .flatMap(option -> option.getCheckedDetailOptionIds().stream())
-                    .collect(Collectors.toList());
-
-
-            List<CheckedDetailOption> checkedDetailOptions = detailOptionIds.stream()
-                    .map(id -> CheckedDetailOption.builder()
-                            .detailOption(detailOptionRepository.findByDetailOptionId(id))
-                            .kok(kok)
-                            .build())
-                    .toList();
-
-
-            if(multipartFiles != null && !multipartFiles.isEmpty()) {
-
-                List<KokImage> kokImages = multipartFiles.stream()
-                        .map(file -> {
-                            String url = file.getOriginalFilename();
-                            OptionCategory category = OptionCategory.OUTER;
-                            if (url.contains("OUTER")) {
-                                category = OptionCategory.OUTER;
-                            } else if (url.contains("INNER")) {
-                                category = OptionCategory.INNER;
-                            } else if (url.contains("CONTRACT")) {
-                                category = OptionCategory.CONTRACT;
-                            }
-
-                            url = fileUploadUtils.uploadFile(user.getUserId().toString() + "/" + System.currentTimeMillis(), file);
-
-
-                            return KokImage.builder()
-                                    .category(category.getDescription())
-                                    .imageUrl(url)
-                                    .kok(kok)
-                                    .option(null)
-                                    .build();
-                        }).collect(Collectors.toList());
-
-                kok.setKokImages(kokImages);
-            }
-
-            kok.setDirection(postKokRequest.getDirection());
-            kok.setReview(postKokRequest.getReviewInfo().getReviewText());
-            kok.setRealEstate(realEstate);
-            kok.setUser(user);
-            kok.setCheckedFurniturs(checkedFurnitures);
-            kok.setCheckedImpressions(checkedImpressions);
-            kok.setCheckedHighlights(checkedHighlights);
-            kok.setCheckedDetailOptions(checkedDetailOptions);
-            kok.setCheckedOptions(checkedOptions);
-            kok.setStar(star);
-
-            Long kokId = kokRepository.save(kok).getKokId();
-
-
-            return new PostKokResponse(kokId);
-
-//        } catch (Exception e) {
-//            throw new KokException(KOK_REGISTRATION_FAILURE);
-//        }
-
+        return PostOrPutKokResponse.builder()
+                .kokId(kok.getKokId())
+                .build();
     }
 
-    public Object modifyKok(long userId, List<MultipartFile> multipartFiles, PutKokRequest putKokRequest) {
-        log.info("[KokService.modifyKok]");
+    private Kok settingKok(long userId, List<MultipartFile> multipartFiles, PostOrPutKokRequest postOrPutKokRequest){
+        log.info("KokService.settingKok");
 
         User user = userRepository.findByUserId(userId);
+        Kok kok = getInitializeKok(user, postOrPutKokRequest);
 
-        Kok kok  = kokRepository.findByKokId(putKokRequest.getKokId());
-
-        if (kok == null) {
+        if(kok == null){
             throw new KokException(KOK_ID_NOT_FOUND);
         }
 
+        fillKokFieldValue(user, kok, postOrPutKokRequest);
+        handleKokImage(user, multipartFiles, kok);
+
+        return kok;
+    }
+
+    private Kok getInitializeKok(User user, PostOrPutKokRequest postOrPutKokRequest) {
+        log.info("KokService.getInitializeKok");
+
+        return (postOrPutKokRequest.getKokId() == null)
+                ? Kok.builder()
+                    .realEstate(realEstateRepository.findById(postOrPutKokRequest.getRealEstateId()).get())
+                    .user(user)
+                    .checkedHighlights(new ArrayList<>())
+                    .checkedFurniturs(new ArrayList<>())
+                    .checkedImpressions(new ArrayList<>())
+                    .checkedOptions(new ArrayList<>())
+                    .checkedDetailOptions(new ArrayList<>())
+                    .kokImages(new ArrayList<>())
+                    .build()
+                : clearKok(Objects.requireNonNull(kokRepository.findById(postOrPutKokRequest.getKokId()).orElse(null)));
+    }
+
+    private Kok clearKok(Kok kok) {
+        log.info("KokService.clearKok");
+
         kok.getCheckedHighlights().clear();
-        putKokRequest.getCheckedHighlights()
-                .stream()
+        kok.getCheckedFurniturs().clear();
+        kok.getCheckedImpressions().clear();
+        kok.getCheckedOptions().clear();
+        kok.getCheckedDetailOptions().clear();
+
+        if(!kok.getKokImages().isEmpty()) {
+            kok.getKokImages().forEach(kokImage -> fileUploadUtils.deleteFile(extractKeyFromUrl(kokImage.getImageUrl())));
+            kok.getKokImages().clear();
+        }
+
+        return kok;
+    }
+
+    private void fillKokFieldValue(User user, Kok kok, PostOrPutKokRequest postOrPutKokRequest) {
+        log.info("KokService.fillKokFieldValue");
+
+        postOrPutKokRequest.getCheckedHighlights()
                 .forEach(checkedHighlight ->
                         kok.getCheckedHighlights().add(CheckedHighlight.builder()
                                 .kok(kok)
                                 .highlight(highlightRepository.findByUserAndTitle(user, checkedHighlight))
                                 .build()));
 
-
-
-        kok.getCheckedFurniturs().clear();
-        putKokRequest.getCheckedFurnitureOptions()
-                .stream()
+        postOrPutKokRequest.getCheckedFurnitureOptions()
                 .forEach(checkedFurniture ->
                         kok.getCheckedFurniturs().add(CheckedFurniture.builder()
                                 .furnitureOption(furnitureOptionRepository.findByFurnitureName(checkedFurniture))
                                 .kok(kok)
                                 .build()));
 
-
-        Star star = Star.builder()
-                .facilityStar(putKokRequest.getReviewInfo().getFacilityStarCount())
-                .infraStar(putKokRequest.getReviewInfo().getInfraStarCount())
-                .structureStar(putKokRequest.getReviewInfo().getStructureStarCount())
-                .vibeStar(putKokRequest.getReviewInfo().getVibeStarCount())
-                .kok(kok)
-                .build();
-
-        kok.getCheckedImpressions().clear();
-        putKokRequest.getReviewInfo().getCheckedImpressions()
-                .stream()
+        postOrPutKokRequest.getReviewInfo().getCheckedImpressions()
                 .forEach(checkedImpression ->
                         kok.getCheckedImpressions().add(CheckedImpression.builder()
                                 .impression(impressionRepository.findByUserAndImpressionTitle(user, checkedImpression))
                                 .kok(kok)
                                 .build()));
 
-
-        kok.getCheckedOptions().clear();
-        List<PostKokRequest.Option> kokOptions = Stream.of(putKokRequest.getCheckedOuterOptions(), putKokRequest.getCheckedInnerOptions(), putKokRequest.getCheckedContractOptions())
+        List<PostOrPutKokRequest.Option> kokOptions = Stream.of(postOrPutKokRequest.getCheckedOuterOptions(), postOrPutKokRequest.getCheckedInnerOptions(), postOrPutKokRequest.getCheckedContractOptions())
                 .flatMap(Collection::stream)
                 .toList();
 
-
-        kok.getCheckedDetailOptions().clear();
-        List<String> stringList = kokOptions.stream().map(option -> {
-            return (option.getCheckedDetailOptionIds().toString());
-        }).toList();
-
-        kokOptions.stream().forEach(kokOption -> kok.getCheckedOptions().add(CheckedOption.builder()
-                        .option(optionRepository.findByOptionId(kokOption.getOptionId()))
-                        .kok(kok)
-                        .build()));
-
-
+        kokOptions.forEach(kokOption -> kok.getCheckedOptions().add(
+                CheckedOption.builder()
+                    .option(optionRepository.findByOptionId(kokOption.getOptionId()))
+                    .kok(kok)
+                    .build()
+            )
+        );
 
         List<Long> detailOptionIds = kokOptions.stream()
                 .flatMap(option -> option.getCheckedDetailOptionIds().stream())
                 .toList();
 
+        detailOptionIds.forEach(id -> kok.getCheckedDetailOptions().add(
+                CheckedDetailOption.builder()
+                    .detailOption(detailOptionRepository.findByDetailOptionId(id))
+                    .kok(kok)
+                    .build()
+            )
+        );
 
-        detailOptionIds.stream()
-                .forEach(id -> kok.getCheckedDetailOptions().add(CheckedDetailOption.builder()
-                        .detailOption(detailOptionRepository.findByDetailOptionId(id))
-                        .kok(kok)
-                        .build()));
+        Star star = Star.builder()
+                .facilityStar(postOrPutKokRequest.getReviewInfo().getFacilityStarCount())
+                .infraStar(postOrPutKokRequest.getReviewInfo().getInfraStarCount())
+                .structureStar(postOrPutKokRequest.getReviewInfo().getStructureStarCount())
+                .vibeStar(postOrPutKokRequest.getReviewInfo().getVibeStarCount())
+                .kok(kok)
+                .build();
 
+        kok.setDirection(postOrPutKokRequest.getDirection());
+        kok.setReview(postOrPutKokRequest.getReviewInfo().getReviewText());
+        kok.setStar(star);
+    }
 
-        if(!kok.getKokImages().isEmpty()) {
-
-            kok.getKokImages().stream().forEach(kokImage -> log.info(kokImage.getImageUrl()));
-
-            kok.getKokImages().stream().forEach(kokImage -> fileUploadUtils.deleteFile(extractKeyFromUrl(kokImage.getImageUrl())));
-
-            kok.getKokImages().clear();
-        }
+    private void handleKokImage(User user, List<MultipartFile> multipartFiles, Kok kok) {
+        log.info("KokService.handleKokImage");
 
         if(multipartFiles != null && !multipartFiles.isEmpty()) {
 
-            multipartFiles.forEach(file -> {
-                String url = file.getOriginalFilename();
-                OptionCategory category = OptionCategory.OUTER;
-                if (url.contains("OUTER")) {
-                    category = OptionCategory.OUTER;
-                } else if (url.contains("INNER")) {
-                    category = OptionCategory.INNER;
-                } else if (url.contains("CONTRACT")) {
-                    category = OptionCategory.CONTRACT;
-                }
+            List<KokImage> kokImages = multipartFiles.stream()
+                    .map(file -> {
+                        String url = file.getOriginalFilename();
+                        OptionCategory category = determineCategory(url);
 
-                // 파일 업로드 및 URL 설정
-                url = fileUploadUtils.uploadFile(user.getUserId().toString() + "/" + System.currentTimeMillis(), file);
+                        url = fileUploadUtils.uploadFile(user.getUserId().toString() + "/" + System.currentTimeMillis(), file);
 
-                // 새 KokImage 객체 생성 및 추가
-                KokImage newKokImage = KokImage.builder()
-                        .category(category.getDescription())
-                        .imageUrl(url)
-                        .kok(kok)
-                        .build();
+                        return KokImage.builder()
+                                .category(category.getDescription())
+                                .imageUrl(url)
+                                .kok(kok)
+                                .option(null)
+                                .build();
+                    }).toList();
 
-                kok.getKokImages().add(newKokImage);
-            });
+            kok.setKokImages(kokImages);
         }
+    }
 
-        kok.setDirection(putKokRequest.getDirection());
-        kok.setReview(putKokRequest.getReviewInfo().getReviewText());
-        kok.setStar(star);
-
-        kokRepository.save(kok);
-
-
-        return null;
-
+    private OptionCategory determineCategory(String url) {
+        if (url.contains("OUTER")) {
+            return OptionCategory.OUTER;
+        } else if (url.contains("INNER")) {
+            return OptionCategory.INNER;
+        } else if (url.contains("CONTRACT")) {
+            return OptionCategory.CONTRACT;
+        }
+        return OptionCategory.OUTER;
     }
 }
