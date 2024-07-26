@@ -20,7 +20,7 @@ public class CheckedOption {
     private long checkedOptionId;
 
     @ManyToOne
-    @JoinColumn(name ="kok_id",  nullable = true)
+    @JoinColumn(name ="kok_id",  nullable = false)
     private Kok kok;
 
     @ManyToOne

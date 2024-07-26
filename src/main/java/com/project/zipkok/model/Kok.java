@@ -20,7 +20,7 @@ public class Kok {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long kokId;
 
-    @Column(name = "direction", nullable = true)
+    @Column(name = "direction", nullable = false)
     private String direction;
 
     @Column(name = "review", nullable = false)
@@ -53,7 +53,7 @@ public class Kok {
     private List<KokImage> kokImages = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "star_id", nullable = true)
+    @JoinColumn(name = "star_id", nullable = false)
     private Star star;
 
 

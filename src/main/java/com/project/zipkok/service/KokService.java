@@ -32,6 +32,7 @@ public class KokService {
     private final OptionRepository optionRepository;
     private final DetailOptionRepository detailOptionRepository;
     private final FileUploadUtils fileUploadUtils;
+    private final StarRepository starRepository;
 
     @Transactional
     public GetKokResponse getKoks(long userId, int page, int size) {
@@ -357,6 +358,21 @@ public class KokService {
     private void fillKokFieldValue(User user, Kok kok, PostOrPutKokRequest postOrPutKokRequest) {
         log.info("KokService.fillKokFieldValue");
 
+        kok.setDirection(postOrPutKokRequest.getDirection());
+        kok.setReview(postOrPutKokRequest.getReviewInfo().getReviewText());
+
+        Star star = Star.builder()
+                .facilityStar(postOrPutKokRequest.getReviewInfo().getFacilityStarCount())
+                .infraStar(postOrPutKokRequest.getReviewInfo().getInfraStarCount())
+                .structureStar(postOrPutKokRequest.getReviewInfo().getStructureStarCount())
+                .vibeStar(postOrPutKokRequest.getReviewInfo().getVibeStarCount())
+                .build();
+
+        starRepository.save(star);
+        kok.setStar(star);
+
+        kokRepository.save(kok);
+
         postOrPutKokRequest.getCheckedHighlights()
                 .forEach(checkedHighlight ->
                         kok.getCheckedHighlights().add(CheckedHighlight.builder()
@@ -428,17 +444,6 @@ public class KokService {
             )
         );
 
-        Star star = Star.builder()
-                .facilityStar(postOrPutKokRequest.getReviewInfo().getFacilityStarCount())
-                .infraStar(postOrPutKokRequest.getReviewInfo().getInfraStarCount())
-                .structureStar(postOrPutKokRequest.getReviewInfo().getStructureStarCount())
-                .vibeStar(postOrPutKokRequest.getReviewInfo().getVibeStarCount())
-                .kok(kok)
-                .build();
-
-        kok.setDirection(postOrPutKokRequest.getDirection());
-        kok.setReview(postOrPutKokRequest.getReviewInfo().getReviewText());
-        kok.setStar(star);
     }
 
     private void handleKokImage(User user, List<MultipartFile> multipartFiles, Kok kok) {
