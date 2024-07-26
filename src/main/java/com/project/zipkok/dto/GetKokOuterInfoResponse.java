@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -21,7 +22,7 @@ public class GetKokOuterInfoResponse {
         private int orderNumber;
         private List<String> detailOptions;
 
-        public static OuterOption of(CheckedOption checkedOption, List<CheckedDetailOption> checkedDetailOptions) {
+        public static OuterOption of(CheckedOption checkedOption, Set<CheckedDetailOption> checkedDetailOptions) {
             return GetKokOuterInfoResponse.OuterOption.builder()
                     .option(checkedOption.getOption().getName())
                     .orderNumber((int) checkedOption.getOption().getOrderNum())

@@ -26,7 +26,6 @@ import static java.time.LocalTime.now;
 public class KokService {
 
     private final KokRepository kokRepository;
-    private final ZimRepository zimRepository;
     private final UserRepository userRepository;
     private final RealEstateRepository realEstateRepository;
     private final FurnitureOptionRepository furnitureOptionRepository;
@@ -99,7 +98,7 @@ public class KokService {
         log.info("[KokService.getKokOuterInfo]");
 
         User user = userRepository.findByUserId(userId);
-        Kok kok = kokRepository.findById(kokId).get();
+        Kok kok = kokRepository.findKokWithCheckedOptionAndCheckedDetailOption(kokId);
 
         validateUserAndKok(user, kok);
 
@@ -394,8 +393,8 @@ public class KokService {
                     .checkedHighlights(new ArrayList<>())
                     .checkedFurnitures(new ArrayList<>())
                     .checkedImpressions(new ArrayList<>())
-                    .checkedOptions(new ArrayList<>())
-                    .checkedDetailOptions(new ArrayList<>())
+                    .checkedOptions(new LinkedHashSet<>())
+                    .checkedDetailOptions(new LinkedHashSet<>())
                     .kokImages(new ArrayList<>())
                     .build()
                 : clearKok(Objects.requireNonNull(kokRepository.findById(postOrPutKokRequest.getKokId()).orElse(null)));
