@@ -42,39 +42,9 @@ public class KokService {
 
         log.info("[KokService.getKoks]");
 
-        User user = userRepository.findByUserId(userId);
+        List<GetKokWithZimStatus> getKokWithZimStatus = kokRepository.getKokWithZimStatus(userId, pageable);
 
-        List<Kok> koks = user.getKoks().stream().toList();
-        List<Zim> zims = user.getZims().stream().toList();
-
-        int startIdx = (page - 1) * size;
-        GetKokResponse.Meta meta = calculateIndexingOfKokList(koks, page, size, startIdx);
-
-        List<Kok> responseKoks = koks.stream()
-                .skip(startIdx)
-                .limit(size)
-                .toList();
-
-        return GetKokResponse.of(responseKoks, meta, zims);
-    }
-
-    private GetKokResponse.Meta calculateIndexingOfKokList(List<Kok> koks, int page, int size, int startIdx) {
-
-        boolean isEnd = false;
-        if(startIdx + size > koks.size() - 1) {
-            isEnd = true;
-        }
-
-        int totalPage = (int) Math.ceil((double) koks.size()/size);
-        if(page > totalPage) {
-            throw new KokException(NO_MORE_KOK_DATA);
-        }
-
-        return GetKokResponse.Meta.builder()
-                .isEnd(isEnd)
-                .currentPage(page)
-                .totalPage(totalPage)
-                .build();
+        return GetKokResponse.from(getKokWithZimStatus);
     }
 
     public GetKokDetailResponse getKokDetail(long userId, long kokId) {
@@ -82,7 +52,7 @@ public class KokService {
         log.info("[KokService.getKokDetail]");
 
         User user = userRepository.findByUserId(userId);
-        Kok kok = kokRepository.findById(kokId).get();
+        Kok kok = kokRepository.findById(kokId).orElseThrow(() -> new KokException(KOK_ID_NOT_FOUND));
 
         boolean isZimmed = judgeIsZimmedRealEstate(user, kok.getRealEstate());
 
