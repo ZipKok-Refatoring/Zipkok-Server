@@ -114,32 +114,7 @@ public class KokService {
 
         validateUserAndKok(user, kok);
 
-        GetKokInnerInfoResponse response = GetKokInnerInfoResponse.builder()
-                .furnitureOptions(kok.getCheckedFurnitures()
-                        .stream()
-                        .map(CheckedFurniture::getFurnitureOption)
-                        .map(FurnitureOption::getFurnitureName)
-                        .collect(Collectors.toList()))
-                .direction(kok.getDirection())
-                .options(kok.getCheckedOptions()
-                        .stream()
-                        .filter(checkedOption -> checkedOption.getOption().getCategory().equals(OptionCategory.INNER))
-                        .filter(checkedOption -> checkedOption.getOption().isVisible())
-                        .map(checkedOption -> GetKokInnerInfoResponse.InnerOption.builder()
-                                .option(checkedOption.getOption().getName())
-                                .orderNumber((int) checkedOption.getOption().getOrderNum())
-                                .detailOptions(kok.getCheckedDetailOptions()
-                                        .stream()
-                                        .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().getOption().equals(checkedOption.getOption()))
-                                        .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().isVisible())
-                                        .map(CheckedDetailOption::getDetailOption)
-                                        .map(DetailOption::getName)
-                                        .collect(Collectors.toList()))
-                                .build())
-                        .collect(Collectors.toList()))
-                .build();
-
-        return response;
+        return GetKokInnerInfoResponse.of(kok);
     }
 
     public GetKokContractResponse getKokContractInfo(long userId, long kokId) {
