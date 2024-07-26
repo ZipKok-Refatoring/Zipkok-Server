@@ -81,38 +81,17 @@ public class KokService {
         User user = userRepository.findByUserId(userId);
         Kok kok = kokRepository.findById(kokId).get();
 
-        boolean isZimmed = false;
-
-        if (zimRepository.existsByUserAndRealEstate(user, kok.getRealEstate())) {
-            isZimmed = true;
-        }
+        boolean isZimmed = judgeIsZimmedRealEstate(user, kok.getRealEstate());
 
         validateUserAndKok(user, kok);
 
-        GetKokDetailResponse response = GetKokDetailResponse.builder()
-                .kokId(kok.getKokId())
-                .imageInfo(GetKokDetailResponse.ImageInfo.builder().
-                        imageNumber(kok.getKokImages().size())
-                        .imageUrls(kok.getKokImages().stream().map(KokImage::getImageUrl).collect(Collectors.toList()))
-                        .build())
-                .address(kok.getRealEstate().getAddress())
-                .detailAddress(kok.getRealEstate().getDetailAddress())
-                .transactionType(kok.getRealEstate().getTransactionType().toString())
-                .deposit(kok.getRealEstate().getDeposit())
-                .price(kok.getRealEstate().getPrice())
-                .detail(kok.getRealEstate().getDetail())
-                .areaSize(kok.getRealEstate().getAreaSize())
-                .pyeongsu((int) kok.getRealEstate().getPyeongsu())
-                .realEstateType(kok.getRealEstate().getRealEstateType().toString())
-                .floorNum(kok.getRealEstate().getFloorNum())
-                .administrativeFee(kok.getRealEstate().getAdministrativeFee())
-                .latitude(kok.getRealEstate().getLatitude())
-                .longitude(kok.getRealEstate().getLongitude())
-                .isZimmed(isZimmed)
-                .realEstateId(kok.getRealEstate().getRealEstateId())
-                .build();
+        return GetKokDetailResponse.of(kok, isZimmed);
+    }
 
-        return response;
+    private boolean judgeIsZimmedRealEstate(User user, RealEstate realEstate) {
+        log.info("[KokService.judgeIsZimmedRealEstate]");
+
+        return zimRepository.existsByUserAndRealEstate(user, realEstate);
     }
 
     public GetKokOuterInfoResponse getKokOuterInfo(long userId, long kokId) {
