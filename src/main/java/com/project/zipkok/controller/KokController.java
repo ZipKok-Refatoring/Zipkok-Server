@@ -5,17 +5,17 @@ import com.project.zipkok.common.exception.KokException;
 import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.dto.*;
 import com.project.zipkok.service.KokService;
-import com.project.zipkok.util.FileUploadUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -35,12 +35,11 @@ public class KokController {
     @GetMapping("")
     @Operation(summary = "유저의 콕리스트 반환", description = "page: 표시할 페이지, size: 페이지당 표시할 데이터 수")
     public BaseResponse<GetKokResponse> getKoks(@Parameter(hidden = true) @PreAuthorize long userId,
-                                                @Parameter(name = "page", description = "표시할 페이지 번호", in = ParameterIn.QUERY) @RequestParam(value = "page") int page,
-                                                @Parameter(name = "size", description = "페이지당 표시할 데이터 수", in = ParameterIn.QUERY) @RequestParam(value = "size") int size) {
+                                                @ParameterObject Pageable pageable) {
 
         log.info("[KokController.getKoks]");
 
-        return new BaseResponse<>(KOK_LIST_QUERY_SUCCESS, kokService.getKoks(userId, page, size));
+        return new BaseResponse<>(KOK_LIST_QUERY_SUCCESS, kokService.getKoks(userId, pageable));
     }
 
     @GetMapping("/{kokId}/detail")

@@ -47,19 +47,4 @@ public class GetKokResponse {
         @JsonProperty("isZimmed")
         private boolean isZimmed;
     }
-
-    private Meta meta;
-
-    @Builder
-    public static class Meta {
-        @JsonProperty("is_End")
-        private boolean isEnd;
-
-        @JsonProperty("current_page")
-        private Integer currentPage;
-
-        @JsonProperty("total_page")
-        private Integer totalPage;
-
-    }
 }

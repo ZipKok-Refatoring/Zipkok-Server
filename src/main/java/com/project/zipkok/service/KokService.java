@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import org.springframework.data.domain.Pageable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
 import static com.project.zipkok.service.UserService.extractKeyFromUrl;
-import static java.time.LocalTime.now;
 
 @Slf4j
 @Service
@@ -42,34 +41,14 @@ public class KokService {
 
 
     @Transactional
-    public GetKokResponse getKoks(long userId, int page, int size) {
+    public GetKokResponse getKoks(long userId, Pageable pageable) {
 
         log.info("[KokService.getKoks]");
 
-        User user = userRepository.findByUserId(userId);
-
-        List<Kok> koks = user.getKoks().stream().toList();
-        List<Zim> zims = user.getZims().stream().toList();
-
-        int startIdx = (page - 1) * size;
-        List<Kok> responseKoks = koks.stream()
-                .skip(startIdx)
-                .limit(size)
-                .collect(Collectors.toList());
-
-        boolean isEnd = false;
-        if(startIdx + size > koks.size() - 1) {
-            isEnd = true;
-        }
-
-        int totalPage = (int) Math.ceil((double) koks.size()/size);
-        if(page > totalPage) {
-            throw new KokException(NO_MORE_KOK_DATA);
-        }
-
+        List<Kok> koks = kokRepository.findByUserId(userId, pageable).getContent();
 
         GetKokResponse response = GetKokResponse.builder()
-                .koks(responseKoks.stream().map(kok -> GetKokResponse.Koks.builder()
+                .koks(koks.stream().map(kok -> GetKokResponse.Koks.builder()
                         .kokId(kok.getKokId())
                         .realEstateId(kok.getRealEstate().getRealEstateId())
                         .imageUrl(Optional.ofNullable(kok.getRealEstate().getRealEstateImages())
@@ -83,18 +62,12 @@ public class KokService {
                         .realEstateType(kok.getRealEstate().getRealEstateType().toString())
                         .deposit(kok.getRealEstate().getDeposit())
                         .price(kok.getRealEstate().getPrice())
-                        .isZimmed(zims.stream().anyMatch(zim -> zim.getRealEstate().equals(kok.getRealEstate())))
+                        .isZimmed(zimRepository.existsByUserIdAndRealEstateId(userId, kok.getRealEstate().getRealEstateId()))
                         .build())
                         .collect(Collectors.toList()))
-                .meta(GetKokResponse.Meta.builder()
-                        .isEnd(isEnd)
-                        .currentPage(page)
-                        .totalPage(totalPage)
-                        .build())
                 .build();
 
         return response;
-
     }
 
     public GetKokDetailResponse getKokDetail(long userId, long kokId) {
