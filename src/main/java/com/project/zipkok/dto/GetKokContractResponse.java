@@ -1,16 +1,14 @@
 package com.project.zipkok.dto;
 
 import com.project.zipkok.common.enums.OptionCategory;
-import com.project.zipkok.model.CheckedDetailOption;
-import com.project.zipkok.model.DetailOption;
-import com.project.zipkok.model.Kok;
-import com.project.zipkok.model.KokImage;
+import com.project.zipkok.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.http.annotation.Contract;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -25,6 +23,20 @@ public class GetKokContractResponse {
         private String option;
         private int orderNumber;
         private List<String> detailOptions;
+
+        public static ContractOptions of(CheckedOption checkedOption, Set<CheckedDetailOption> checkedDetailOptions) {
+            return GetKokContractResponse.ContractOptions.builder()
+                    .option(checkedOption.getOption().getName())
+                    .orderNumber((int) checkedOption.getOption().getOrderNum())
+                    .detailOptions(checkedDetailOptions
+                            .stream()
+                            .map(CheckedDetailOption::getDetailOption)
+                            .filter(detailOption -> detailOption.getOption().equals(checkedOption.getOption()))
+                            .filter(DetailOption::isVisible)
+                            .map(DetailOption::getName)
+                            .collect(Collectors.toList()))
+                    .build();
+        }
     }
 
     private ImageInfo imageInfo;
@@ -48,18 +60,9 @@ public class GetKokContractResponse {
                         .stream()
                         .filter(checkedOption -> checkedOption.getOption().getCategory().equals(OptionCategory.CONTRACT))
                         .filter(checkedOption -> checkedOption.getOption().isVisible())
-                        .map(checkedOption -> GetKokContractResponse.ContractOptions.builder()
-                                .option(checkedOption.getOption().getName())
-                                .orderNumber((int) checkedOption.getOption().getOrderNum())
-                                .detailOptions(kok.getCheckedDetailOptions()
-                                        .stream()
-                                        .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().getOption().equals(checkedOption.getOption()))
-                                        .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().isVisible())
-                                        .map(CheckedDetailOption::getDetailOption)
-                                        .map(DetailOption::getName)
-                                        .collect(Collectors.toList()))
-                                .build())
-                        .collect(Collectors.toList()))
+                        .map(checkedOption -> GetKokContractResponse.ContractOptions.of(checkedOption, kok.getCheckedDetailOptions()))
+                        .toList()
+                )
                 .imageInfo(GetKokContractResponse.ImageInfo.builder()
                         .imageNumber(contractImages.size())
                         .imageUrls(contractImages)

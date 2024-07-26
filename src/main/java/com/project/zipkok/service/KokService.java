@@ -122,7 +122,7 @@ public class KokService {
         log.info("[KokService.getKokContractInfo]");
 
         User user = userRepository.findByUserId(userId);
-        Kok kok = kokRepository.findById(kokId).get();
+        Kok kok = kokRepository.findKokWithCheckedOptionAndCheckedDetailOption(kokId);
 
         validateUserAndKok(user, kok);
 
