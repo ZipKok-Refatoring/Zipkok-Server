@@ -3,6 +3,7 @@ package com.project.zipkok.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.zipkok.model.Kok;
 import com.project.zipkok.model.KokImage;
+import com.project.zipkok.model.RealEstate;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,27 +45,30 @@ public class GetKokDetailResponse {
     private boolean isZimmed;
 
     public static GetKokDetailResponse of(Kok kok, boolean isZimmed) {
+
+        RealEstate realEstate = kok.getRealEstate();
+
         return GetKokDetailResponse.builder()
                 .kokId(kok.getKokId())
                 .imageInfo(GetKokDetailResponse.ImageInfo.builder().
                         imageNumber(kok.getKokImages().size())
                         .imageUrls(kok.getKokImages().stream().map(KokImage::getImageUrl).collect(Collectors.toList()))
                         .build())
-                .address(kok.getRealEstate().getAddress())
-                .detailAddress(kok.getRealEstate().getDetailAddress())
-                .transactionType(kok.getRealEstate().getTransactionType().toString())
-                .deposit(kok.getRealEstate().getDeposit())
-                .price(kok.getRealEstate().getPrice())
-                .detail(kok.getRealEstate().getDetail())
-                .areaSize(kok.getRealEstate().getAreaSize())
-                .pyeongsu((int) kok.getRealEstate().getPyeongsu())
-                .realEstateType(kok.getRealEstate().getRealEstateType().toString())
-                .floorNum(kok.getRealEstate().getFloorNum())
-                .administrativeFee(kok.getRealEstate().getAdministrativeFee())
-                .latitude(kok.getRealEstate().getLatitude())
-                .longitude(kok.getRealEstate().getLongitude())
+                .address(realEstate.getAddress())
+                .detailAddress(realEstate.getDetailAddress())
+                .transactionType(realEstate.getTransactionType().toString())
+                .deposit(realEstate.getDeposit())
+                .price(realEstate.getPrice())
+                .detail(realEstate.getDetail())
+                .areaSize(realEstate.getAreaSize())
+                .pyeongsu((int) realEstate.getPyeongsu())
+                .realEstateType(realEstate.getRealEstateType().toString())
+                .floorNum(realEstate.getFloorNum())
+                .administrativeFee(realEstate.getAdministrativeFee())
+                .latitude(realEstate.getLatitude())
+                .longitude(realEstate.getLongitude())
                 .isZimmed(isZimmed)
-                .realEstateId(kok.getRealEstate().getRealEstateId())
+                .realEstateId(realEstate.getRealEstateId())
                 .build();
     }
 }
