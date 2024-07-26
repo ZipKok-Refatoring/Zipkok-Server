@@ -103,31 +103,7 @@ public class KokService {
 
         validateUserAndKok(user, kok);
 
-        GetKokOuterInfoResponse response = GetKokOuterInfoResponse.builder()
-                .hilights(kok.getCheckedHighlights()
-                        .stream()
-                        .map(CheckedHighlight::getHighlight)
-                        .map(Highlight::getTitle)
-                        .collect(Collectors.toList()))
-                .options(kok.getCheckedOptions()
-                        .stream()
-                        .filter(checkedOption -> checkedOption.getOption().getCategory().equals(OptionCategory.OUTER))
-                        .filter(checkedOption -> checkedOption.getOption().isVisible())
-                        .map(checkedOption -> GetKokOuterInfoResponse.OuterOption.builder()
-                                .option(checkedOption.getOption().getName())
-                                .orderNumber((int) checkedOption.getOption().getOrderNum())
-                                .detailOptions(kok.getCheckedDetailOptions()
-                                        .stream()
-                                        .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().getOption().equals(checkedOption.getOption()))
-                                        .filter(checkedDetailOption -> checkedDetailOption.getDetailOption().isVisible())
-                                        .map(CheckedDetailOption::getDetailOption)
-                                        .map(DetailOption::getName)
-                                        .collect(Collectors.toList()))
-                                .build())
-                        .collect(Collectors.toList()))
-                .build();
-
-        return response;
+        return GetKokOuterInfoResponse.of(kok);
     }
 
     public GetKokInnerInfoResponse getKokInnerInfo(long userId, long kokId) {
