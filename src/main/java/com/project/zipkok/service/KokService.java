@@ -138,16 +138,7 @@ public class KokService {
 
         validateUserAndKok(user, kok);
 
-        GetKokReviewInfoResponse response = GetKokReviewInfoResponse.builder()
-                .impressions(kok.getCheckedImpressions().stream().map(checkedImpression -> checkedImpression.getImpression().getImpressionTitle()).collect(Collectors.toList()))
-                .facilityStarCount(kok.getStar().getFacilityStar())
-                .infraStarCount(kok.getStar().getInfraStar())
-                .structureStarCount(kok.getStar().getStructureStar())
-                .vibeStarCount(kok.getStar().getVibeStar())
-                .reviewText(kok.getReview())
-                .build();
-
-        return response;
+        return GetKokReviewInfoResponse.of(kok);
     }
 
     public GetKokConfigInfoResponse getKokConfigInfo(long userId, Long kokId) {
