@@ -134,7 +134,7 @@ public class KokService {
         log.info("[KokService.getKokReviewInfo]");
 
         User user = userRepository.findByUserId(userId);
-        Kok kok = kokRepository.findById(kokId).get();
+        Kok kok = kokRepository.findKokWithImpressionAndStar(kokId);
 
         validateUserAndKok(user, kok);
 

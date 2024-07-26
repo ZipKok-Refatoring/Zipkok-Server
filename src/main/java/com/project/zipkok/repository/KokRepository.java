@@ -22,4 +22,13 @@ public interface KokRepository extends JpaRepository<Kok, Long> {
             + "WHERE k.kokId = :kokId"
     )
     Kok findKokWithCheckedOptionAndCheckedDetailOption(Long kokId);
+
+    @Query("SELECT k "
+            + "FROM Kok k "
+            + "JOIN FETCH k.checkedImpressions ci "
+            + "JOIN FETCH k.star s "
+            + "JOIN FETCH ci.impression i "
+            + "WHERE k.kokId = :kokId"
+    )
+    Kok findKokWithImpressionAndStar(Long kokId);
 }
