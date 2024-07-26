@@ -51,7 +51,7 @@ public class KokService {
         List<Kok> responseKoks = koks.stream()
                 .skip(startIdx)
                 .limit(size)
-                .collect(Collectors.toList());
+                .toList();
 
         boolean isEnd = false;
         if(startIdx + size > koks.size() - 1) {
@@ -64,32 +64,15 @@ public class KokService {
         }
 
 
-        GetKokResponse response = GetKokResponse.builder()
-                .koks(responseKoks.stream().map(kok -> GetKokResponse.Koks.builder()
-                        .kokId(kok.getKokId())
-                        .realEstateId(kok.getRealEstate().getRealEstateId())
-                        .imageUrl(Optional.ofNullable(kok.getRealEstate().getRealEstateImages())
-                                .filter(images -> !images.isEmpty())
-                                .map(images -> images.get(0).getImageUrl())
-                                .orElse(null))
-                        .address(kok.getRealEstate().getAddress())
-                        .detailAddress(kok.getRealEstate().getDetailAddress())
-                        .estateAgent(kok.getRealEstate().getAgent())
-                        .transactionType(kok.getRealEstate().getTransactionType().toString())
-                        .realEstateType(kok.getRealEstate().getRealEstateType().toString())
-                        .deposit(kok.getRealEstate().getDeposit())
-                        .price(kok.getRealEstate().getPrice())
-                        .isZimmed(zims.stream().anyMatch(zim -> zim.getRealEstate().equals(kok.getRealEstate())))
-                        .build())
-                        .collect(Collectors.toList()))
-                .meta(GetKokResponse.Meta.builder()
-                        .isEnd(isEnd)
-                        .currentPage(page)
-                        .totalPage(totalPage)
-                        .build())
-                .build();
-
-        return response;
+        return GetKokResponse.of(
+                    responseKoks,
+                    GetKokResponse.Meta.builder()
+                            .isEnd(isEnd)
+                            .currentPage(page)
+                            .totalPage(totalPage)
+                            .build(),
+                    zims
+                );
 
     }
 
