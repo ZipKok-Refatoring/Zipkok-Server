@@ -30,12 +30,9 @@ public class KokService {
     private final UserRepository userRepository;
     private final RealEstateRepository realEstateRepository;
     private final FurnitureOptionRepository furnitureOptionRepository;
-    private final ImpressionRepository impressionRepository;
     private final OptionRepository optionRepository;
     private final DetailOptionRepository detailOptionRepository;
     private final FileUploadUtils fileUploadUtils;
-
-
 
     @Transactional
     public GetKokResponse getKoks(long userId, int page, int size) {
