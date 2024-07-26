@@ -110,7 +110,7 @@ public class KokService {
         log.info("[KokService.getKokInnerInfo]");
 
         User user = userRepository.findByUserId(userId);
-        Kok kok = kokRepository.findById(kokId).get();
+        Kok kok = kokRepository.findKokWithCheckedOptionAndCheckedDetailOption(kokId);
 
         validateUserAndKok(user, kok);
 
@@ -160,7 +160,7 @@ public class KokService {
 
     public GetKokReviewInfoResponse getKokReviewInfo(long userId, long kokId) {
 
-        log.info("[KokService.getKokContractInfo]");
+        log.info("[KokService.getKokReviewInfo]");
 
         User user = userRepository.findByUserId(userId);
         Kok kok = kokRepository.findById(kokId).get();
