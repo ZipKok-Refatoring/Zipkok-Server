@@ -323,10 +323,10 @@ public class UserService {
         return getKokOptionLoadResponse;
     }
 
-    private List<Highlight> makeDefaultHighlights(User user){
-        List<String> highlightNames = List.of("CCTV", "주변공원", "현관보안", "편세권", "주차장", "역세권", "더블역세권", "트리플역세권");
+    private Set<Highlight> makeDefaultHighlights(User user){
+        Set<String> highlightNames = Set.of("CCTV", "주변공원", "현관보안", "편세권", "주차장", "역세권", "더블역세권", "트리플역세권");
 
-        List<Highlight> defaultHighlights = new ArrayList<>();
+        Set<Highlight> defaultHighlights = new LinkedHashSet<>();
 
         for(String highlightTitle : highlightNames){
             defaultHighlights.add(new Highlight(highlightTitle, user));
@@ -335,7 +335,7 @@ public class UserService {
         return defaultHighlights;
     }
 
-    private List<Option> makeDefaultOptions(User user){
+    private Set<Option> makeDefaultOptions(User user){
 
         Map<String, List<String>> outerOptions = new LinkedHashMap<String, List<String>>();
 
@@ -361,7 +361,7 @@ public class UserService {
         contractOptions.put("계약 관련 질문 체크", List.of("중개 수수료는 얼마인가요?", "전입신고가 가능한가요?", "이사 전날까지 수도/전기요금 정산됐나요?", "집주인의 빚(근저당)이 있나요?", "계약하는 분이 집주인이 맞나요?", "특약사항 기재가 가능한가요?"));
 
 
-        List<Option> defaultOptions = new ArrayList<>();
+        Set<Option> defaultOptions = new LinkedHashSet<>();
 
         int orderNumber =1;
         for(String optionName : outerOptions.keySet()){
@@ -394,10 +394,10 @@ public class UserService {
         return defaultOptions;
     }
 
-    private List<Impression> makeDefaultImpressions(User user) {
+    private Set<Impression> makeDefaultImpressions(User user) {
         List<String> impressionNames = List.of("깔끔해요", "조용해요", "세련돼요", "심플해요", "더러워요", "냄새나요", "시끄러워요", "좁아요", "그냥 그래요", "마음에 들어요", "별로예요");
 
-        List<Impression> defaultImpressions = new ArrayList<>();
+        Set<Impression> defaultImpressions = new LinkedHashSet<>();
 
         for(String impressionName : impressionNames) {
             defaultImpressions.add(Impression.builder()
