@@ -24,6 +24,13 @@ public class GetKokDetailResponse {
     public static class ImageInfo {
         private int imageNumber;
         private List<String> imageUrls;
+
+        public static ImageInfo of(Kok kok) {
+            return GetKokDetailResponse.ImageInfo.builder()
+                            .imageNumber(kok.getKokImages().size())
+                            .imageUrls(kok.getKokImages().stream().map(KokImage::getImageUrl).collect(Collectors.toList()))
+                            .build();
+        }
     }
 
     private String address;
@@ -50,10 +57,9 @@ public class GetKokDetailResponse {
 
         return GetKokDetailResponse.builder()
                 .kokId(kok.getKokId())
-                .imageInfo(GetKokDetailResponse.ImageInfo.builder().
-                        imageNumber(kok.getKokImages().size())
-                        .imageUrls(kok.getKokImages().stream().map(KokImage::getImageUrl).collect(Collectors.toList()))
-                        .build())
+                .imageInfo(
+                        GetKokDetailResponse.ImageInfo.of(kok)
+                )
                 .address(realEstate.getAddress())
                 .detailAddress(realEstate.getDetailAddress())
                 .transactionType(realEstate.getTransactionType().toString())

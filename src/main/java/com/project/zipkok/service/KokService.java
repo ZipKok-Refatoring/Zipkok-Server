@@ -91,7 +91,7 @@ public class KokService {
     private boolean judgeIsZimmedRealEstate(User user, RealEstate realEstate) {
         log.info("[KokService.judgeIsZimmedRealEstate]");
 
-        return zimRepository.existsByUserAndRealEstate(user, realEstate);
+        return user.getZims().stream().anyMatch(zim -> zim.getRealEstate().getRealEstateId() == realEstate.getRealEstateId());
     }
 
     public GetKokOuterInfoResponse getKokOuterInfo(long userId, long kokId) {
