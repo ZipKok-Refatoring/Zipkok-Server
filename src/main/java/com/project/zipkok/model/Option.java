@@ -6,7 +6,9 @@ import jdk.jfr.Unsigned;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "Options")
@@ -46,7 +48,7 @@ public class Option {
     private List<CheckedOption> checkedOptions = new ArrayList<>();
 
     @OneToMany(mappedBy = "option",orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<DetailOption> detailOptions = new ArrayList<>();
+    private Set<DetailOption> detailOptions = new LinkedHashSet<>();
 
     public Option(String name, boolean isVisible, long orderNum, OptionCategory category, User user){
         this.name = name;

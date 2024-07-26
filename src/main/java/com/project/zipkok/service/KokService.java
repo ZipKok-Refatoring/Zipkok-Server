@@ -29,7 +29,6 @@ public class KokService {
     private final ZimRepository zimRepository;
     private final UserRepository userRepository;
     private final RealEstateRepository realEstateRepository;
-    private final HighlightRepository highlightRepository;
     private final FurnitureOptionRepository furnitureOptionRepository;
     private final ImpressionRepository impressionRepository;
     private final OptionRepository optionRepository;
@@ -288,8 +287,8 @@ public class KokService {
 
     private GetKokConfigInfoResponse makeKokConfigResponse(User user, Kok kok) {
 
-        List<String> hilightsResponse = makeHilightTitleList(user.getHighlights());
-        List<String> checkedHilightsResponse = null;
+        Set<String> hilightsResponse = makeHilightTitleList(user.getHighlights());
+        Set<String> checkedHilightsResponse = null;
         List<String> furnitureOptionsResponse = makeFurnitureNameList(furnitureOptionRepository.findAll());
         List<String> checkedFurinirureOptionsResponse = null;
         GetKokConfigInfoResponse.ReviewInfo reviewInfoResponse = null;
@@ -304,7 +303,7 @@ public class KokService {
         List<GetKokConfigInfoResponse.Option> contractOptionsResponse = makeOptionResponseList(filterOption(user.getOptions(), OptionCategory.CONTRACT), kok);
 
         if (kok != null) {
-            checkedHilightsResponse = makeHilightTitleList(kok.getCheckedHighlights().stream().map(CheckedHighlight::getHighlight).toList());
+            checkedHilightsResponse = makeHilightTitleList(kok.getCheckedHighlights().stream().map(CheckedHighlight::getHighlight).collect(Collectors.toSet()));
             checkedFurinirureOptionsResponse = makeFurnitureNameList(kok.getCheckedFurnitures().stream().map(CheckedFurniture::getFurnitureOption).toList());
             reviewInfoResponse = makeReviewInfoResponseList(user, kok);
             directionResponse = kok.getDirection();
@@ -315,10 +314,10 @@ public class KokService {
 
 
         GetKokConfigInfoResponse response = GetKokConfigInfoResponse.builder()
-                .hilights(hilightsResponse)
-                .checkedHilights(checkedHilightsResponse)
-                .furnitureOptions(furnitureOptionsResponse)
-                .checkedFurnitureOptions(checkedFurinirureOptionsResponse)
+                .hilights(hilightsResponse.stream().toList())
+                .checkedHilights(checkedHilightsResponse.stream().toList())
+                .furnitureOptions(furnitureOptionsResponse.stream().toList())
+                .checkedFurnitureOptions(checkedFurinirureOptionsResponse.stream().toList())
                 .reviewInfo(reviewInfoResponse)
                 .direction(directionResponse)
                 .outerImageUrls(outerKokImagesResponse)
@@ -368,7 +367,7 @@ public class KokService {
         }
     }
 
-    private List<Option> filterOption(List<Option> optionList, OptionCategory category) {
+    private List<Option> filterOption(Set<Option> optionList, OptionCategory category) {
         List<Option> filteredOptions = optionList
                 .stream()
                 .filter(option -> option.getCategory().equals(category) && option.isVisible())
@@ -404,11 +403,11 @@ public class KokService {
         return response;
     }
 
-    private static List<String> makeHilightTitleList(List<Highlight> highlights) {
-        List<String> hilightsResponse = highlights
+    private static Set<String> makeHilightTitleList(Set<Highlight> highlights) {
+        Set<String> hilightsResponse = highlights
                 .stream()
                 .map(Highlight::getTitle)
-                .toList();
+                .collect(Collectors.toSet());
         return hilightsResponse;
     }
 
@@ -490,20 +489,34 @@ public class KokService {
                 .forEach(checkedHighlight ->
                         kok.getCheckedHighlights().add(CheckedHighlight.builder()
                                 .kok(kok)
-                                .highlight(highlightRepository.findByUserAndTitle(user, checkedHighlight))
+                                .highlight(
+                                        user.getHighlights().stream()
+                                                .filter(highlight -> highlight.getTitle().equals(checkedHighlight))
+                                                .findFirst()
+                                                .orElse(null)
+                                )
                                 .build()));
 
+        List<FurnitureOption> furnitureOptionList = furnitureOptionRepository.findAll();
         postOrPutKokRequest.getCheckedFurnitureOptions()
                 .forEach(checkedFurniture ->
                         kok.getCheckedFurnitures().add(CheckedFurniture.builder()
-                                .furnitureOption(furnitureOptionRepository.findByFurnitureName(checkedFurniture))
+                                .furnitureOption(
+                                        furnitureOptionList.stream()
+                                                .filter(furnitureOption -> furnitureOption.getFurnitureName().equals(checkedFurniture))
+                                                .findFirst()
+                                                .orElse(null)
+                                )
                                 .kok(kok)
                                 .build()));
 
         postOrPutKokRequest.getReviewInfo().getCheckedImpressions()
                 .forEach(checkedImpression ->
                         kok.getCheckedImpressions().add(CheckedImpression.builder()
-                                .impression(impressionRepository.findByUserAndImpressionTitle(user, checkedImpression))
+                                .impression(user.getImpressions().stream()
+                                        .filter(highlight -> highlight.getImpressionTitle().equals(checkedImpression))
+                                        .findFirst()
+                                        .orElse(null))
                                 .kok(kok)
                                 .build()));
 
@@ -511,9 +524,15 @@ public class KokService {
                 .flatMap(Collection::stream)
                 .toList();
 
+        List<Option> optionList = optionRepository.findAll();
         kokOptions.forEach(kokOption -> kok.getCheckedOptions().add(
                 CheckedOption.builder()
-                    .option(optionRepository.findByOptionId(kokOption.getOptionId()))
+                    .option(
+                        optionList.stream()
+                                .filter(option -> option.getOptionId() == kokOption.getOptionId())
+                                .findFirst()
+                                .orElse(null)
+                    )
                     .kok(kok)
                     .build()
             )
@@ -523,9 +542,15 @@ public class KokService {
                 .flatMap(option -> option.getCheckedDetailOptionIds().stream())
                 .toList();
 
+        List<DetailOption> detailOptionList = detailOptionRepository.findAll();
         detailOptionIds.forEach(id -> kok.getCheckedDetailOptions().add(
                 CheckedDetailOption.builder()
-                    .detailOption(detailOptionRepository.findByDetailOptionId(id))
+                    .detailOption(
+                            detailOptionList.stream()
+                                    .filter(detailOption -> detailOption.getDetailOptionId() == id)
+                                    .findFirst()
+                                    .orElse(null)
+                    )
                     .kok(kok)
                     .build()
             )
