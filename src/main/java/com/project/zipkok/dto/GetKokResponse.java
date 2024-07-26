@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.zipkok.model.Kok;
 import com.project.zipkok.model.Zim;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
 import java.util.List;
@@ -54,6 +55,7 @@ public class GetKokResponse {
 
     private Meta meta;
 
+    @Data
     @Builder
     public static class Meta {
         @JsonProperty("is_End")

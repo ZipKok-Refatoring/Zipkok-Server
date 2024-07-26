@@ -48,10 +48,17 @@ public class KokService {
         List<Zim> zims = user.getZims().stream().toList();
 
         int startIdx = (page - 1) * size;
+        GetKokResponse.Meta meta = calculateIndexingOfKokList(koks, page, size, startIdx);
+
         List<Kok> responseKoks = koks.stream()
                 .skip(startIdx)
                 .limit(size)
                 .toList();
+
+        return GetKokResponse.of(responseKoks, meta, zims);
+    }
+
+    private GetKokResponse.Meta calculateIndexingOfKokList(List<Kok> koks, int page, int size, int startIdx) {
 
         boolean isEnd = false;
         if(startIdx + size > koks.size() - 1) {
@@ -63,17 +70,11 @@ public class KokService {
             throw new KokException(NO_MORE_KOK_DATA);
         }
 
-
-        return GetKokResponse.of(
-                    responseKoks,
-                    GetKokResponse.Meta.builder()
-                            .isEnd(isEnd)
-                            .currentPage(page)
-                            .totalPage(totalPage)
-                            .build(),
-                    zims
-                );
-
+        return GetKokResponse.Meta.builder()
+                .isEnd(isEnd)
+                .currentPage(page)
+                .totalPage(totalPage)
+                .build();
     }
 
     public GetKokDetailResponse getKokDetail(long userId, long kokId) {
