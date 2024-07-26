@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "Kok")
@@ -23,7 +20,7 @@ public class Kok {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long kokId;
 
-    @Column(name = "direction", nullable = true)
+    @Column(name = "direction", nullable = false)
     private String direction;
 
     @Column(name = "review", nullable = false)
@@ -38,7 +35,7 @@ public class Kok {
     private User user;
 
     @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<CheckedFurniture> checkedFurniturs = new ArrayList<>();
+    private List<CheckedFurniture> checkedFurnitures = new ArrayList<>();
 
     @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CheckedImpression> checkedImpressions = new ArrayList<>();
@@ -47,15 +44,15 @@ public class Kok {
     private List<CheckedHighlight> checkedHighlights = new ArrayList<>();
 
     @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<CheckedDetailOption> checkedDetailOptions = new ArrayList<>();
+    private Set<CheckedDetailOption> checkedDetailOptions = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<CheckedOption> checkedOptions = new ArrayList<>();
+    private Set<CheckedOption> checkedOptions = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "kok", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<KokImage> kokImages = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "star_id", nullable = false)
     private Star star;
 

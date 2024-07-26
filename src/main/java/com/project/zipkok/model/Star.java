@@ -34,7 +34,7 @@ public class Star {
     private int vibeStar;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "kok_id", nullable = false)
+//    @JoinColumn(name = "kok_id", nullable = true)
     private Kok kok;
 
     public Star(int facilityStar, int infraStar, int structureStar, int vibeStar, Kok kok){

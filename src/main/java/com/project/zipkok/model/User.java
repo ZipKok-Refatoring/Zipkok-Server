@@ -73,16 +73,16 @@ public class User {
     private Set<Kok> koks = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Option> options = new ArrayList<>();
+    private Set<Option> options = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Pin> pins = new ArrayList<>();
 
     @OneToMany(mappedBy = "user",orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Highlight> highlights = new ArrayList<>();
+    private Set<Highlight> highlights = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Impression> impressions  = new ArrayList<>();
+    private Set<Impression> impressions  = new LinkedHashSet<>();
 
     @Builder
     public User(String email, OAuthProvider oAuthProvider, String nickname, Gender gender, String birthday) {

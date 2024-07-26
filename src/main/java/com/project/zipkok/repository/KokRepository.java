@@ -18,4 +18,23 @@ public interface KokRepository extends JpaRepository<Kok, Long> {
 
     @Query("SELECT k FROM Kok k JOIN FETCH k.realEstate re JOIN FETCH re.realEstateImages WHERE k.user.userId = :userId")
     Slice<Kok> findByUserId(long userId, org.springframework.data.domain.Pageable pageable);
+
+    @Query("SELECT k "
+            + "FROM Kok k "
+            + "JOIN FETCH k.checkedOptions co "
+            + "JOIN FETCH k.checkedDetailOptions cdo "
+            + "JOIN FETCH co.option o "
+            + "JOIN FETCH cdo.detailOption do "
+            + "WHERE k.kokId = :kokId"
+    )
+    Kok findKokWithCheckedOptionAndCheckedDetailOption(Long kokId);
+
+    @Query("SELECT k "
+            + "FROM Kok k "
+            + "JOIN FETCH k.checkedImpressions ci "
+            + "JOIN FETCH k.star s "
+            + "JOIN FETCH ci.impression i "
+            + "WHERE k.kokId = :kokId"
+    )
+    Kok findKokWithImpressionAndStar(Long kokId);
 }
