@@ -20,7 +20,7 @@ public class GetKokReviewInfoResponse {
 
     public static GetKokReviewInfoResponse of(Kok kok){
 
-        Star star = new Star();
+        Star star = kok.getStar();
 
         return GetKokReviewInfoResponse.builder()
                 .impressions(kok.getCheckedImpressions().stream()
