@@ -77,7 +77,7 @@ public class RealEstate {
     @Column(name = "detail_address")
     private String detailAddress;
 
-    @OneToMany(mappedBy = "realEstate",orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "realEstate",orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<RealEstateImage> realEstateImages = new ArrayList<>();
 
     public RealEstate(String address, double latitude, double longitude, TransactionType transactionType, long deposit, long price, RealEstateType realEstateType) {
