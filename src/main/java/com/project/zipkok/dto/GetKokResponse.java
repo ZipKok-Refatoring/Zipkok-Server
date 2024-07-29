@@ -51,44 +51,32 @@ public class GetKokResponse {
 
         @JsonProperty("isZimmed")
         private boolean isZimmed;
+
+        public static Koks from(Kok kok, Boolean isZimmed) {
+            return Koks.builder()
+                    .kokId(kok.getKokId())
+                    .realEstateId(kok.getRealEstate().getRealEstateId())
+                    .imageUrl(kok.getRealEstate().getRealEstateImages().get(0).getImageUrl())
+                    .address(kok.getRealEstate().getAddress())
+                    .detailAddress(kok.getRealEstate().getDetailAddress())
+                    .estateAgent(kok.getRealEstate().getAgent())
+                    .transactionType(kok.getRealEstate().getTransactionType().getDescription())
+                    .realEstateType(kok.getRealEstate().getRealEstateType().getDescription())
+                    .deposit(kok.getRealEstate().getDeposit())
+                    .price(kok.getRealEstate().getPrice())
+                    .isZimmed(isZimmed)
+                    .build();
+        }
     }
 
-    private Meta meta;
+    public static GetKokResponse from(List<GetKokWithZimStatus> getKokWithZimStatus) {
 
-    @Data
-    @Builder
-    public static class Meta {
-        @JsonProperty("is_End")
-        private boolean isEnd;
+        List<Koks> koks = getKokWithZimStatus.stream()
+                .map(kokWithZimStatus -> Koks.from(kokWithZimStatus.getKok(), kokWithZimStatus.getZimStatus()))
+                .collect(Collectors.toList());
 
-        @JsonProperty("current_page")
-        private Integer currentPage;
-
-        @JsonProperty("total_page")
-        private Integer totalPage;
-
-    }
-
-    public static GetKokResponse of(List<Kok> responseKoks, Meta meta, List<Zim> zims) {
         return GetKokResponse.builder()
-                .koks(responseKoks.stream().map(kok -> GetKokResponse.Koks.builder()
-                                .kokId(kok.getKokId())
-                                .realEstateId(kok.getRealEstate().getRealEstateId())
-                                .imageUrl(Optional.ofNullable(kok.getRealEstate().getRealEstateImages())
-                                        .filter(images -> !images.isEmpty())
-                                        .map(images -> images.get(0).getImageUrl())
-                                        .orElse(null))
-                                .address(kok.getRealEstate().getAddress())
-                                .detailAddress(kok.getRealEstate().getDetailAddress())
-                                .estateAgent(kok.getRealEstate().getAgent())
-                                .transactionType(kok.getRealEstate().getTransactionType().toString())
-                                .realEstateType(kok.getRealEstate().getRealEstateType().toString())
-                                .deposit(kok.getRealEstate().getDeposit())
-                                .price(kok.getRealEstate().getPrice())
-                                .isZimmed(zims.stream().anyMatch(zim -> zim.getRealEstate().equals(kok.getRealEstate())))
-                                .build())
-                        .collect(Collectors.toList()))
-                .meta(meta)
+                .koks(koks)
                 .build();
     }
 }
