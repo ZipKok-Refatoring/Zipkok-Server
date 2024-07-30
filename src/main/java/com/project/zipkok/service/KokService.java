@@ -42,7 +42,7 @@ public class KokService {
 
         log.info("[KokService.getKoks]");
 
-        List<GetKokWithZimStatus> getKokWithZimStatus = kokRepository.getKokWithZimStatus(userId, pageable);
+        List<GetKokWithZimStatus> getKokWithZimStatus = kokRepository.getKokWithZimStatus(userId, pageable).toList();
 
         return GetKokResponse.from(getKokWithZimStatus);
     }

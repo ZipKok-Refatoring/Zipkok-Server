@@ -30,7 +30,7 @@ public interface KokRepository extends JpaRepository<Kok, Long> {
             "FROM Kok k " +
             "LEFT JOIN Zim z ON k.user.userId = z.user.userId AND k.realEstate.realEstateId = z.realEstate.realEstateId " +
             "WHERE k.user.userId = :userId ")
-    List<GetKokWithZimStatus> getKokWithZimStatus(@Param("userId") long userId, Pageable pageable);
+    Slice<GetKokWithZimStatus> getKokWithZimStatus(@Param("userId") long userId, Pageable pageable);
 
     @Query("SELECT k "
             + "FROM Kok k "
