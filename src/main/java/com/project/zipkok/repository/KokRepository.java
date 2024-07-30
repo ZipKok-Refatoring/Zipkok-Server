@@ -12,12 +12,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
 public interface KokRepository extends JpaRepository<Kok, Long> {
 
-    Kok findByKokId(long kokId);
+    Optional<Kok> findByKokId(long kokId);
 
     @Query(value = "select new com.project.zipkok.dto.GetKokWithZimStatus(k, " +
             "CASE " +
@@ -36,7 +37,7 @@ public interface KokRepository extends JpaRepository<Kok, Long> {
             + "JOIN FETCH cdo.detailOption do "
             + "WHERE k.kokId = :kokId"
     )
-    Kok findKokWithCheckedOptionAndCheckedDetailOption(Long kokId);
+    Optional<Kok> findKokWithCheckedOptionAndCheckedDetailOption(Long kokId);
 
     @Query("SELECT k "
             + "FROM Kok k "
@@ -45,5 +46,5 @@ public interface KokRepository extends JpaRepository<Kok, Long> {
             + "JOIN FETCH ci.impression i "
             + "WHERE k.kokId = :kokId"
     )
-    Kok findKokWithImpressionAndStar(Long kokId);
+    Optional<Kok> findKokWithImpressionAndStar(Long kokId);
 }

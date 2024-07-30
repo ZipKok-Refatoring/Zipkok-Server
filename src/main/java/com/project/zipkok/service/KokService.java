@@ -72,7 +72,8 @@ public class KokService {
         log.info("[KokService.getKokOuterInfo]");
 
         User user = userRepository.findByUserId(userId);
-        Kok kok = kokRepository.findKokWithCheckedOptionAndCheckedDetailOption(kokId);
+        Kok kok = kokRepository.findKokWithCheckedOptionAndCheckedDetailOption(kokId)
+                .orElseThrow(() -> new KokException(KOK_ID_NOT_FOUND));
 
         validateUserAndKok(user, kok);
 
@@ -84,7 +85,8 @@ public class KokService {
         log.info("[KokService.getKokInnerInfo]");
 
         User user = userRepository.findByUserId(userId);
-        Kok kok = kokRepository.findKokWithCheckedOptionAndCheckedDetailOption(kokId);
+        Kok kok = kokRepository.findKokWithCheckedOptionAndCheckedDetailOption(kokId)
+                .orElseThrow(() -> new KokException(KOK_ID_NOT_FOUND));
 
         validateUserAndKok(user, kok);
 
@@ -96,7 +98,8 @@ public class KokService {
         log.info("[KokService.getKokContractInfo]");
 
         User user = userRepository.findByUserId(userId);
-        Kok kok = kokRepository.findKokWithCheckedOptionAndCheckedDetailOption(kokId);
+        Kok kok = kokRepository.findKokWithCheckedOptionAndCheckedDetailOption(kokId)
+                .orElseThrow(() -> new KokException(KOK_ID_NOT_FOUND));
 
         validateUserAndKok(user, kok);
 
@@ -108,7 +111,8 @@ public class KokService {
         log.info("[KokService.getKokReviewInfo]");
 
         User user = userRepository.findByUserId(userId);
-        Kok kok = kokRepository.findKokWithImpressionAndStar(kokId);
+        Kok kok = kokRepository.findKokWithImpressionAndStar(kokId)
+                .orElseThrow(() -> new KokException(KOK_ID_NOT_FOUND));
 
         validateUserAndKok(user, kok);
 
@@ -122,7 +126,7 @@ public class KokService {
         User user = userRepository.findByUserId(userId);
 
         if(kokId != null) {
-            Kok kok = kokRepository.findByKokId(kokId);
+            Kok kok = kokRepository.findByKokId(kokId).orElseThrow(() -> new KokException(KOK_ID_NOT_FOUND));
             validateUserAndKok(user, kok);
             return makeKokConfigResponse(user, kok);
         }
@@ -203,10 +207,6 @@ public class KokService {
     }
 
     private static void validateUserAndKok(User user, Kok kok) {
-
-        if (kok == null) {
-            throw new KokException(KOK_ID_NOT_FOUND);
-        }
 
         if (!kok.getUser().equals(user)) {
             throw new KokException(INVALID_KOK_ACCESS);
