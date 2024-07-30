@@ -16,12 +16,8 @@ import java.util.List;
 
 @Repository
 public interface KokRepository extends JpaRepository<Kok, Long> {
-    boolean existsByUserAndRealEstate(User user, RealEstate realEstate);
 
     Kok findByKokId(long kokId);
-
-    @Query("SELECT k FROM Kok k JOIN FETCH k.realEstate WHERE k.user.userId = :userId")
-    Slice<Kok> findByUserId(long userId, org.springframework.data.domain.Pageable pageable);
 
     @Query(value = "select new com.project.zipkok.dto.GetKokWithZimStatus(k, " +
             "CASE " +
