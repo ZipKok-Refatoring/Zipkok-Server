@@ -390,10 +390,10 @@ public class UserService {
         return defaultOptions;
     }
 
-    private Set<Impression> makeDefaultImpressions(User user) {
+    private void makeDefaultImpressions(User user) {
         List<String> impressionNames = List.of("깔끔해요", "조용해요", "세련돼요", "심플해요", "더러워요", "냄새나요", "시끄러워요", "좁아요", "그냥 그래요", "마음에 들어요", "별로예요");
 
-        Set<Impression> defaultImpressions = new LinkedHashSet<>();
+        List<Impression> defaultImpressions = new LinkedList<>();
 
         for(String impressionName : impressionNames) {
             defaultImpressions.add(Impression.builder()
@@ -402,9 +402,7 @@ public class UserService {
                     .build());
         }
 
-        impressionRepository.saveAll(defaultImpressions);
-
-        return defaultImpressions;
+        impressionRepository.insertImpressions(defaultImpressions);
     }
 
 

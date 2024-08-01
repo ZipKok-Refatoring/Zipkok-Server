@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public class HighlightRepositoryImpl implements HighlightRepositoryCustom {
+public class HighlightRepositoryCustomImpl implements HighlightRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 
