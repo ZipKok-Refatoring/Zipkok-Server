@@ -45,6 +45,7 @@ public class UserService {
     private final OptionRepository optionRepository;
     private final DetailOptionRepository detailOptionRepository;
     private final KokImageRepository kokImageRepository;
+    private final ImpressionRepository impressionRepository;
 
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
@@ -73,29 +74,22 @@ public class UserService {
     public AuthTokens signUp(PostSignUpRequest postSignUpRequest) {
         log.info("{UserService.signUp}");
 
-        String email = postSignUpRequest.getEmail();
-        OAuthProvider oAuthProvider = postSignUpRequest.getOauthProvider();
-        String nickname = postSignUpRequest.getNickname();
-        Gender gender = postSignUpRequest.getGender();
-        String birthday = postSignUpRequest.getBirthday();
-
-        User user = new User(email, oAuthProvider, nickname, gender,birthday);
+        User user = User.from(postSignUpRequest);
 
         //user 생성하면서 연관된 table 열도 생성
         user.setDesireResidence(new DesireResidence(user));
         user.setTransactionPriceConfig(new TransactionPriceConfig(user));
-        user.setHighlights(this.makeDefaultHighlights(user));
-        user.setOptions(this.makeDefaultOptions(user));
-        user.setImpressions(this.makeDefaultImpressions(user));
 
-        this.userRepository.save(user);
+        userRepository.save(user);
 
-        long userId = this.userRepository.findByEmail(email).getUserId();
+        makeDefaultHighlights(user);
+        makeDefaultOptions(user);
+        makeDefaultImpressions(user);
 
         //token 발행
-        AuthTokens authTokens = jwtProvider.createToken(email, userId);
+        AuthTokens authTokens = jwtProvider.createToken(user.getEmail(), user.getUserId());
 
-        redisService.setValues(email, authTokens.getRefreshToken(), Duration.ofMillis(jwtProvider.getREFRESH_TOKEN_EXPIRED_IN()));
+        redisService.setValues(user.getEmail(), authTokens.getRefreshToken(), Duration.ofMillis(jwtProvider.getREFRESH_TOKEN_EXPIRED_IN()));
 
         return authTokens;
     }
@@ -323,16 +317,16 @@ public class UserService {
         return getKokOptionLoadResponse;
     }
 
-    private Set<Highlight> makeDefaultHighlights(User user){
-        Set<String> highlightNames = Set.of("CCTV", "주변공원", "현관보안", "편세권", "주차장", "역세권", "더블역세권", "트리플역세권");
+    private void makeDefaultHighlights(User user){
+        List<String> highlightNames = List.of("CCTV", "주변공원", "현관보안", "편세권", "주차장", "역세권", "더블역세권", "트리플역세권");
 
-        Set<Highlight> defaultHighlights = new LinkedHashSet<>();
+        List<Highlight> defaultHighlights = new LinkedList<>();
 
         for(String highlightTitle : highlightNames){
             defaultHighlights.add(new Highlight(highlightTitle, user));
         }
 
-        return defaultHighlights;
+        highlightRepository.insertHighlights(defaultHighlights);
     }
 
     private Set<Option> makeDefaultOptions(User user){
@@ -390,6 +384,8 @@ public class UserService {
             }
             defaultOptions.add(option);
         }
+
+        optionRepository.saveAll(defaultOptions);
         
         return defaultOptions;
     }
@@ -405,6 +401,8 @@ public class UserService {
                     .impressionTitle(impressionName)
                     .build());
         }
+
+        impressionRepository.saveAll(defaultImpressions);
 
         return defaultImpressions;
     }

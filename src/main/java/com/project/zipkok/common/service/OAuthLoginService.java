@@ -75,26 +75,4 @@ public class OAuthLoginService {
 
     }
 
-//    private String findOrCreateUser(OAuthInfoResponse oAuthInfoResponse) {
-//
-//        if(userRepository.findByEmail(oAuthInfoResponse.getEmail()) != null) {
-//            return oAuthInfoResponse.getEmail();
-//        }
-//
-//        return newMember(oAuthInfoResponse);
-//    }
-
-//    private String newMember(OAuthInfoResponse oAuthInfoResponse) {
-//        User user = User.builder()
-//                .email(oAuthInfoResponse.getEmail())
-//                .oAuthProvider(oAuthInfoResponse.getOAuthProvider())
-//                .build();
-//
-//        DesireResidence desireResidence = new DesireResidence(user);
-//        TransactionPriceConfig transactionPriceConfig = new TransactionPriceConfig(user);
-//        user.setDesireResidence(desireResidence);
-//        user.setTransactionPriceConfig(transactionPriceConfig);
-//
-//        return userRepository.save(user).getEmail();
-//    }
 }

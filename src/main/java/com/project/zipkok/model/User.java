@@ -4,6 +4,7 @@ import com.project.zipkok.common.enums.Gender;
 import com.project.zipkok.common.enums.OAuthProvider;
 import com.project.zipkok.common.enums.RealEstateType;
 import com.project.zipkok.common.enums.TransactionType;
+import com.project.zipkok.dto.PostSignUpRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -91,5 +92,16 @@ public class User {
         this.nickname = nickname;
         this.gender = gender;
         this.birthday = birthday;
+    }
+
+    public static User from(PostSignUpRequest postSignUpRequest) {
+        return User.builder()
+                .email(postSignUpRequest.getEmail())
+                .oAuthProvider(postSignUpRequest.getOauthProvider())
+                .nickname(postSignUpRequest.getNickname())
+                .gender(postSignUpRequest.getGender())
+                .birthday(postSignUpRequest.getBirthday())
+                .status("active")
+                .build();
     }
 }
