@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OptionRepository extends JpaRepository<Option, Long> {
+public interface OptionRepository extends JpaRepository<Option, Long>, OptionRepositoryCustom {
     List<Option> findAllByUser(User user);
     Option findByOptionId(long optionId);
 }

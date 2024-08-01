@@ -329,7 +329,7 @@ public class UserService {
         highlightRepository.insertHighlights(defaultHighlights);
     }
 
-    private Set<Option> makeDefaultOptions(User user){
+    private void makeDefaultOptions(User user){
 
         Map<String, List<String>> outerOptions = new LinkedHashMap<String, List<String>>();
 
@@ -355,7 +355,7 @@ public class UserService {
         contractOptions.put("계약 관련 질문 체크", List.of("중개 수수료는 얼마인가요?", "전입신고가 가능한가요?", "이사 전날까지 수도/전기요금 정산됐나요?", "집주인의 빚(근저당)이 있나요?", "계약하는 분이 집주인이 맞나요?", "특약사항 기재가 가능한가요?"));
 
 
-        Set<Option> defaultOptions = new LinkedHashSet<>();
+        List<Option> defaultOptions = new LinkedList<>();
 
         int orderNumber =1;
         for(String optionName : outerOptions.keySet()){
@@ -385,9 +385,7 @@ public class UserService {
             defaultOptions.add(option);
         }
 
-        optionRepository.saveAll(defaultOptions);
-        
-        return defaultOptions;
+        optionRepository.insertOptions(defaultOptions);
     }
 
     private void makeDefaultImpressions(User user) {
