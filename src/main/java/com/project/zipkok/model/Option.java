@@ -2,7 +2,6 @@ package com.project.zipkok.model;
 
 import com.project.zipkok.common.enums.OptionCategory;
 import jakarta.persistence.*;
-import jdk.jfr.Unsigned;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -21,8 +20,7 @@ public class Option {
 
     @Id
     @Column(name ="option_id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long optionId;
+    private Long optionId;
 
     @Column(name ="name", nullable = false)
     private String name;
@@ -50,7 +48,8 @@ public class Option {
     @OneToMany(mappedBy = "option",orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<DetailOption> detailOptions = new LinkedHashSet<>();
 
-    public Option(String name, boolean isVisible, long orderNum, OptionCategory category, User user){
+    public Option(String name, boolean isVisible, long orderNum, OptionCategory category, User user) {
+        this.optionId = generateOptionId(user, category, orderNum);
         this.name = name;
         this.isVisible = isVisible;
         this.orderNum = orderNum;
@@ -60,5 +59,13 @@ public class Option {
 
     public void addDetailOption(DetailOption detailOption){
         this.detailOptions.add(detailOption);
+    }
+
+    private Long generateOptionId(User user, OptionCategory category, Long orderNum) {
+        return Long.valueOf(new StringBuilder()
+                .append(user.getUserId())
+                .append(category.ordinal())
+                .append(orderNum)
+                .toString());
     }
 }

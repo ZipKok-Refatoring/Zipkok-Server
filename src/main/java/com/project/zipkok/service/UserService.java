@@ -356,13 +356,13 @@ public class UserService {
 
 
         List<Option> defaultOptions = new LinkedList<>();
+        List<DetailOption> defaultDetailOptions = new LinkedList<>();
 
         int orderNumber =1;
         for(String optionName : outerOptions.keySet()){
             Option option = new Option(optionName, true, orderNumber++, OptionCategory.OUTER, user);
             for(String detailOptionTitle : outerOptions.get(optionName)){
-                DetailOption detailOption = new DetailOption(detailOptionTitle, true, option);
-                option.addDetailOption(detailOption);
+                defaultDetailOptions.add(new DetailOption(detailOptionTitle, true, option));
             }
             defaultOptions.add(option);
         }
@@ -370,8 +370,7 @@ public class UserService {
         for(String optionName : innerOptions.keySet()){
             Option option = new Option(optionName, true, orderNumber++, OptionCategory.INNER, user);
             for(String detailOptionTitle : innerOptions.get(optionName)){
-                DetailOption detailOption = new DetailOption(detailOptionTitle, true, option);
-                option.addDetailOption(detailOption);
+                defaultDetailOptions.add(new DetailOption(detailOptionTitle, true, option));
             }
             defaultOptions.add(option);
         }
@@ -379,13 +378,13 @@ public class UserService {
         for(String optionName : contractOptions.keySet()){
             Option option = new Option(optionName, true, orderNumber++, OptionCategory.CONTRACT, user);
             for(String detailOptionTitle : contractOptions.get(optionName)){
-                DetailOption detailOption = new DetailOption(detailOptionTitle, true, option);
-                option.addDetailOption(detailOption);
+                defaultDetailOptions.add(new DetailOption(detailOptionTitle, true, option));
             }
             defaultOptions.add(option);
         }
 
         optionRepository.insertOptions(defaultOptions);
+        detailOptionRepository.insertDetailOptions(defaultDetailOptions);
     }
 
     private void makeDefaultImpressions(User user) {

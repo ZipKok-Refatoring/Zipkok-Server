@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DetailOptionRepository extends JpaRepository<DetailOption, Long> {
+public interface DetailOptionRepository extends JpaRepository<DetailOption, Long>, DetailOptionRepositoryCustom {
     List<DetailOption> findAllByOption(Option option);
     DetailOption findByDetailOptionId(long detailOptionId);
 }

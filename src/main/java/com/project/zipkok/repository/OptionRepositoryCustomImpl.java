@@ -5,6 +5,7 @@ import com.project.zipkok.model.Option;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -21,12 +22,12 @@ public class OptionRepositoryCustomImpl implements OptionRepositoryCustom {
             return;
         }
 
-        StringBuilder optionSql = new StringBuilder("INSERT INTO options (name, is_visible, order_num, category, user_id) VALUES ");
+        StringBuilder optionSql = new StringBuilder("INSERT INTO options (option_id, name, is_visible, order_num, category, user_id) VALUES ");
         int optionCounter = 0;
         for (Option option : options) {
-            optionSql.append("(:name").append(optionCounter).append(", :isVisible").append(optionCounter)
-                    .append(", :orderNum").append(optionCounter).append(", :category").append(optionCounter)
-                    .append(", :userId").append(optionCounter).append("), ");
+            optionSql.append("(:optionId").append(optionCounter).append(", :name").append(optionCounter)
+                    .append(", :isVisible").append(optionCounter).append(", :orderNum").append(optionCounter)
+                    .append(", :category").append(optionCounter).append(", :userId").append(optionCounter).append("), ");
             optionCounter++;
         }
 
@@ -35,6 +36,7 @@ public class OptionRepositoryCustomImpl implements OptionRepositoryCustom {
 
         optionCounter = 0;
         for (Option option : options) {
+            optionQuery.setParameter("optionId" + optionCounter, option.getOptionId());
             optionQuery.setParameter("name" + optionCounter, option.getName());
             optionQuery.setParameter("isVisible" + optionCounter, option.isVisible());
             optionQuery.setParameter("orderNum" + optionCounter, option.getOrderNum());

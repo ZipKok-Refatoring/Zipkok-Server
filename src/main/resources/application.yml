@@ -134,6 +134,10 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
+#        jdbc:
+#          batch_size: 100
+#          order_inserts: true
+#          order_updates: true
         show_sql: true
         format_sql: true
         default_batch_fetch_size: 100
@@ -158,11 +162,11 @@ cloud:
       secretKey: ${S3_SECRET_KEY}
 
 ---
-logging:
-  level:
-    org.hibernate.orm.jdbc.bind: TRACE          # JPA 쿼리의 파라미터가 표시되도록 (쿼리 뒤에 parameter를 알려줌)
-
----
+#logging:
+#  level:
+#    org.hibernate.orm.jdbc.bind: TRACE          # JPA 쿼리의 파라미터가 표시되도록 (쿼리 뒤에 parameter를 알려줌)
+#
+#---
 #
 #crawling:
 #  workspace_path: ${CRAWLING_WORKSPACE_PATH}
