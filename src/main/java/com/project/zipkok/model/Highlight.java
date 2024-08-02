@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "Highlight")
@@ -37,5 +39,17 @@ public class Highlight {
     public Highlight(String title, User user){
         this.title = title;
         this.user = user;
+    }
+
+    public static Set<Highlight> makeDefaultHighlights(User user){
+        Set<String> highlightNames = Set.of("CCTV", "주변공원", "현관보안", "편세권", "주차장", "역세권", "더블역세권", "트리플역세권");
+
+        Set<Highlight> defaultHighlights = new LinkedHashSet<>();
+
+        for(String highlightTitle : highlightNames){
+            defaultHighlights.add(new Highlight(highlightTitle, user));
+        }
+
+        return defaultHighlights;
     }
 }

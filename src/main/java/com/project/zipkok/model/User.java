@@ -4,6 +4,7 @@ import com.project.zipkok.common.enums.Gender;
 import com.project.zipkok.common.enums.OAuthProvider;
 import com.project.zipkok.common.enums.RealEstateType;
 import com.project.zipkok.common.enums.TransactionType;
+import com.project.zipkok.dto.PostSignUpRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,6 +12,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import static com.project.zipkok.model.Highlight.makeDefaultHighlights;
+import static com.project.zipkok.model.Impression.makeDefaultImpressions;
+import static com.project.zipkok.model.Option.makeDefaultOptions;
 
 @Entity
 @Table(name = "User")
@@ -91,5 +96,23 @@ public class User {
         this.nickname = nickname;
         this.gender = gender;
         this.birthday = birthday;
+    }
+
+    public static User from(PostSignUpRequest postSignUpRequest) {
+        User user = new User();
+
+        user.setEmail(postSignUpRequest.getEmail());
+        user.setNickname(postSignUpRequest.getNickname());
+        user.setBirthday(postSignUpRequest.getBirthday());
+        user.setGender(postSignUpRequest.getGender());
+        user.setOAuthProvider(postSignUpRequest.getOauthProvider());
+
+        user.setDesireResidence(new DesireResidence(user));
+        user.setTransactionPriceConfig(new TransactionPriceConfig(user));
+        user.setHighlights(makeDefaultHighlights(user));
+        user.setOptions(makeDefaultOptions(user));
+        user.setImpressions(makeDefaultImpressions(user));
+
+        return user;
     }
 }
