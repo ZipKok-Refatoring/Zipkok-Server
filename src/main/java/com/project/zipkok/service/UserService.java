@@ -266,9 +266,8 @@ public class UserService {
         log.info("{UserService.kokOptionLoad}");
 
         //model 객체 호출
-        User user = this.userRepository.findByUserId(userId);
-        List<Highlight> highlightList = this.highlightRepository.findAllByUser(user);
-        List<Option> optionList = this.optionRepository.findAllByUser(user);
+        List<Highlight> highlightList = this.highlightRepository.findAllByUserId(userId);
+        List<Option> optionList = this.optionRepository.findAllByUserId(userId);
 
         //exception 처리
         if(highlightList == null || optionList == null){
@@ -290,7 +289,7 @@ public class UserService {
         for(Option option : optionList){
             
             //dto에 detailOption 정보 삽입
-            List<DetailOption> detailOptionList = this.detailOptionRepository.findAllByOption(option);
+            List<DetailOption> detailOptionList = option.getDetailOptions().stream().toList();
 
             List<GetKokOptionLoadResponse.DetailOption> detailOptionList1 = new ArrayList<>();
 

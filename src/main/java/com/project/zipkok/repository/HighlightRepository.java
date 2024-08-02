@@ -14,4 +14,7 @@ import java.util.Set;
 @Repository
 public interface HighlightRepository extends JpaRepository<Highlight, Long>, HighlightRepositoryCustom {
     List<Highlight> findAllByUser(User user);
+
+    @Query("select h from Highlight h where h.user.userId = :userId")
+    List<Highlight> findAllByUserId(long userId);
 }
