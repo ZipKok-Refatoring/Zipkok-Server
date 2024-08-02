@@ -4,6 +4,7 @@ import com.project.zipkok.common.enums.Gender;
 import com.project.zipkok.common.enums.OAuthProvider;
 import com.project.zipkok.common.enums.RealEstateType;
 import com.project.zipkok.common.enums.TransactionType;
+import com.project.zipkok.dto.PatchOnBoardingRequest;
 import com.project.zipkok.dto.PostSignUpRequest;
 import jakarta.persistence.*;
 import lombok.*;
@@ -114,5 +115,13 @@ public class User {
         user.setImpressions(makeDefaultImpressions(user));
 
         return user;
+    }
+
+    public void setOnBoardingInfo(PatchOnBoardingRequest patchOnBoardingRequest) {
+        this.realEstateType = patchOnBoardingRequest.getRealEstateType();
+        this.transactionType = patchOnBoardingRequest.getTransactionType();
+
+        this.desireResidence.setDesireResidenceInfo(patchOnBoardingRequest);
+        this.transactionPriceConfig.setTransactionPriceConfig(patchOnBoardingRequest);
     }
 }

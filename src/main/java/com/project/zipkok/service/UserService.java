@@ -83,49 +83,11 @@ public class UserService {
     public Objects setOnBoarding(PatchOnBoardingRequest patchOnBoardingRequest, long userId) {
         log.info("{UserService.setOnBoarding}");
 
-        String address = patchOnBoardingRequest.getAddress();
-        double latitude = patchOnBoardingRequest.getLatitude();
-        double longitude = patchOnBoardingRequest.getLongitude();
-        RealEstateType realEstateType = patchOnBoardingRequest.getRealEstateType();
-        TransactionType transactionType = patchOnBoardingRequest.getTransactionType();
-        long mpriceMin = patchOnBoardingRequest.getMpriceMin();
-        long mpriceMax = patchOnBoardingRequest.getMpriceMax();
-        long mdepositMin = patchOnBoardingRequest.getMdepositMin();
-        long mdepositMax = patchOnBoardingRequest.getMdepositMax();
-        long ydepositMin = patchOnBoardingRequest.getYdepositMin();
-        long ydepositMax = patchOnBoardingRequest.getYdepositMax();
-        long purchaseMin = patchOnBoardingRequest.getPurchaseMin();
-        long purchaseMax = patchOnBoardingRequest.getPurchaseMax();
-
-        //User table에 realEstateType 수정
         User user = this.userRepository.findByUserId(userId);
 
-        user.setRealEstateType(realEstateType);
-        user.setTransactionType(transactionType);
+        user.setOnBoardingInfo(patchOnBoardingRequest);
+
         this.userRepository.save(user);
-
-
-        //희망 거주지 table 수정
-        DesireResidence desireResidence = this.desireResidenceRepository.findByUser(user);
-
-        desireResidence.setAddress(address);
-        desireResidence.setLatitude(latitude);
-        desireResidence.setLongitude(longitude);
-        this.desireResidenceRepository.save(desireResidence);
-
-
-        //거래가격설정 table 수정
-        TransactionPriceConfig transactionPriceConfig = this.transactionPriceConfigRepository.findByUser(user);
-
-        transactionPriceConfig.setMPriceMin(mpriceMin);
-        transactionPriceConfig.setMPriceMax(mpriceMax);
-        transactionPriceConfig.setMDepositMin(mdepositMin);
-        transactionPriceConfig.setMDepositMax(mdepositMax);
-        transactionPriceConfig.setYDepositMin(ydepositMin);
-        transactionPriceConfig.setYDepositMax(ydepositMax);
-        transactionPriceConfig.setPurchaseMin(purchaseMin);
-        transactionPriceConfig.setPurchaseMax(purchaseMax);
-        this.transactionPriceConfigRepository.save(transactionPriceConfig);
 
         return null;
     }

@@ -1,5 +1,6 @@
 package com.project.zipkok.model;
 
+import com.project.zipkok.dto.PatchOnBoardingRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,6 +34,12 @@ public class DesireResidence {
 
     public DesireResidence(User user) {
         this.user = user;
+    }
+
+    public void setDesireResidenceInfo(PatchOnBoardingRequest patchOnBoardingRequest){
+        this.address = patchOnBoardingRequest.getAddress();
+        this.latitude = patchOnBoardingRequest.getLatitude();
+        this.longitude = patchOnBoardingRequest.getLongitude();
     }
 
 }
