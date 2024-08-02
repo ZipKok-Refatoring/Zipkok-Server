@@ -83,7 +83,7 @@ public class UserService {
     public Objects setOnBoarding(PatchOnBoardingRequest patchOnBoardingRequest, long userId) {
         log.info("{UserService.setOnBoarding}");
 
-        User user = this.userRepository.findByUserId(userId);
+        User user = this.userRepository.findByUserIdWithDesireResidenceAndTransactionPriceConfig(userId);
 
         user.setOnBoardingInfo(patchOnBoardingRequest);
 
