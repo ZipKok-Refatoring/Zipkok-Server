@@ -103,69 +103,9 @@ public class UserService {
     public GetMyPageDetailResponse myPageDetailLoad(long userId) {
         log.info("{UserService.myPageDetailLoad}");
 
-        User user = this.userRepository.findByUserId(userId);
-        TransactionPriceConfig transactionPriceConfig = this.transactionPriceConfigRepository.findByUser(user);
+        User user = this.userRepository.findByUserIdWithDesireResidenceAndTransactionPriceConfig(userId);
 
-        GetMyPageDetailResponse getMyPageDetailResponse = new GetMyPageDetailResponse();
-
-        getMyPageDetailResponse.setImageUrl(user.getProfileImgUrl());
-        getMyPageDetailResponse.setNickname(user.getNickname());
-        getMyPageDetailResponse.setBirthday(user.getBirthday());
-        getMyPageDetailResponse.setGender(user.getGender());
-        getMyPageDetailResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
-        getMyPageDetailResponse.setRealEstateType(user.getRealEstateType() == null ? null : user.getRealEstateType().toString());
-
-        if (user.getTransactionType() == null) {
-            getMyPageDetailResponse.setTransactionType(null);
-        } else {
-            getMyPageDetailResponse.setTransactionType(user.getTransactionType().toString());
-        }
-
-        getMyPageDetailResponse.setMpriceMin(transactionPriceConfig.getMPriceMin());
-        getMyPageDetailResponse.setMpriceMax(transactionPriceConfig.getMPriceMax());
-        getMyPageDetailResponse.setMdepositMin(transactionPriceConfig.getMDepositMin());
-        getMyPageDetailResponse.setMdepositMax(transactionPriceConfig.getMDepositMax());
-        getMyPageDetailResponse.setYdepositMin(transactionPriceConfig.getYDepositMin());
-        getMyPageDetailResponse.setYdepositMax(transactionPriceConfig.getYDepositMax());
-        getMyPageDetailResponse.setPriceMin(transactionPriceConfig.getPurchaseMin());
-        getMyPageDetailResponse.setPriceMax(transactionPriceConfig.getPurchaseMax());
-
-        getMyPageDetailResponse.setLatitude(user.getDesireResidence().getLatitude() == null ? null :user.getDesireResidence().getLatitude());
-        getMyPageDetailResponse.setLongitude(user.getDesireResidence().getLongitude()== null ? null :user.getDesireResidence().getLongitude());
-
-//        ModelMapper modelMapper = new ModelMapper();
-//
-//        modelMapper.typeMap(TransactionPriceConfig.class, GetMyPageDetailResponse.class).addMappings(mapper -> {
-//            mapper.map(TransactionPriceConfig::getMPriceMin, GetMyPageDetailResponse::setMpriceMin);
-//            mapper.map(TransactionPriceConfig::getMPriceMax, GetMyPageDetailResponse::setMpriceMax);
-//            mapper.map(TransactionPriceConfig::getMDepositMin, GetMyPageDetailResponse::setMdepositMin);
-//            mapper.map(TransactionPriceConfig::getMDepositMax, GetMyPageDetailResponse::setMdepositMax);
-//            mapper.map(TransactionPriceConfig::getYDepositMin, GetMyPageDetailResponse::setYdepositMin);
-//            mapper.map(TransactionPriceConfig::getYDepositMax, GetMyPageDetailResponse::setYdepositMax);
-//            mapper.map(TransactionPriceConfig::getPurchaseMin, GetMyPageDetailResponse::setPriceMin);
-//            mapper.map(TransactionPriceConfig::getPurchaseMax, GetMyPageDetailResponse::setPriceMax);
-//        });
-//
-//        getMyPageDetailResponse = modelMapper.map(transactionPriceConfig, GetMyPageDetailResponse.class);
-//
-//        modelMapper.typeMap(User.class, GetMyPageDetailResponse.class).addMappings(mapper -> {
-//            mapper.map(User::getProfileImgUrl, GetMyPageDetailResponse::setImageUrl);
-//            mapper.map(User::getNickname, GetMyPageDetailResponse::setNickname);
-//            mapper.map(User::getBirthday, GetMyPageDetailResponse::setBirthday);
-//            mapper.map(User::getGender, GetMyPageDetailResponse::setGender);
-//            mapper.map(User::getRealEstates, GetMyPageDetailResponse::setRealEstateType);
-//            mapper.map(User::getTransactionType, GetMyPageDetailResponse::setTransactionType);
-//        });
-//
-//        getMyPageDetailResponse = modelMapper.map(user, GetMyPageDetailResponse.class);
-//
-//        if(getMyPageDetailResponse.getTransactionType() == null){
-//            getMyPageDetailResponse.setTransactionType(TransactionType.MONTHLY);
-//        }
-//
-//        getMyPageDetailResponse.setAddress(user.getDesireResidence().getAddress());
-
-        return getMyPageDetailResponse;
+        return GetMyPageDetailResponse.from(user);
     }
 
     @Transactional
