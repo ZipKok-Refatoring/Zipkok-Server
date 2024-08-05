@@ -1,6 +1,7 @@
 package com.project.zipkok.model;
 
 import com.project.zipkok.dto.PatchOnBoardingRequest;
+import com.project.zipkok.dto.PutUpdateMyInfoRequest;
 import jakarta.persistence.*;
 import jakarta.transaction.Transaction;
 import lombok.Getter;
@@ -54,7 +55,7 @@ public class TransactionPriceConfig {
         this.user = user;
     }
 
-        public void setTransactionPriceConfig(PatchOnBoardingRequest patchOnBoardingRequest) {
+    public void setTransactionPriceConfig(PatchOnBoardingRequest patchOnBoardingRequest) {
         this.mPriceMin = patchOnBoardingRequest.getMpriceMin();
         this.mPriceMax = patchOnBoardingRequest.getMpriceMax();
         this.mDepositMin = patchOnBoardingRequest.getMdepositMin();
@@ -63,5 +64,16 @@ public class TransactionPriceConfig {
         this.yDepositMax = patchOnBoardingRequest.getYdepositMax();
         this.purchaseMin = patchOnBoardingRequest.getPurchaseMin();
         this.purchaseMax = patchOnBoardingRequest.getPurchaseMax();
+    }
+
+    public void setTransactionPriceConfig(PutUpdateMyInfoRequest putUpdateMyInfoRequest) {
+        this.mPriceMin = putUpdateMyInfoRequest.getMpriceMin();
+        this.mPriceMax = putUpdateMyInfoRequest.getMpriceMax();
+        this.mDepositMin = putUpdateMyInfoRequest.getMdepositMin();
+        this.mDepositMax = putUpdateMyInfoRequest.getMdepositMax();
+        this.yDepositMin = putUpdateMyInfoRequest.getYdepositMin();
+        this.yDepositMax = putUpdateMyInfoRequest.getYdepositMax();
+        this.purchaseMin = putUpdateMyInfoRequest.getPurchaseMin();
+        this.purchaseMax = putUpdateMyInfoRequest.getPurchaseMax();
     }
 }

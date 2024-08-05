@@ -6,6 +6,7 @@ import com.project.zipkok.common.enums.RealEstateType;
 import com.project.zipkok.common.enums.TransactionType;
 import com.project.zipkok.dto.PatchOnBoardingRequest;
 import com.project.zipkok.dto.PostSignUpRequest;
+import com.project.zipkok.dto.PutUpdateMyInfoRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -123,5 +124,18 @@ public class User {
 
         this.desireResidence.setDesireResidenceInfo(patchOnBoardingRequest);
         this.transactionPriceConfig.setTransactionPriceConfig(patchOnBoardingRequest);
+    }
+
+    public void setUpdateUserInfo(String url, PutUpdateMyInfoRequest putUpdateMyInfoRequest){
+        this.nickname = putUpdateMyInfoRequest.getNickname();
+        this.birthday = putUpdateMyInfoRequest.getBirthday();
+        this.gender = putUpdateMyInfoRequest.getGender();
+        this.realEstateType = putUpdateMyInfoRequest.getRealEstateType();
+        this.transactionType = putUpdateMyInfoRequest.getTransactionType();
+
+        this.profileImgUrl = url;
+
+        this.desireResidence.setDesireResidenceInfo(putUpdateMyInfoRequest);
+        this.transactionPriceConfig.setTransactionPriceConfig(putUpdateMyInfoRequest);
     }
 }

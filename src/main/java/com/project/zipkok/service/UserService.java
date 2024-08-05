@@ -382,41 +382,27 @@ public class UserService {
     public Object updateMyInfo(long userId, MultipartFile file, PutUpdateMyInfoRequest putUpdateMyInfoRequest) {
         log.info("{UserService.updateMyInfo}");
 
-        User user = this.userRepository.findByUserId(userId);
+        User user = this.userRepository.findByUserIdWithDesireResidenceAndTransactionPriceConfig(userId);
 
+        String imageUrl = settingProfileImage(userId, file);
+
+        user.setUpdateUserInfo(imageUrl, putUpdateMyInfoRequest);
+
+        this.userRepository.save(user);
+        return null;
+    }
+
+    private String settingProfileImage(Long userId, MultipartFile file){
+
+        String url = null;
         if(file != null) {
-            String url = this.fileUploadUtils.uploadFile(user.getUserId().toString() + "/profile", file);
+            url = this.fileUploadUtils.uploadFile(userId.toString() + "/profile", file);
 
             if(url == null){
                 throw new FileUploadException(CANNOT_SAVE_FILE);
             }
-
-            user.setProfileImgUrl(url);
         }
-
-        user.setNickname(putUpdateMyInfoRequest.getNickname());
-        user.setBirthday(putUpdateMyInfoRequest.getBirthday());
-        user.setGender(putUpdateMyInfoRequest.getGender());
-        user.setRealEstateType(putUpdateMyInfoRequest.getRealEstateType());
-        user.setTransactionType(putUpdateMyInfoRequest.getTransactionType());
-
-        DesireResidence desireResidence = user.getDesireResidence();
-        desireResidence.setAddress(putUpdateMyInfoRequest.getAddress());
-        desireResidence.setLatitude(putUpdateMyInfoRequest.getLatitude());
-        desireResidence.setLongitude(putUpdateMyInfoRequest.getLongitude());
-
-        TransactionPriceConfig transactionPriceConfig = user.getTransactionPriceConfig();
-        transactionPriceConfig.setMPriceMin(putUpdateMyInfoRequest.getMpriceMin());
-        transactionPriceConfig.setMPriceMax(putUpdateMyInfoRequest.getMpriceMax());
-        transactionPriceConfig.setMDepositMin(putUpdateMyInfoRequest.getMdepositMin());
-        transactionPriceConfig.setMDepositMax(putUpdateMyInfoRequest.getMdepositMax());
-        transactionPriceConfig.setYDepositMin(putUpdateMyInfoRequest.getYdepositMin());
-        transactionPriceConfig.setYDepositMax(putUpdateMyInfoRequest.getYdepositMax());
-        transactionPriceConfig.setPurchaseMin(putUpdateMyInfoRequest.getPurchaseMin());
-        transactionPriceConfig.setPurchaseMax(putUpdateMyInfoRequest.getPurchaseMax());
-
-        this.userRepository.save(user);
-        return null;
+        return url;
     }
 
     @Transactional
