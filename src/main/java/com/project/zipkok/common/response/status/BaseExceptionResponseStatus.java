@@ -75,6 +75,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     DEREGISTRATION_FAIL(5031, HttpStatus.BAD_REQUEST.value(), "회원탈퇴 실패했습니다."),
     INVALID_TRANSACTION_TYPE(5032, HttpStatus.BAD_REQUEST.value(), "잘못된 거래 유형 형식입니다."),
 
+    INVALID_FIELD_FORMAT(5032, HttpStatus.BAD_REQUEST.value(), "잘못된 Field 형식입니다."),
+
 
     /**
      * 6000 : zim 예외
