@@ -91,5 +91,6 @@ public class User {
         this.nickname = nickname;
         this.gender = gender;
         this.birthday = birthday;
+        this.status =  "active";
     }
 }
