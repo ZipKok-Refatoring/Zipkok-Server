@@ -3,6 +3,7 @@ package com.project.zipkok.service;
 import com.project.zipkok.common.enums.*;
 import com.project.zipkok.common.exception.s3.FileUploadException;
 import com.project.zipkok.common.exception.user.KokOptionLoadException;
+import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.common.service.RedisService;
 import com.project.zipkok.dto.*;
@@ -50,25 +51,6 @@ public class UserService {
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
     private final FileUploadUtils fileUploadUtils;
-
-    @Transactional
-    public List<GetUserResponse> getUsers() {
-        List<GetUserResponse> userList = userRepository.findAll()
-                .stream()
-                .map(user -> new GetUserResponse(
-                        user.getNickname(),
-                        user.getProfileImgUrl(),
-                        user.getDesireResidence().getAddress(),
-                        user.getRealEstateType().toString(),
-                        user.getTransactionType().toString(),
-                        user.getTransactionPriceConfig().getMPriceMax(),
-                        user.getTransactionPriceConfig().getMPriceMin(),
-                        user.getTransactionPriceConfig().getMDepositMax(),
-                        user.getTransactionPriceConfig().getMDepositMin()
-                )).collect(Collectors.toList());
-
-        return userList;
-    }
 
     @Transactional
     public AuthTokens signUp(PostSignUpRequest postSignUpRequest) {
@@ -149,48 +131,10 @@ public class UserService {
         log.info("{UserService.myPageLoad}");
 
         //repository로부터 객체 가져오기
-        User user = this.userRepository.findByUserId(userId);
-        TransactionPriceConfig transactionPriceConfig = this.transactionPriceConfigRepository.findByUser(user);
+        User user = this.userRepository.findMyPageInfoByUserId(userId)
+                .orElseThrow(() -> new NoMatchUserException(MEMBER_NOT_FOUND));
 
-        //return 할 dto 선언
-        GetMyPageResponse getMyPageResponse = new GetMyPageResponse();
-
-        //dto field 값 set
-        getMyPageResponse.setNickname(user.getNickname());
-        getMyPageResponse.setImageUrl(user.getProfileImgUrl());
-        getMyPageResponse.setRealEstateType(user.getRealEstateType() == null ? null : user.getRealEstateType().toString());
-
-        getMyPageResponse.setAddress(this.desireResidenceRepository.findByUser(user).getAddress());
-
-        String transactionType = null;
-
-        //관심매물유형에 따라 dto field 값 set 작업 분기처리
-        if(user.getTransactionType() == null){
-            getMyPageResponse.setTransactionType(null);
-            getMyPageResponse.setPriceMax(null);
-            getMyPageResponse.setPriceMin(null);
-            getMyPageResponse.setDepositMax(null);
-            getMyPageResponse.setDepositMin(null);
-        }
-        else{
-            getMyPageResponse.setTransactionType(user.getTransactionType().toString());
-            transactionType = user.getTransactionType().getDescription();
-            if(transactionType.equals("월세")){
-                getMyPageResponse.setPriceMax(transactionPriceConfig.getMPriceMax());
-                getMyPageResponse.setPriceMin(transactionPriceConfig.getMPriceMin());
-                getMyPageResponse.setDepositMax(transactionPriceConfig.getMDepositMax());
-                getMyPageResponse.setDepositMin(transactionPriceConfig.getMDepositMin());
-            }
-            else if(transactionType.equals("전세")){
-                getMyPageResponse.setDepositMax(transactionPriceConfig.getYDepositMax());
-                getMyPageResponse.setDepositMin(transactionPriceConfig.getYDepositMin());
-            }
-            else if(transactionType.equals("매매")){
-                getMyPageResponse.setPriceMax(transactionPriceConfig.getPurchaseMax());
-                getMyPageResponse.setPriceMin(transactionPriceConfig.getPurchaseMin());
-            }
-        }
-        return getMyPageResponse;
+        return GetMyPageResponse.from(user);
     }
 
     public GetMyPageDetailResponse myPageDetailLoad(long userId) {
