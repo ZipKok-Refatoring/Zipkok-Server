@@ -161,6 +161,9 @@ cloud:
 logging:
   level:
     org.hibernate.orm.jdbc.bind: TRACE          # JPA 쿼리의 파라미터가 표시되도록 (쿼리 뒤에 parameter를 알려줌)
+    org:
+      springframework:
+        jdbc: debug
 
 ---
 #
