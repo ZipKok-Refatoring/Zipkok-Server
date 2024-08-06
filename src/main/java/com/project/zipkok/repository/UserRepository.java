@@ -21,4 +21,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
             + "WHERE u.userId = :userId"
     )
     User findByUserIdWithDesireResidenceAndTransactionPriceConfig(Long userId);
+
+    @Query("SELECT u "
+            + "FROM User u "
+            + "JOIN FETCH u.highlights h "
+            + "JOIN FETCH u.options o "
+            + "WHERE u.userId = :userId"
+    )
+    User findByUserIdWithHighlightAndOptions(Long userId);
 }
