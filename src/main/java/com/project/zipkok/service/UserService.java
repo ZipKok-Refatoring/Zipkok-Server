@@ -179,58 +179,12 @@ public class UserService {
 
     @Transactional
     public GetKokOptionLoadResponse loadKokOption(long userId) {
-        log.info("{UserService.kokOptionLoad}");
+        log.info("{UserService.loadKokOption}");
 
-        //model 객체 호출
-        User user = this.userRepository.findByUserId(userId);
-        List<Highlight> highlightList = this.highlightRepository.findAllByUser(user);
-        List<Option> optionList = this.optionRepository.findAllByUser(user);
+        List<Highlight> highlightList = this.highlightRepository.findAllByUserId(userId);
+        List<Option> optionList = this.optionRepository.findAllByUserId(userId);
 
-        //exception 처리
-        if(highlightList == null || optionList == null){
-            throw new KokOptionLoadException(MEMBER_LIST_ITEM_QUERY_FAILURE);
-        }
-
-        GetKokOptionLoadResponse getKokOptionLoadResponse = new GetKokOptionLoadResponse();
-
-        //dto에 highlight 정보 삽입
-        for(Highlight highlight : highlightList){
-            getKokOptionLoadResponse.addHighlight(highlight.getTitle());
-        }
-
-        //dto에 option 정보 삽입
-        List<GetKokOptionLoadResponse.Option> outerOptions = new ArrayList<>();
-        List<GetKokOptionLoadResponse.Option> innerOptions = new ArrayList<>();
-        List<GetKokOptionLoadResponse.Option> contractOptions = new ArrayList<>();
-
-        for(Option option : optionList){
-            
-            //dto에 detailOption 정보 삽입
-            List<DetailOption> detailOptionList = this.detailOptionRepository.findAllByOption(option);
-
-            List<GetKokOptionLoadResponse.DetailOption> detailOptionList1 = new ArrayList<>();
-
-            for(DetailOption detailOption : detailOptionList){
-                detailOptionList1.add(new GetKokOptionLoadResponse.DetailOption(detailOption.getDetailOptionId(), detailOption.getName(), detailOption.isVisible()));
-            }
-
-            //for문 해당 option이 outerOption 인지, innerOption 인지, contractOption 인지 판단 --> dto에 삽입
-            if(option.getCategory().equals(OptionCategory.OUTER)){
-                outerOptions.add(new GetKokOptionLoadResponse.Option(option.getOptionId(), option.getName(), option.getOrderNum(), option.isVisible(), detailOptionList1));
-            }
-            else if(option.getCategory().equals(OptionCategory.INNER)){
-                innerOptions.add(new GetKokOptionLoadResponse.Option(option.getOptionId(), option.getName(), option.getOrderNum(), option.isVisible(), detailOptionList1));
-            }
-            else if(option.getCategory().equals(OptionCategory.CONTRACT)){
-                contractOptions.add(new GetKokOptionLoadResponse.Option(option.getOptionId(), option.getName(), option.getOrderNum(), option.isVisible(), detailOptionList1));
-            }
-        }
-
-        getKokOptionLoadResponse.setOuterOptions(outerOptions);
-        getKokOptionLoadResponse.setInnerOptions(innerOptions);
-        getKokOptionLoadResponse.setContractOptions(contractOptions);
-
-        return getKokOptionLoadResponse;
+        return GetKokOptionLoadResponse.of(highlightList, optionList);
     }
 
     private Set<Highlight> makeDefaultHighlights(User user){
