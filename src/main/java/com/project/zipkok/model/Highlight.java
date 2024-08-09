@@ -36,9 +36,11 @@ public class Highlight {
     private List<CheckedHighlight> checkedHighlights = new ArrayList<>();
 
     @Builder
-    public Highlight(String title, User user){
-        this.title = title;
-        this.user = user;
+    public static Highlight of(String title, User user){
+        return Highlight.builder()
+                .title(title)
+                .user(user)
+                .build();
     }
 
     public static Set<Highlight> makeDefaultHighlights(User user){
@@ -47,7 +49,7 @@ public class Highlight {
         Set<Highlight> defaultHighlights = new LinkedHashSet<>();
 
         for(String highlightTitle : highlightNames){
-            defaultHighlights.add(new Highlight(highlightTitle, user));
+            defaultHighlights.add(Highlight.of(highlightTitle, user));
         }
 
         return defaultHighlights;

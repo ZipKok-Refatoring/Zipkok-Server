@@ -1,5 +1,6 @@
 package com.project.zipkok.model;
 
+import com.project.zipkok.dto.PostUpdateKokOptionRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,5 +38,13 @@ public class DetailOption {
         this.name =name;
         this.isVisible =isVisible;
         this.option = option;
+    }
+
+    public boolean match(PostUpdateKokOptionRequest.DetailOption requestDetailOption){
+        return requestDetailOption.getDetailOptionId() == detailOptionId;
+    }
+
+    public void copyInfo(PostUpdateKokOptionRequest.DetailOption requestDetailOption){
+        this.isVisible = requestDetailOption.isDetailOptionIsVisible();
     }
 }

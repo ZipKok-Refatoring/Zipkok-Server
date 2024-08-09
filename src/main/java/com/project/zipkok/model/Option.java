@@ -1,6 +1,7 @@
 package com.project.zipkok.model;
 
 import com.project.zipkok.common.enums.OptionCategory;
+import com.project.zipkok.dto.PostUpdateKokOptionRequest;
 import jakarta.persistence.*;
 import jdk.jfr.Unsigned;
 import lombok.*;
@@ -57,6 +58,17 @@ public class Option {
 
     public void addDetailOption(DetailOption detailOption){
         this.detailOptions.add(detailOption);
+    }
+
+    public boolean match(PostUpdateKokOptionRequest.Option requestOption){
+        return requestOption.getOptionId() == this.optionId;
+    }
+
+    public void copyInfo(PostUpdateKokOptionRequest.Option requestOption){
+        if(requestOption.getOptionId().equals(this.optionId)){
+            this.orderNum = requestOption.getOrderNumber();
+            this.isVisible = requestOption.isVisible();
+        }
     }
 
     public static Set<Option> makeDefaultOptions(User user){

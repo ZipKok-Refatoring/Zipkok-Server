@@ -30,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -39,7 +40,6 @@ import static com.project.zipkok.common.response.status.BaseExceptionResponseSta
 public class UserService {
 
     private final UserRepository userRepository;
-    private final HighlightRepository highlightRepository;
     private final OptionRepository optionRepository;
     private final DetailOptionRepository detailOptionRepository;
     private final KokImageRepository kokImageRepository;
@@ -47,6 +47,8 @@ public class UserService {
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
     private final FileUploadUtils fileUploadUtils;
+
+    private final HighlightRepository highlightRepository;
 
     @Transactional
     public AuthTokens signUp(PostSignUpRequest postSignUpRequest){
@@ -127,82 +129,68 @@ public class UserService {
     public Object updateKokOption(long userId, PostUpdateKokOptionRequest postUpdateKokOptionRequest) {
         log.info("{UserService.updateKokOption}");
 
-        //model 객체 호출
-        User user = this.userRepository.findByUserId(userId);
-        List<Highlight> newHighlightList = this.highlightRepository.findAllByUser(user);
+        updateHighlightList(userId, postUpdateKokOptionRequest);
+        updateOption(userId, postUpdateKokOptionRequest);
 
-        //exception 처리
-        if(newHighlightList == null){
+        return null;
+    }
+
+    private void updateHighlightList(Long userId, PostUpdateKokOptionRequest postUpdateKokOptionRequest) {
+
+        List<Highlight> highlightList = highlightRepository.findAllByUserId(userId);
+
+        if(highlightList == null){
             throw new KokOptionLoadException(MEMBER_LIST_ITEM_UPDATE_FAILURE);
         }
 
+        User user = highlightList.get(0).getUser();
+        highlightList.clear();
+        postUpdateKokOptionRequest.getHighlights().stream()
+                .map(title -> Highlight.of(title, user))
+                .forEach(highlightList::add);
+    }
 
-        //기존 Highlight 객체 삭제=========================================================================
-        this.highlightRepository.deleteAll(newHighlightList);
+    private void updateOption(Long userId, PostUpdateKokOptionRequest postUpdateKokOptionRequest) {
 
-        //새로운 highlight list 생성하기
-        newHighlightList.clear();
-        for(String highlightTitle : postUpdateKokOptionRequest.getHighlights()){
-            newHighlightList.add(new Highlight(highlightTitle, user));
-        }
+        List<Option> optionList = optionRepository.findAllByUserIdWithDetailOption(userId);
 
-        //user 객체에 highlight list 바꾸기
-        this.highlightRepository.saveAllAndFlush(newHighlightList);
+        List<PostUpdateKokOptionRequest.Option> requestOptions = Stream.of(
+                        postUpdateKokOptionRequest.getOuterOptions(),
+                        postUpdateKokOptionRequest.getInnerOptions(),
+                        postUpdateKokOptionRequest.getContractOptions()
+                )
+                .flatMap(Collection::stream)
+                .toList();
 
+        requestOptions.forEach(requestOption ->
+                optionList.stream()
+                        .filter(option -> option.match(requestOption))
+                        .findFirst()
+                        .ifPresent(option -> option.copyInfo(requestOption))
+        );
 
-        //option, detailOption 객체 수정 (outer) ====================================================================
-        for(PostUpdateKokOptionRequest.Option requestOption : postUpdateKokOptionRequest.getOuterOptions()){
+        updateDetailOption(optionList, requestOptions);
+    }
 
-            Option option = this.optionRepository.findByOptionId(requestOption.getOptionId());
+    private void updateDetailOption(List<Option> optionList, List<PostUpdateKokOptionRequest.Option> requestOptionIds) {
+        List<DetailOption> detailOptionList =
+                optionList.stream()
+                .map(Option::getDetailOptions)
+                .flatMap(Collection::stream)
+                .toList();
 
-            option.setOrderNum(requestOption.getOrderNumber());
-            option.setVisible(requestOption.isVisible());
+        List<PostUpdateKokOptionRequest.DetailOption> requestDetailOptionList =
+                requestOptionIds.stream()
+                .map(PostUpdateKokOptionRequest.Option::getDetailOptions)
+                .flatMap(Collection::stream)
+                .toList();
 
-            for(PostUpdateKokOptionRequest.DetailOption requestDetailOption : requestOption.getDetailOptions()){
-                DetailOption detailOption = this.detailOptionRepository.findByDetailOptionId(requestDetailOption.getDetailOptionId());
-
-                detailOption.setVisible(requestDetailOption.isDetailOptionIsVisible());
-                this.detailOptionRepository.save(detailOption);
-            }
-            this.optionRepository.save(option);
-        }
-
-        //option, detailOption 객체 수정 (inner) ====================================================================
-        for(PostUpdateKokOptionRequest.Option requestOption : postUpdateKokOptionRequest.getInnerOptions()){
-
-            Option option = this.optionRepository.findByOptionId(requestOption.getOptionId());
-
-            option.setOrderNum(requestOption.getOrderNumber());
-            option.setVisible(requestOption.isVisible());
-
-            for(PostUpdateKokOptionRequest.DetailOption requestDetailOption : requestOption.getDetailOptions()){
-                DetailOption detailOption = this.detailOptionRepository.findByDetailOptionId(requestDetailOption.getDetailOptionId());
-
-                detailOption.setVisible(requestDetailOption.isDetailOptionIsVisible());
-                this.detailOptionRepository.save(detailOption);
-            }
-            this.optionRepository.save(option);
-        }
-
-        //option, detailOption 객체 수정 (contract) ====================================================================
-        for(PostUpdateKokOptionRequest.Option requestOption : postUpdateKokOptionRequest.getContractOptions()){
-
-            Option option = this.optionRepository.findByOptionId(requestOption.getOptionId());
-
-            option.setOrderNum(requestOption.getOrderNumber());
-            option.setVisible(requestOption.isVisible());
-
-            for(PostUpdateKokOptionRequest.DetailOption requestDetailOption : requestOption.getDetailOptions()){
-                DetailOption detailOption = this.detailOptionRepository.findByDetailOptionId(requestDetailOption.getDetailOptionId());
-
-                detailOption.setVisible(requestDetailOption.isDetailOptionIsVisible());
-                this.detailOptionRepository.save(detailOption);
-            }
-            this.optionRepository.save(option);
-        }
-
-        return null;
-
+        requestDetailOptionList.forEach(requestDetailOption ->
+                detailOptionList.stream()
+                        .filter(detailOption -> detailOption.match(requestDetailOption))
+                        .findFirst()
+                        .ifPresent(detailOption -> detailOption.copyInfo(requestDetailOption))
+        );
     }
 
     @Transactional
