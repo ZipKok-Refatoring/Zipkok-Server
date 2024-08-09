@@ -10,8 +10,12 @@ import java.util.List;
 
 @Repository
 public interface OptionRepository extends JpaRepository<Option, Long> {
-    Option findByOptionId(long optionId);
+    @Query("SELECT o " +
+            "FROM Option o " +
+            "JOIN FETCH o.detailOptions do " +
+            "WHERE o.user.userId = :userId")
+    List<Option> findAllByUserIdWithDetailOption(Long userId);
 
-    @Query("select o from Option o JOIN FETCH o.detailOptions where o.user.userId = :userId")
-    List<Option> findAllByUserId(long userId);
+    @Query("SELECT o FROM Option o WHERE o.user.userId = :userId")
+    List<Option> findAllByUserId(Long userId);
 }

@@ -10,9 +10,9 @@ import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class GetMyPageDetailResponse {
 
     private String imageUrl;
@@ -49,8 +49,11 @@ public class GetMyPageDetailResponse {
 
     private Double longitude;
 
-    // of 메서드
-    public static GetMyPageDetailResponse of(User user, TransactionPriceConfig transactionPriceConfig, DesireResidence desireResidence) {
+    public static GetMyPageDetailResponse from(User user){
+
+        DesireResidence desireResidence = user.getDesireResidence();
+        TransactionPriceConfig transactionPriceConfig = user.getTransactionPriceConfig();
+
         return GetMyPageDetailResponse.builder()
                 .imageUrl(user.getProfileImgUrl())
                 .nickname(user.getNickname())
@@ -62,13 +65,13 @@ public class GetMyPageDetailResponse {
                 .mpriceMin(transactionPriceConfig.getMPriceMin())
                 .mpriceMax(transactionPriceConfig.getMPriceMax())
                 .mdepositMin(transactionPriceConfig.getMDepositMin())
-                .mpriceMax(transactionPriceConfig.getMDepositMax())
+                .mdepositMax(transactionPriceConfig.getMDepositMax())
                 .ydepositMin(transactionPriceConfig.getYDepositMin())
                 .ydepositMax(transactionPriceConfig.getYDepositMax())
-                .priceMin(transactionPriceConfig.getPurchaseMin())
-                .priceMax(transactionPriceConfig.getPurchaseMax())
-                .latitude(user.getDesireResidence().getLatitude() == null ? null : user.getDesireResidence().getLatitude())
-                .longitude(user.getDesireResidence().getLongitude() == null ? null : user.getDesireResidence().getLongitude())
+                .priceMin(transactionPriceConfig.getMPriceMin())
+                .priceMax(transactionPriceConfig.getMPriceMax())
+                .latitude(desireResidence.getLatitude())
+                .longitude(desireResidence.getLongitude())
                 .build();
     }
 }

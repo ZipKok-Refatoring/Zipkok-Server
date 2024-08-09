@@ -4,6 +4,9 @@ import com.project.zipkok.common.enums.Gender;
 import com.project.zipkok.common.enums.OAuthProvider;
 import com.project.zipkok.common.enums.RealEstateType;
 import com.project.zipkok.common.enums.TransactionType;
+import com.project.zipkok.dto.PatchOnBoardingRequest;
+import com.project.zipkok.dto.PostSignUpRequest;
+import com.project.zipkok.dto.PutUpdateMyInfoRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,6 +14,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import static com.project.zipkok.model.Highlight.makeDefaultHighlights;
+import static com.project.zipkok.model.Impression.makeDefaultImpressions;
+import static com.project.zipkok.model.Option.makeDefaultOptions;
 
 @Entity
 @Table(name = "User")
@@ -92,5 +99,26 @@ public class User {
         this.gender = gender;
         this.birthday = birthday;
         this.status =  "active";
+    }
+
+    public void setOnBoardingInfo(PatchOnBoardingRequest patchOnBoardingRequest) {
+        this.realEstateType = patchOnBoardingRequest.getRealEstateType();
+        this.transactionType = patchOnBoardingRequest.getTransactionType();
+
+        this.desireResidence.setDesireResidenceInfo(patchOnBoardingRequest);
+        this.transactionPriceConfig.setTransactionPriceConfig(patchOnBoardingRequest);
+    }
+
+    public void setUpdateUserInfo(String url, PutUpdateMyInfoRequest putUpdateMyInfoRequest){
+        this.nickname = putUpdateMyInfoRequest.getNickname();
+        this.birthday = putUpdateMyInfoRequest.getBirthday();
+        this.gender = putUpdateMyInfoRequest.getGender();
+        this.realEstateType = putUpdateMyInfoRequest.getRealEstateType();
+        this.transactionType = putUpdateMyInfoRequest.getTransactionType();
+
+        this.profileImgUrl = url;
+
+        this.desireResidence.setDesireResidenceInfo(putUpdateMyInfoRequest);
+        this.transactionPriceConfig.setTransactionPriceConfig(putUpdateMyInfoRequest);
     }
 }

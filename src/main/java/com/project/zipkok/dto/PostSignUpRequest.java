@@ -3,6 +3,7 @@ package com.project.zipkok.dto;
 import com.project.zipkok.common.enums.Gender;
 import com.project.zipkok.common.enums.OAuthProvider;
 import com.project.zipkok.common.enums.ValidEnum;
+import com.project.zipkok.model.DesireResidence;
 import com.project.zipkok.model.User;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;

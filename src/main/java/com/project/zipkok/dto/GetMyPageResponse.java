@@ -1,10 +1,12 @@
 package com.project.zipkok.dto;
 
-import com.project.zipkok.common.enums.RealEstateType;
-import com.project.zipkok.common.enums.TransactionType;
-import com.project.zipkok.model.DesireResidence;
 import com.project.zipkok.model.TransactionPriceConfig;
 import com.project.zipkok.model.User;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import com.project.zipkok.model.DesireResidence;
 import lombok.*;
 
 @Getter
@@ -33,7 +35,10 @@ public class GetMyPageResponse {
     private Long depositMin;
 
     public static class GetMyPageResponseBuilder {
-        public GetMyPageResponseBuilder fromTransactionType(User user, TransactionPriceConfig transactionPriceConfig, DesireResidence desireResidence) {
+        public GetMyPageResponseBuilder fromTransactionType(User user) {
+            DesireResidence desireResidence = user.getDesireResidence();
+            TransactionPriceConfig transactionPriceConfig = user.getTransactionPriceConfig();
+
             this.nickname(user.getNickname());
             this.imageUrl(user.getProfileImgUrl());
             this.address(desireResidence.getAddress());
@@ -71,9 +76,9 @@ public class GetMyPageResponse {
     }
 
     // of 메서드
-    public static GetMyPageResponse of(User user, TransactionPriceConfig transactionPriceConfig, DesireResidence desireResidence) {
+    public static GetMyPageResponse from(User user) {
         return GetMyPageResponse.builder()
-                .fromTransactionType(user, transactionPriceConfig, desireResidence)
+                .fromTransactionType(user)
                 .build();
     }
 }

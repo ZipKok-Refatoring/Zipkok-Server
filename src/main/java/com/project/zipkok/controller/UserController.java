@@ -1,29 +1,21 @@
 package com.project.zipkok.controller;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.project.zipkok.common.argument_resolver.PreAuthorize;
-import com.project.zipkok.common.exception.user.NoMatchUserException;
 import com.project.zipkok.common.exception.user.OnBoardingBadRequestException;
 import com.project.zipkok.common.exception.user.UserBadRequestException;
 import com.project.zipkok.common.response.BaseResponse;
 import com.project.zipkok.dto.*;
 import com.project.zipkok.service.UserService;
-import com.project.zipkok.util.FileUploadUtils;
 import com.project.zipkok.util.jwt.AuthTokens;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Repository;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 import static com.project.zipkok.common.response.status.BaseExceptionResponseStatus.*;
 import static com.project.zipkok.util.BindingResultUtils.getErrorMessages;

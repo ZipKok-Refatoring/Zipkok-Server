@@ -5,18 +5,17 @@ import com.project.zipkok.common.enums.OptionCategory;
 import com.project.zipkok.model.Highlight;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class GetKokOptionLoadResponse {
 
     private List<String> highlights;
-
+    
     private List<Option> outerOptions;
 
     private List<Option> innerOptions;
@@ -62,11 +61,10 @@ public class GetKokOptionLoadResponse {
         }
     }
 
-    @Getter
-    @Setter
+    @Data
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    @Builder
     public static class DetailOption{
 
         private Long detailOptionId;

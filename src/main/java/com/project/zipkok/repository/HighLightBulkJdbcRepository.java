@@ -37,4 +37,21 @@ public class HighLightBulkJdbcRepository {
             }
         });
     }
+
+    @Transactional
+    public void deleteAll(Long userId) {
+        String sql = "DELETE FROM highlight WHERE user_id = ?";
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+
+                ps.setLong(1, userId);
+            }
+
+            @Override
+            public int getBatchSize() {
+                return 10;
+            }
+        });
+    }
 }
