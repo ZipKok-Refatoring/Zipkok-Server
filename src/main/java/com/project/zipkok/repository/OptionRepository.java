@@ -15,4 +15,7 @@ public interface OptionRepository extends JpaRepository<Option, Long> {
             "JOIN FETCH o.detailOptions do " +
             "WHERE o.user.userId = :userId")
     List<Option> findAllByUserIdWithDetailOption(Long userId);
+
+    @Query("SELECT o FROM Option o WHERE o.user.userId = :userId")
+    List<Option> findAllByUserId(Long userId);
 }

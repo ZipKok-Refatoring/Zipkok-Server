@@ -92,7 +92,9 @@ public class UserService {
         optionBulkJdbcRepository.saveAll(options);
         List<Impression> impressions = Impression.makeDefaultImpressions(user).stream().toList();
         impressionBulkJdbcRepository.saveAll(impressions);
-        List<DetailOption> detailOptions = DetailOption.makeDefaultDetailOptions(options);
+
+        List<Option> savedOptions = optionRepository.findAllByUserId(user.getUserId());
+        List<DetailOption> detailOptions = DetailOption.makeDefaultDetailOptions(savedOptions);
         detailOptionBulkJdbcRepository.saveAll(detailOptions);
     }
 
