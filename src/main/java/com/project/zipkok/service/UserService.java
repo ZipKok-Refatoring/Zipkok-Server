@@ -72,6 +72,7 @@ public class UserService {
         log.info("{UserService.createUser}");
 
         User user = postSignUpRequest.toEntity();
+        userRepository.save(user);
 
         DesireResidence desireResidence = new DesireResidence(user);
         TransactionPriceConfig transactionPriceConfig = new TransactionPriceConfig(user);
@@ -81,7 +82,7 @@ public class UserService {
 
         makeDefaultUserInfo(user);
 
-        return userRepository.save(user);
+        return user;
     }
 
     private void makeDefaultUserInfo(User user) {
@@ -152,22 +153,18 @@ public class UserService {
 
     private void updateHighlightList(Long userId, PostUpdateKokOptionRequest postUpdateKokOptionRequest) {
 
-        List<Highlight> highlightList = highlightRepository.findAllByUserId(userId);
+        highlightBulkJdbcRepository.deleteAll(userId);
 
-        if(highlightList == null){
-            throw new KokOptionLoadException(MEMBER_LIST_ITEM_UPDATE_FAILURE);
-        }
+        User user = userRepository.findByUserId(userId);
 
-        User user = highlightList.get(0).getUser();
-        highlightList.clear();
-        postUpdateKokOptionRequest.getHighlights().stream()
+        List<Highlight> highlightList = postUpdateKokOptionRequest.getHighlights().stream()
                 .map(title -> Highlight.of(title, user))
-                .forEach(highlightList::add);
+                .toList();
+
+        highlightBulkJdbcRepository.saveAll(highlightList);
     }
 
     private void updateOption(Long userId, PostUpdateKokOptionRequest postUpdateKokOptionRequest) {
-
-        List<Option> optionList = optionRepository.findAllByUserIdWithDetailOption(userId);
 
         List<PostUpdateKokOptionRequest.Option> requestOptions = Stream.of(
                         postUpdateKokOptionRequest.getOuterOptions(),
@@ -177,35 +174,19 @@ public class UserService {
                 .flatMap(Collection::stream)
                 .toList();
 
-        requestOptions.forEach(requestOption ->
-                optionList.stream()
-                        .filter(option -> option.match(requestOption))
-                        .findFirst()
-                        .ifPresent(option -> option.copyInfo(requestOption))
-        );
+        optionBulkJdbcRepository.updateAll(requestOptions);
 
-        updateDetailOption(optionList, requestOptions);
+        updateDetailOption(requestOptions);
     }
 
-    private void updateDetailOption(List<Option> optionList, List<PostUpdateKokOptionRequest.Option> requestOptionIds) {
-        List<DetailOption> detailOptionList =
-                optionList.stream()
-                .map(Option::getDetailOptions)
-                .flatMap(Collection::stream)
-                .toList();
-
+    private void updateDetailOption(List<PostUpdateKokOptionRequest.Option> requestOptionIds) {
         List<PostUpdateKokOptionRequest.DetailOption> requestDetailOptionList =
                 requestOptionIds.stream()
                 .map(PostUpdateKokOptionRequest.Option::getDetailOptions)
                 .flatMap(Collection::stream)
                 .toList();
 
-        requestDetailOptionList.forEach(requestDetailOption ->
-                detailOptionList.stream()
-                        .filter(detailOption -> detailOption.match(requestDetailOption))
-                        .findFirst()
-                        .ifPresent(detailOption -> detailOption.copyInfo(requestDetailOption))
-        );
+        detailOptionBulkJdbcRepository.updateAll(requestDetailOptionList);
     }
 
     @Transactional

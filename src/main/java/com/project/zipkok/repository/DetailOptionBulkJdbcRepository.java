@@ -1,5 +1,6 @@
 package com.project.zipkok.repository;
 
+import com.project.zipkok.dto.PostUpdateKokOptionRequest;
 import com.project.zipkok.model.DetailOption;
 import com.project.zipkok.model.Highlight;
 import jakarta.transaction.Transactional;
@@ -34,6 +35,25 @@ public class DetailOptionBulkJdbcRepository {
             @Override
             public int getBatchSize() {
                 return detailOptions.size();
+            }
+        });
+    }
+
+    @Transactional
+    public void updateAll(List<PostUpdateKokOptionRequest.DetailOption> requestOptionIds) {
+        String sql = "UPDATE DetailOption SET is_visible = ? WHERE detail_option_id = ?";
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                PostUpdateKokOptionRequest.DetailOption requestDetailOption = requestOptionIds.get(i);
+
+                ps.setLong(1, requestDetailOption.getDetailOptionId());
+                ps.setBoolean(2, requestDetailOption.isDetailOptionIsVisible());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return requestOptionIds.size();
             }
         });
     }

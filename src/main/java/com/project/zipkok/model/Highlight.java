@@ -40,6 +40,7 @@ public class Highlight {
         return Highlight.builder()
                 .title(title)
                 .user(user)
+                .status("active")
                 .build();
     }
 
