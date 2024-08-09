@@ -10,7 +10,6 @@ import java.util.List;
 
 @Repository
 public interface HighlightRepository extends JpaRepository<Highlight, Long> {
-
     @Query("SELECT h FROM Highlight h WHERE h.user.userId = :userId")
     List<Highlight> findAllByUserId(Long userId);
 

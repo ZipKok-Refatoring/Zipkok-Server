@@ -98,24 +98,7 @@ public class User {
         this.nickname = nickname;
         this.gender = gender;
         this.birthday = birthday;
-    }
-
-    public static User from(PostSignUpRequest postSignUpRequest) {
-        User user = new User();
-
-        user.setEmail(postSignUpRequest.getEmail());
-        user.setNickname(postSignUpRequest.getNickname());
-        user.setBirthday(postSignUpRequest.getBirthday());
-        user.setGender(postSignUpRequest.getGender());
-        user.setOAuthProvider(postSignUpRequest.getOauthProvider());
-
-        user.setDesireResidence(new DesireResidence(user));
-        user.setTransactionPriceConfig(new TransactionPriceConfig(user));
-        user.setHighlights(makeDefaultHighlights(user));
-        user.setOptions(makeDefaultOptions(user));
-        user.setImpressions(makeDefaultImpressions(user));
-
-        return user;
+        this.status =  "active";
     }
 
     public void setOnBoardingInfo(PatchOnBoardingRequest patchOnBoardingRequest) {

@@ -1,18 +1,19 @@
 package com.project.zipkok.dto;
 
-import com.project.zipkok.common.enums.RealEstateType;
-import com.project.zipkok.common.enums.TransactionType;
 import com.project.zipkok.model.TransactionPriceConfig;
 import com.project.zipkok.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.project.zipkok.model.DesireResidence;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class GetMyPageResponse {
 
     private String nickname;
@@ -33,44 +34,51 @@ public class GetMyPageResponse {
 
     private Long depositMin;
 
-    public static GetMyPageResponse from (User user){
-        GetMyPageResponse getMyPageResponse = new GetMyPageResponse();
+    public static class GetMyPageResponseBuilder {
+        public GetMyPageResponseBuilder fromTransactionType(User user) {
+            DesireResidence desireResidence = user.getDesireResidence();
+            TransactionPriceConfig transactionPriceConfig = user.getTransactionPriceConfig();
 
-        getMyPageResponse.setNickname(user.getNickname());
-        getMyPageResponse.setImageUrl(user.getProfileImgUrl());
-        getMyPageResponse.setRealEstateType(user.getRealEstateType() == null ? null : user.getRealEstateType().toString());
+            this.nickname(user.getNickname());
+            this.imageUrl(user.getProfileImgUrl());
+            this.address(desireResidence.getAddress());
+            this.realEstateType(user.getRealEstateType() == null ? null : user.getRealEstateType().toString());
 
-        getMyPageResponse.setAddress(user.getDesireResidence().getAddress());
-
-        TransactionPriceConfig transactionPriceConfig = user.getTransactionPriceConfig();
-        if(user.getTransactionType() == null){
-            getMyPageResponse.setTransactionType(null);
-            getMyPageResponse.setPriceMax(null);
-            getMyPageResponse.setPriceMin(null);
-            getMyPageResponse.setDepositMax(null);
-            getMyPageResponse.setDepositMin(null);
-        }
-        else{
-            getMyPageResponse.setTransactionType(user.getTransactionType().toString());
-            String transactionType = user.getTransactionType().getDescription();
-            switch (transactionType) {
-                case "월세" -> {
-                    getMyPageResponse.setPriceMax(transactionPriceConfig.getMPriceMax());
-                    getMyPageResponse.setPriceMin(transactionPriceConfig.getMPriceMin());
-                    getMyPageResponse.setDepositMax(transactionPriceConfig.getMDepositMax());
-                    getMyPageResponse.setDepositMin(transactionPriceConfig.getMDepositMin());
-                }
-                case "전세" -> {
-                    getMyPageResponse.setDepositMax(transactionPriceConfig.getYDepositMax());
-                    getMyPageResponse.setDepositMin(transactionPriceConfig.getYDepositMin());
-                }
-                case "매매" -> {
-                    getMyPageResponse.setPriceMax(transactionPriceConfig.getPurchaseMax());
-                    getMyPageResponse.setPriceMin(transactionPriceConfig.getPurchaseMin());
+            if(user.getTransactionType() == null) {
+                this.transactionType(null);
+                this.priceMax(null);
+                this.priceMin(null);
+                this.depositMax(null);
+                this.depositMin(null);
+            }
+            else {
+                this.transactionType = user.getTransactionType().toString();
+                String transactionTypeDescription = user.getTransactionType().getDescription();
+                switch (transactionTypeDescription) {
+                    case "월세" -> {
+                        this.priceMax(transactionPriceConfig.getMPriceMax());
+                        this.priceMin(transactionPriceConfig.getMPriceMin());
+                        this.depositMax(transactionPriceConfig.getMDepositMax());
+                        this.depositMin(transactionPriceConfig.getMDepositMin());
+                    }
+                    case "전세" -> {
+                        this.depositMax(transactionPriceConfig.getYDepositMax());
+                        this.depositMin(transactionPriceConfig.getYDepositMin());
+                    }
+                    case "매매" -> {
+                        this.priceMax(transactionPriceConfig.getPurchaseMax());
+                        this.priceMin(transactionPriceConfig.getPurchaseMin());
+                    }
                 }
             }
+            return this;
         }
+    }
 
-        return getMyPageResponse;
+    // of 메서드
+    public static GetMyPageResponse from(User user) {
+        return GetMyPageResponse.builder()
+                .fromTransactionType(user)
+                .build();
     }
 }

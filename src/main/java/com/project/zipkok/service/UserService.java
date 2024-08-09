@@ -40,9 +40,14 @@ import static com.project.zipkok.common.response.status.BaseExceptionResponseSta
 public class UserService {
 
     private final UserRepository userRepository;
+    private final DesireResidenceRepository desireResidenceRepository;
+    private final TransactionPriceConfigRepository transactionPriceConfigRepository;
     private final OptionRepository optionRepository;
-    private final DetailOptionRepository detailOptionRepository;
     private final KokImageRepository kokImageRepository;
+    private final HighLightBulkJdbcRepository highlightBulkJdbcRepository;
+    private final ImpressionBulkJdbcRepository impressionBulkJdbcRepository;
+    private final OptionBulkJdbcRepository optionBulkJdbcRepository;
+    private final DetailOptionBulkJdbcRepository detailOptionBulkJdbcRepository;
 
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
@@ -66,9 +71,28 @@ public class UserService {
     private User createUser(PostSignUpRequest postSignUpRequest) {
         log.info("{UserService.createUser}");
 
-        User user = User.from(postSignUpRequest);
+        User user = postSignUpRequest.toEntity();
+
+        DesireResidence desireResidence = new DesireResidence(user);
+        TransactionPriceConfig transactionPriceConfig = new TransactionPriceConfig(user);
+
+        desireResidenceRepository.save(desireResidence);
+        transactionPriceConfigRepository.save(transactionPriceConfig);
+
+        makeDefaultUserInfo(user);
 
         return userRepository.save(user);
+    }
+
+    private void makeDefaultUserInfo(User user) {
+        List<Highlight> highlights = Highlight.makeDefaultHighlights(user).stream().toList();
+        highlightBulkJdbcRepository.saveAll(highlights);
+        List<Option> options = Option.makeDefaultOptions(user);
+        optionBulkJdbcRepository.saveAll(options);
+        List<Impression> impressions = Impression.makeDefaultImpressions(user).stream().toList();
+        impressionBulkJdbcRepository.saveAll(impressions);
+        List<DetailOption> detailOptions = DetailOption.makeDefaultDetailOptions(options);
+        detailOptionBulkJdbcRepository.saveAll(detailOptions);
     }
 
     private AuthTokens makeJwtToken(User user) {
@@ -83,19 +107,17 @@ public class UserService {
     public Objects setOnBoarding(PatchOnBoardingRequest patchOnBoardingRequest, long userId) {
         log.info("{UserService.setOnBoarding}");
 
-        User user = this.userRepository.findByUserIdWithDesireResidenceAndTransactionPriceConfig(userId);
-
+        User user = userRepository.findByUserIdWithDesireResidenceAndTransactionPriceConfig(userId);
         user.setOnBoardingInfo(patchOnBoardingRequest);
 
-        this.userRepository.save(user);
-
+        userRepository.save(user);
         return null;
     }
 
     public GetMyPageResponse myPageLoad(long userId) {
         log.info("{UserService.myPageLoad}");
 
-        User user = this.userRepository.findByUserIdWithDesireResidenceAndTransactionPriceConfig(userId);
+        User user = userRepository.findByUserIdWithDesireResidenceAndTransactionPriceConfig(userId);
 
         return GetMyPageResponse.from(user);
     }
@@ -103,26 +125,19 @@ public class UserService {
     public GetMyPageDetailResponse myPageDetailLoad(long userId) {
         log.info("{UserService.myPageDetailLoad}");
 
-        User user = this.userRepository.findByUserIdWithDesireResidenceAndTransactionPriceConfig(userId);
+        User user = userRepository.findByUserIdWithDesireResidenceAndTransactionPriceConfig(userId);
 
         return GetMyPageDetailResponse.from(user);
     }
 
     @Transactional
     public GetKokOptionLoadResponse loadKokOption(long userId) {
-        log.info("{UserService.kokOptionLoad}");
+        log.info("{UserService.loadKokOption}");
 
-        //model 객체 호출
-        User user = this.userRepository.findByUserIdWithHighlightAndOptions(userId);
-        Set<Highlight> highlightList = user.getHighlights();
-        Set<Option> optionList = user.getOptions();
+        List<Highlight> highlightList = highlightRepository.findAllByUserId(userId);
+        List<Option> optionList = optionRepository.findAllByUserIdWithDetailOption(userId);
 
-        //exception 처리
-        if(highlightList == null || optionList == null){
-            throw new KokOptionLoadException(MEMBER_LIST_ITEM_QUERY_FAILURE);
-        }
-
-        return GetKokOptionLoadResponse.from(highlightList, optionList);
+        return GetKokOptionLoadResponse.of(highlightList, optionList);
     }
 
     @Transactional

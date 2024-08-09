@@ -15,17 +15,27 @@ import java.util.stream.Stream;
 public class GetKokOptionLoadResponse {
 
     private List<String> highlights;
+    
+    private List<Option> outerOptions;
 
-    private List<Option> outerOptions = new ArrayList<>();
+    private List<Option> innerOptions;
 
-    private List<Option> innerOptions = new ArrayList<>();
+    private List<Option> contractOptions;
 
-    private List<Option> contractOptions = new ArrayList<>();
+    public static GetKokOptionLoadResponse of(List<Highlight> highlightList, List<com.project.zipkok.model.Option> optionList) {
+        return GetKokOptionLoadResponse.builder()
+                .highlights(highlightList.stream().map(Highlight::getTitle).toList())
+                .outerOptions(optionList.stream().filter(option -> option.getCategory().equals(OptionCategory.OUTER)).map(Option::from).toList())
+                .innerOptions(optionList.stream().filter(option -> option.getCategory().equals(OptionCategory.INNER)).map(Option::from).toList())
+                .contractOptions(optionList.stream().filter(option -> option.getCategory().equals(OptionCategory.CONTRACT)).map(Option::from).toList())
+                .build();
+    }
 
-    @Data
-    @Builder
+    @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class Option{
 
         private Long optionId;
@@ -39,6 +49,16 @@ public class GetKokOptionLoadResponse {
         private boolean isVisible;
 
         private List<DetailOption> detailOptions;
+
+        public static Option from(com.project.zipkok.model.Option option){
+            return Option.builder()
+                    .optionId(option.getOptionId())
+                    .optionTitle(option.getName())
+                    .orderNumber(option.getOrderNum())
+                    .isVisible(option.isVisible())
+                    .detailOptions(option.getDetailOptions().stream().map(DetailOption::from).toList())
+                    .build();
+        }
     }
 
     @Data
@@ -52,70 +72,13 @@ public class GetKokOptionLoadResponse {
         private String detailOptionTitle;
 
         private boolean detailOptionIsVisible;
-    }
 
-    public static GetKokOptionLoadResponse from(Set<Highlight> highlights, Set<com.project.zipkok.model.Option> options) {
-
-        GetKokOptionLoadResponse getKokOptionLoadResponse =
-                GetKokOptionLoadResponse.builder()
-                    .highlights(
-                            highlights.stream()
-                                    .map(Highlight::getTitle)
-                                    .toList()
-                    )
-                    .outerOptions(
-                            options.stream()
-                                    .filter(option -> option.getCategory()== OptionCategory.OUTER)
-                                    .map(GetKokOptionLoadResponse::from)
-                                    .toList()
-                    )
-                    .innerOptions(
-                            options.stream()
-                                    .filter(option -> option.getCategory()== OptionCategory.INNER)
-                                    .map(GetKokOptionLoadResponse::from)
-                                    .toList()
-                    )
-                    .contractOptions(
-                            options.stream()
-                                    .filter(option -> option.getCategory()== OptionCategory.CONTRACT)
-                                    .map(GetKokOptionLoadResponse::from)
-                                    .toList()
-                    )
+        public static DetailOption from(com.project.zipkok.model.DetailOption detailOption){
+            return DetailOption.builder()
+                    .detailOptionId(detailOption.getDetailOptionId())
+                    .detailOptionTitle(detailOption.getName())
+                    .detailOptionIsVisible(detailOption.isVisible())
                     .build();
-
-        //Batch size 지정해두었기 때문에 in 절 사용해서 쿼리를 날림.
-        List<com.project.zipkok.model.DetailOption> detailOptions = options.stream()
-                .flatMap(option -> option.getDetailOptions().stream())
-                .toList();
-
-        Stream.of(getKokOptionLoadResponse.outerOptions, getKokOptionLoadResponse.innerOptions, getKokOptionLoadResponse.contractOptions)
-                .flatMap(Collection::stream)
-                .forEach(option -> {
-                    detailOptions.forEach(detailOption -> {
-                        if(option.getOptionId().equals(detailOption.getOption().getOptionId())){
-                            option.getDetailOptions().add(GetKokOptionLoadResponse.from(detailOption));
-                        }
-                    });
-                });
-
-        return getKokOptionLoadResponse;
-    }
-
-    private static Option from (com.project.zipkok.model.Option option) {
-        return Option.builder()
-                .optionId(option.getOptionId())
-                .optionTitle(option.getName())
-                .orderNumber(option.getOrderNum())
-                .isVisible(option.isVisible())
-                .detailOptions(new ArrayList<>())
-                .build();
-    }
-
-    private static DetailOption from (com.project.zipkok.model.DetailOption detailOption) {
-        return DetailOption.builder()
-                .detailOptionId(detailOption.getDetailOptionId())
-                .detailOptionTitle(detailOption.getName())
-                .detailOptionIsVisible(detailOption.isVisible())
-                .build();
+        }
     }
 }
